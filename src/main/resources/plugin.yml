@@ -1,5 +1,5 @@
 name: SPfB
-main: org.braste.SPfB.SPfB
+main: de.braste.SPfB.SPfB
 version: 1.2.4 (CraftBukkit 1.6.4-R2.05)
 author: Braste
 depends: [SPfBFunctions]
