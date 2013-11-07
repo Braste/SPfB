@@ -1,0 +1,99 @@
+name: SPfB
+main: org.braste.SPfB.SPfB
+version: 1.2.4 (CraftBukkit 1.6.4-R2.05)
+author: Braste
+depends: [SPfBFunctions]
+
+commands:
+ home:
+  description: Teleportiert den Spieler zu seinem Homepunkt.
+  usage: <command>
+ sethome:
+  description: Setzt den Homepunkt des Spielers auf die momentane Position.
+  usage: <command>
+  aliases: ['shome']
+ spawn:
+  description: Teleportiert den Spieler zum Spawnpunkt.
+  usage: <command>
+ setspawn:
+  description: Setzt den Spawnpunkt.
+  usage: <command>
+ setgroup:
+  description: Aendert die Gruppe des angegebenen Spielers.
+  usage: <command> <player> <group>
+  aliases: ['sgroup']
+ getgroups:
+  description: Ruft alle Gruppen des Servers ab.
+  usage: <command>
+  aliases: ['groups']
+ login:
+  description: Loggt den Spieler ein.
+  usage: <command> <password>
+  aliases: ['join']
+ register:
+  description: Registriert den Spieler.
+  usage: <command> <password> <password>
+  aliases: ['reg']
+ changepw:
+  description: Aendert das Passwort.
+  usage: <command> <old password> <new password> <new password> 
+  aliases: ['cpw']
+ warp:
+  description: Teleportiert den Spieler zu dem angegebenen Warppunkt.
+  usage: <command> <warplocation>
+ createwarp:
+  description: Setzt einen Warppunkt an der momentanen Position.
+  usage: <command>
+  aliases: ['cwarp']
+ listwarps:
+  description: Liste alles Warppunkte auf.
+  usage: <command>
+  aliases: ['lwarps']
+ deletewarp:
+  description: Loescht den angegebenen Warppunkt.
+  usage: <command> <warplocation>
+  aliases: ['dwarp']
+ removereg:
+  description: Entfernt die Registrierung des angegebenen Spielers.
+  usage: <command> <player>
+  aliases: ['rreg']
+ clearinventory:
+  description: Leert das Inventar.
+  usage: <command> <main|bar|all>
+  aliases: ['ci']
+ wp:
+  description: Teleportiert den Spieler zu dem angegebenen Wegpunkt.
+  usage: <command> <waypoint>
+ listwp:
+  description: Listet alle Wegpunkte des Spielers auf.
+  usage: <command> [player]
+  aliases: ['lwp']
+ setwp:
+  description: Setzt einen neuen Wegpunkt mit dem angegebenen Namen.
+  usage: <command> <name>
+  aliases: ['swp']
+ deletewp:
+  description: Loescht den angegebenen Wegpunkt
+  usage: <command> <waypoint>
+  aliases: ['dwp']
+ tp:
+  description: Teleportiert einen Spieler zu einem anderen Spieler.
+  usage: <command> <target|source> [target]
+ list:
+  description: Listet alle Onlinespieler auf.
+  usage: <command>
+ broadcast:
+  description: Sendet eine Systemnachricht an alle Spieler.
+  usage: <command> <message>
+  aliases: ['b']
+ rift:
+  description: Die Zeit ist eine Schleife.
+  usage: <command> [time]
+ setweather:
+  description: Ändert das Wetter.
+  usage: <command> <duration|storm>
+  aliases: ['setw','sw']
+ reloadplugin:
+  description: Startet ein Plugin (neu).
+  usage: <command> <name>
+  aliases: ['reloadp']

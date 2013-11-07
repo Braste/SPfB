@@ -1,1 +1,16 @@
+# we use maven!
+/build.xml
 target/
+classes/
+
+# intellij
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# various other potential build files
+/build
+/bin
+/dist
+/manifest.mf

@@ -1,0 +1,109 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>de.braste</groupId>
+    <artifactId>SPfB</artifactId>
+    <version>1.2.4</version>
+    <name>SPfB</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <api.version>unknown</api.version>
+        <minecraft.version>1.6.4</minecraft.version>
+        <bukkit_version>1.6.4-R2.0</bukkit_version>
+        <minecraft_version>1_6_R3</minecraft_version>
+    </properties>
+
+    <scm>
+        <connection>scm:git:git://github.com/Braste/SPfB.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/Braste/SPfB.git</developerConnection>
+        <url>https://github.com/Braste/SPfB</url>
+    </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>deployment</id>
+            <name>repo.crm-braun.de Releases</name>
+            <url>http://repo.crm-braun.de/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshot</id>
+            <name>repo.crm-braun.de Snapshots</name>
+            <url>http://repo.crm-braun.de/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+		<dependency>
+		  <groupId>de.braste</groupId>
+		  <artifactId>SPfBFunctions</artifactId>
+		  <version>${project.version}</version>
+		  <type>jar</type>
+		  <scope>compile</scope>
+		</dependency>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>${bukkit_version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <defaultGoal>clean install</defaultGoal>
+        <sourceDirectory>${basedir}/src/main/java/</sourceDirectory>
+
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.3.1</version>
+                <configuration>
+                    <archive>
+                        <addMavenDescriptor>true</addMavenDescriptor>
+                         <manifestEntries>
+                            <Class-Path>SPfBFunctions.jar</Class-Path>
+                            <Main-Class>de.braste.SPfB.SPfB</Main-Class>
+                            <Implementation-Title>SPfB</Implementation-Title>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Implementation-Vendor>Braste</Implementation-Vendor>
+                            <Specification-Title>Bukkit</Specification-Title>
+                            <Specification-Version>${bukkit_version}</Specification-Version>
+                            <Specification-Vendor>Bukkit Team</Specification-Vendor>
+                            <Sealed>true</Sealed>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
