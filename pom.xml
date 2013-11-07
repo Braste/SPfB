@@ -38,6 +38,10 @@
             <id>bukkit-repo</id>
             <url>http://repo.bukkit.org/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>braste-repo</id>
+            <url>http://repo.crm-braun.de/content/groups/public/</url>
+        </repository>
     </repositories>
 
     <dependencies>
