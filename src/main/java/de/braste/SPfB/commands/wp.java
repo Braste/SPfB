@@ -25,17 +25,20 @@ public class wp implements CommandExecutor {
             if (funcs.canUseCommand(player, "SPfB.wp")) {
                 System.out.println(player.getName() + " used SPfB.wp");
                 if (funcs.isLoggedIn(player)) {
-                    boolean ret = false;
 
-                    if (args.length == 1) {
-                        funcs.getWaypoint(player, args[0]);
-                        ret = true;
-                    } else if (args.length > 1) {
+                    if (args.length == 2 && funcs.canUseCommand(player, "SPfB.allwp")) {
+                        funcs.getPlayerWaypoint(player, args[0], args[1]);
+                        return true;
+                    }
+                    else if (args.length == 1) {
+                        funcs.getOwnWaypoint(player, args[0]);
+                        return true;
+                    } else if (args.length > 2) {
                         funcs.systemMessage(player, "Zu viele Parameter:");
                     } else {
                         funcs.systemMessage(player, "Zu wenig Parameter:");
                     }
-                    return ret;
+                    return false;
                 }
                 else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }

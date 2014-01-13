@@ -62,8 +62,8 @@ commands:
   usage: <command> <main|bar|all>
   aliases: ['ci']
  wp:
-  description: Teleportiert den Spieler zu dem angegebenen Wegpunkt.
-  usage: <command> <waypoint>
+  description: Teleportiert den Spieler zu dem angegebenen Wegpunkt (wenn ein anderer Spieler angegeben wird, zu einem Wegpunkt dieses Spielers).
+  usage: <command> [player] <waypoint>
  listwp:
   description: Listet alle Wegpunkte des Spielers auf.
   usage: <command> [player]

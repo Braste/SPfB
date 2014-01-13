@@ -25,19 +25,18 @@ public class listwp implements CommandExecutor {
             if (funcs.canUseCommand(player, "SPfB.listwp")) {
                 System.out.println(player.getName() + " used SPfB.listwp");
                 if (funcs.isLoggedIn(player)) {
-                    boolean ret = false;
-                    if (args.length == 1) {
+                    if (args.length == 1 && funcs.canUseCommand(player, "SPfB.listallwp")) {
                         funcs.listWaypoints(player, args[0]);
-                        ret = true;
+                        return true;
                     } else if (args.length < 1) {
                         funcs.listWaypoints(player, null);
-                        ret = true;
+                        return true;
                     } else if (args.length > 1) {
                         funcs.systemMessage(player, "Zu viele Parameter:");
                     } else {
                         funcs.systemMessage(player, "Zu wenig Parameter:");
                     }
-                    return ret;
+                    return false;
                 }
                 else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }

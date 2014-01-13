@@ -25,17 +25,14 @@ public class setwp implements CommandExecutor {
             if (funcs.canUseCommand(player, "SPfB.setwp")) {
                 System.out.println(player.getName() + " used SPfB.setwp");
                 if (funcs.isLoggedIn(player)) {
-                    boolean ret = false;
-
                     if (args.length == 1) {
-                        funcs.setWaypoint(player, args[0]);
-                        ret = true;
+                        return funcs.setWaypoint(player, args[0]);
                     } else if (args.length > 1) {
                         funcs.systemMessage(player, "Zu viele Parameter:");
                     } else {
                         funcs.systemMessage(player, "Zu wenig Parameter:");
                     }
-                    return ret;
+                    return false;
                 }
                 else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
