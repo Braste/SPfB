@@ -19,7 +19,7 @@ public class list implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-
+            funcs.listPlayers(sender);
         } else {
             Player player = (Player) sender;
 
