@@ -43,6 +43,10 @@
             <id>braste-repo</id>
             <url>http://repo.crm-braun.de/content/groups/public/</url>
         </repository>
+        <repository>
+            <id>pex-repo</id>
+            <url>http://pex-repo.zachsthings.com</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -59,6 +63,11 @@
             <version>${bukkit_version}</version>
             <type>jar</type>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>ru.tehkode</groupId>
+            <artifactId>PermissionsEx</artifactId>
+            <version>1.22</version>
         </dependency>
     </dependencies>
 

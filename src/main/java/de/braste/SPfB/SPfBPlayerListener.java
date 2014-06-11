@@ -6,6 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,9 +45,7 @@ class SPfBPlayerListener implements Listener {
         if (funcs.isInDatabase(player)) {
             funcs.setIP(player);
             funcs.setOnline(player, 1);
-
-            if (funcs.isInGroup(player, "user")) {
-
+            if (player.hasPermission("SPfB.register")) {
                 if (funcs.isRegistered(player)) {
                     funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
                 } else {
@@ -69,8 +69,9 @@ class SPfBPlayerListener implements Listener {
         String message = event.getMessage();
 
         if (!message.startsWith("/")) {
-            String group = funcs.getGroup(event.getPlayer().getName());
-            String prefix = funcs.getGroupPrefix(group);
+            PermissionUser user = PermissionsEx.getUser(event.getPlayer());
+            String group = user.getParentIdentifiers().get(0);
+            String prefix = user.getPrefix();
 
             Date now = new Date();
 
