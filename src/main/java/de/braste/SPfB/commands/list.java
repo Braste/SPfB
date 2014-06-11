@@ -23,7 +23,7 @@ public class list implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.list")) {
+            if (player.hasPermission("SPfB.list")) {
                 System.out.println(player.getName() + " used SPfB.list");
                 funcs.listPlayers(player);
             }

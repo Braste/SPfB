@@ -22,7 +22,7 @@ public class clearinventory implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.clearinventory")) {
+            if (player.hasPermission("SPfB.clearinventory")) {
                 System.out.println(player.getName() + " used SPfB.clearinventory");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;

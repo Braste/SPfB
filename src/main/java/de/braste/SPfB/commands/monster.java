@@ -21,7 +21,7 @@ public class monster implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.monster")) {
+            if (player.hasPermission("SPfB.monster")) {
                 System.out.println(player.getName() + " used SPfB.monster");
                 if (funcs.isLoggedIn(player)) {
 
@@ -31,6 +31,7 @@ public class monster implements CommandExecutor {
             }
         }*/
         return true;
+
     }
 
     public SPfB getPlugin() {

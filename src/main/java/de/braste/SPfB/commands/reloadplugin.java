@@ -53,7 +53,7 @@ public class reloadplugin implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.reloadplugin")) {
+            if (player.hasPermission("SPfB.reloadplugin")) {
                 System.out.println(player.getName() + " used SPfB.reloadplugin");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;

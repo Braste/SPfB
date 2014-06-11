@@ -22,7 +22,7 @@ public class setweather implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.setweather")) {
+            if (player.hasPermission("SPfB.setweather")) {
                 System.out.println(player.getName() + " used SPfB.setweather");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;

@@ -22,7 +22,7 @@ public class spawn implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.spawn")) {
+            if (player.hasPermission("SPfB.spawn")) {
                 System.out.println(player.getName() + " used SPfB.spawn");
                 if (funcs.isLoggedIn(player)) funcs.spawn(player);
                 else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");

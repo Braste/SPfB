@@ -34,7 +34,6 @@ class SPfBPlayerListener implements Listener {
         if (funcs.isLoggedIn(player)) {
             funcs.logout(player);
         }
-        player = null;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -58,7 +57,6 @@ class SPfBPlayerListener implements Listener {
         } else if (funcs.insertPlayer(player)) {
             funcs.systemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
         }
-        player = null;
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -108,7 +106,7 @@ class SPfBPlayerListener implements Listener {
         if (event.getPlayer().getServer().getPluginCommand(command) == null) {
             System.out.println("Name: " + event.getPlayer().getName() + " - minecraft." + command);
 
-            if (!funcs.isLoggedIn(event.getPlayer()) || !funcs.canUseCommand(event.getPlayer().getName(), "minecraft." + command)) {
+            if (!funcs.isLoggedIn(event.getPlayer()) || !event.getPlayer().hasPermission("minecraft." + command)) {
                 event.setCancelled(true);
             }
         }
@@ -136,6 +134,13 @@ class SPfBPlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
+        if (!funcs.isLoggedIn(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerBucketFill(final PlayerBucketFillEvent event) {
         if (!funcs.isLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
@@ -151,6 +156,20 @@ class SPfBPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPortal(final PlayerPortalEvent event) {
+        if (!funcs.isLoggedIn(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerShearEntity(final PlayerShearEntityEvent event) {
+        if (!funcs.isLoggedIn(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerFish(final PlayerFishEvent event) {
         if (!funcs.isLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }

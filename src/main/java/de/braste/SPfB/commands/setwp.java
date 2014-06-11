@@ -22,7 +22,7 @@ public class setwp implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.setwp")) {
+            if (player.hasPermission("SPfB.setwp")) {
                 System.out.println(player.getName() + " used SPfB.setwp");
                 if (funcs.isLoggedIn(player)) {
                     if (args.length == 1) {

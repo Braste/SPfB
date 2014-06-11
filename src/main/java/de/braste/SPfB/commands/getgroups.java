@@ -22,7 +22,7 @@ public class getgroups implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.getgroups")) {
+            if (player.hasPermission("SPfB.getgroups")) {
                 System.out.println(player.getName() + " used SPfB.getgroups");
                 if (funcs.isLoggedIn(player)) {
                     funcs.systemMessage(player, funcs.getServerGroups());

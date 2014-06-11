@@ -22,7 +22,7 @@ public class deletewarp implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.deletewarp")) {
+            if (player.hasPermission("SPfB.deletewarp")) {
                 System.out.println(player.getName() + " used SPfB.deletewarp");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;

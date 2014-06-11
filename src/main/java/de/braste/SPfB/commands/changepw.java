@@ -22,7 +22,7 @@ public class changepw implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.changepw")) {
+            if (player.hasPermission("SPfB.changepw")) {
                 System.out.println(player.getName() + " used SPfB.changepw");
                 boolean ret = false;
 

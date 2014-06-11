@@ -22,11 +22,11 @@ public class wp implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.wp")) {
+            if (player.hasPermission("SPfB.wp")) {
                 System.out.println(player.getName() + " used SPfB.wp");
                 if (funcs.isLoggedIn(player)) {
 
-                    if (args.length == 2 && funcs.canUseCommand(player, "SPfB.allwp")) {
+                    if (args.length == 2 && player.hasPermission("SPfB.allwp")) {
                         funcs.getPlayerWaypoint(player, args[0], args[1]);
                         return true;
                     }

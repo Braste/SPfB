@@ -5,9 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.block.*;
 
 class SPfBBlockListener implements Listener {
 
@@ -25,7 +23,7 @@ class SPfBBlockListener implements Listener {
         if (!funcs.isLoggedIn(player)) {
             event.setCancelled(true);
         }
-        else
+        /*else
         {
             blocksPlaced++;
             if (blocksPlaced > 200)
@@ -33,11 +31,19 @@ class SPfBBlockListener implements Listener {
                 blocksPlaced = 0;
                 new HelperThread().start();
             }
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(final BlockBreakEvent event) {
+        Player player = event.getPlayer();
+        if (!funcs.isLoggedIn(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockDamage(final BlockDamageEvent event) {
         Player player = event.getPlayer();
         if (!funcs.isLoggedIn(player)) {
             event.setCancelled(true);

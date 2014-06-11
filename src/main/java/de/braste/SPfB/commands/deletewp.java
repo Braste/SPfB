@@ -22,7 +22,7 @@ public class deletewp implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.deletewp")) {
+            if (player.hasPermission("SPfB.deletewp")) {
                 System.out.println(player.getName() + " used SPfB.deletewp");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;

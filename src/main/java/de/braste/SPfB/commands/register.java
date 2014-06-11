@@ -22,7 +22,7 @@ public class register implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.register")) {
+            if (player.hasPermission("SPfB.register")) {
                 System.out.println(player.getName() + " used SPfB.register");
                 boolean ret = false;
 

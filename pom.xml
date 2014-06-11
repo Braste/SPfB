@@ -3,16 +3,16 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.braste</groupId>
     <artifactId>SPfB</artifactId>
-    <version>1.2.5-SNAPSHOT</version>
+    <version>1.3.0</version>
     <name>SPfB</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version>unknown</api.version>
-        <minecraft.version>1.6.4</minecraft.version>
-        <bukkit_version>1.6.4-R2.0</bukkit_version>
+        <minecraft.version>1.7.9</minecraft.version>
+        <bukkit_version>1.7.9-R0.2</bukkit_version>
         <minecraft_version>1_6_R3</minecraft_version>
-        <functions_version>1.2.5-SNAPSHOT</functions_version>
+        <functions_version>1.3.0</functions_version>
     </properties>
 
     <scm>

@@ -20,6 +20,7 @@ public class SPfB extends JavaPlugin {
 
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);
+        pm.registerEvents(new SPfBEntityListener(this), this);
 
         //HOME
         getCommand("home").setExecutor(new home(this));
@@ -98,8 +99,6 @@ public class SPfB extends JavaPlugin {
 
         /*//MONSTER
         getCommand("monster").setExecutor(new monster(this));*/
-
-        //schedule.scheduleAsyncDelayedTask(this, help, 200L);
 
         System.out.println(pdfFile.getName() + " version " + pdfFile.getVersion() + " enabled");
     }

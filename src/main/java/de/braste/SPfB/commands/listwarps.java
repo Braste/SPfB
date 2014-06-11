@@ -21,7 +21,7 @@ public class listwarps implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.listwarps")) {
+            if (player.hasPermission("SPfB.listwarps")) {
                 System.out.println(player.getName() + " used SPfB.listwarps");
                 if (funcs.isLoggedIn(player)) funcs.listWarps(player);
                 else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");

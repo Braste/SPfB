@@ -38,7 +38,7 @@ public class rift implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.rift")) {
+            if (player.hasPermission("SPfB.rift")) {
                 System.out.println(player.getName() + " used SPfB.rift");
                 if (funcs.isLoggedIn(player)) {
                     if (args.length == 1) {

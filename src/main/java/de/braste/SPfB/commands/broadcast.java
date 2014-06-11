@@ -22,7 +22,7 @@ public class broadcast implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.broadcast")) {
+            if (player.hasPermission("SPfB.broadcast")) {
                 System.out.println(player.getName() + " used SPfB.broadcast");
                 if (funcs.isLoggedIn(player)) {
                     String message = "";

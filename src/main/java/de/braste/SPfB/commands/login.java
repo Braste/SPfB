@@ -22,7 +22,7 @@ public class login implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.login")) {
+            if (player.hasPermission("SPfB.login")) {
                 System.out.println(player.getName() + " used SPfB.login");
                 boolean ret = false;
 

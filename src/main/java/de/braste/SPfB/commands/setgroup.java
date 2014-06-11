@@ -1,12 +1,15 @@
 package de.braste.SPfB.commands;
 
 
+import com.evilmidget38.UUIDFetcher;
 import de.braste.SPfB.SPfB;
 import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public class setgroup implements CommandExecutor {
     private final SPfB plugin;
@@ -22,10 +25,25 @@ public class setgroup implements CommandExecutor {
             boolean ret = false;
 
             if (args.length == 2) {
-                Player target = plugin.getServer().matchPlayer(args[0]).get(0);
-                funcs.setGroup(args[0], args[1]);
-                System.out.println("Gruppe von " + args[0] + " erfolgreiche auf " + args[1] + " gesetzt");
-                ret = true;
+                Player target;
+                try
+                {
+                    UUID playerId = UUIDFetcher.getUUIDOf(args[0]);
+                    target = sender.getServer().getPlayer(playerId);
+                }
+                catch(Exception e)
+                {
+                    sender.getServer().getLogger().warning("Exception while running UUIDFetcher");
+                    e.printStackTrace();
+                    sender.getServer().getLogger().warning("Trying with player name");
+                    target = sender.getServer().matchPlayer(args[0]).get(0);
+                }
+                if (target != null)
+                {
+                    funcs.setGroup(args[0], args[1]);
+                    System.out.println("Gruppe von " + args[0] + " erfolgreiche auf " + args[1] + " gesetzt");
+                    ret = true;
+                }
             } else if (args.length > 2) {
                 System.out.println("Zu viele Parameter:");
             } else {
@@ -35,13 +53,25 @@ public class setgroup implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.setgroup")) {
+            if (player.hasPermission("SPfB.setgroup")) {
                 System.out.println(player.getName() + " used SPfB.setgroup");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length == 2) {
-                        Player target = player.getServer().matchPlayer(args[0]).get(0);
+                        Player target;
+                        try
+                        {
+                            UUID playerId = UUIDFetcher.getUUIDOf(args[0]);
+                            target = sender.getServer().getPlayer(playerId);
+                        }
+                        catch(Exception e)
+                        {
+                            sender.getServer().getLogger().warning("Exception while running UUIDFetcher");
+                            e.printStackTrace();
+                            sender.getServer().getLogger().warning("Trying with player name");
+                            target = sender.getServer().matchPlayer(args[0]).get(0);
+                        }
                         if (!funcs.isAdmin(target)) {
                             funcs.setGroup(args[0], args[1]);
                             funcs.systemMessage(player, "Gruppe von " + args[0] + " erfolgreiche auf " + args[1] + " gesetzt");

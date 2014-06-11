@@ -22,10 +22,10 @@ public class listwp implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.listwp")) {
+            if (player.hasPermission("SPfB.listwp")) {
                 System.out.println(player.getName() + " used SPfB.listwp");
                 if (funcs.isLoggedIn(player)) {
-                    if (args.length == 1 && funcs.canUseCommand(player, "SPfB.listallwp")) {
+                    if (args.length == 1 && player.hasPermission("SPfB.listallwp")) {
                         funcs.listWaypoints(player, args[0]);
                         return true;
                     } else if (args.length < 1) {

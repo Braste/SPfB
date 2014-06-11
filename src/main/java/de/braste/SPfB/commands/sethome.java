@@ -22,7 +22,7 @@ public class sethome implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.sethome")) {
+            if (player.hasPermission("SPfB.sethome")) {
                 System.out.println(player.getName() + " used SPfB.sethome");
                 if (funcs.isLoggedIn(player)) {
                     if (funcs.setHome(player)) {

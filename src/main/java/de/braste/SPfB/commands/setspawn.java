@@ -22,7 +22,7 @@ public class setspawn implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.setspawn")) {
+            if (player.hasPermission("SPfB.setspawn")) {
                 System.out.println(player.getName() + " used SPfB.setspawn");
                 if (funcs.isLoggedIn(player)) {
                     if (funcs.setSpawn(player)) {

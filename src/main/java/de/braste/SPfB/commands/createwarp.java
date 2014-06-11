@@ -22,7 +22,7 @@ public class createwarp implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.createwarp")) {
+            if (player.hasPermission("SPfB.createwarp")) {
                 System.out.println(player.getName() + " used SPfB.createwarp");
                 if (funcs.isLoggedIn(player)) {
                     boolean ret = false;

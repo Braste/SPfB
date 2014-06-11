@@ -21,7 +21,7 @@ public class home implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (funcs.canUseCommand(player, "SPfB.home")) {
+            if (player.hasPermission("SPfB.home")) {
                 System.out.println(player.getName() + " used SPfB.home");
                 if (funcs.isLoggedIn(player)) funcs.home(player);
                 else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
