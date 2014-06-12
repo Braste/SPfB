@@ -23,7 +23,7 @@ public class monster implements CommandExecutor {
 
             if (player.hasPermission("SPfB.monster")) {
                 System.out.println(player.getName() + " used SPfB.monster");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
 
                     funcs.spawnMonster(player, );
                 }

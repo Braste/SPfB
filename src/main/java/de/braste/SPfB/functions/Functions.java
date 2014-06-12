@@ -3,9 +3,9 @@ package de.braste.SPfB.functions;
 import com.evilmidget38.UUIDFetcher;
 import de.braste.SPfB.SPfB;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
+import org.apache.commons.pool.ObjectPool;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import ru.tehkode.libs.org.apache.commons.pool.ObjectPool;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
@@ -45,12 +45,15 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery("SELECT x, y, z, rotX FROM homes WHERE name = '" + playerId + "' AND world = '" + player.getWorld().getName() + "'");
-            if (res.wasNull()) {
+            res = st.executeQuery("SELECT x, y, z, rotX FROM homes WHERE name = '" + playerId.toString() + "' AND world = '" + player.getWorld().getName() + "'");
+            if(!res.next()) {
                 updateToUUID(player, "homes", "name");
-                res = st.executeQuery("SELECT x, y, z, rotX FROM homes WHERE name = '" + playerId + "' AND world = '" + player.getWorld().getName() + "'");
+                res = st.executeQuery("SELECT x, y, z, rotX FROM homes WHERE name = '" + playerId.toString() + "' AND world = '" + player.getWorld().getName() + "'");
+                while (res.next()) {
+                    loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
+                }
             }
-            while (res.next()) {
+            else {
                 loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
             }
         } catch (SQLException e) {
@@ -121,13 +124,17 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery("SELECT count(*) as count FROM reg WHERE name = '" + playerId + "'");
-            if (res.wasNull()) {
-                updateToUUID(player, "reg", "name");
-                res = st.executeQuery("SELECT count(*) as count FROM reg WHERE name = '" + playerId + "'");
-            }
+            res = st.executeQuery("SELECT count(*) as count FROM reg WHERE name = '" + playerId.toString() + "'");
             while (res.next()) {
-                return res.getInt("count") > 0;
+                if (res.getInt("count") == 0)
+                {
+                    updateToUUID(player, "reg", "name");
+                    res = st.executeQuery("SELECT count(*) as count FROM reg WHERE name = '" + playerId.toString() + "'");
+                    while (res.next()) {
+                        return (res.getInt("count") > 0);
+                    }
+                }
+                return (res.getInt("count") > 0);
             }
         } catch (SQLException e) {
             throw e;
@@ -153,6 +160,27 @@ public class Functions {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public void logout(Player player) throws SQLException, MySqlPoolableException {
+        Connection conn = null;
+        Statement st = null;
+        UUID playerId = player.getUniqueId();
+        try {
+            conn = (Connection) _connPool.borrowObject();
+            st = conn.createStatement();
+            if (st.executeUpdate("UPDATE reg SET session = 0 WHERE name = '" + playerId.toString() + "'") <= 0) {
+                updateToUUID(player, "reg", "name");
+                st.executeUpdate("UPDATE reg SET session = 0 WHERE name = '" + playerId.toString() + "'");
+            }
+        } catch (SQLException e) {
+            throw e;
+        }  catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(st);
+            safeClose(conn);
+        }
     }
 
     public boolean getIsLoggedIn(Player player)
@@ -227,9 +255,9 @@ public class Functions {
             if (newPw.equals(controlPw) && getPassword(player).equals(oldPw)) {
                 conn = (Connection) _connPool.borrowObject();
                 st = conn.createStatement();
-                if (st.executeUpdate("UPDATE reg SET password = " + newPw + " WHERE name = '" + playerId + "'") <= 0) {
+                if (st.executeUpdate("UPDATE reg SET password = " + newPw + " WHERE name = '" + playerId.toString() + "'") <= 0) {
                     updateToUUID(player, "reg", "name");
-                    if (st.executeUpdate("UPDATE reg SET password = " + newPw + " WHERE name = '" + playerId + "'") > 0)
+                    if (st.executeUpdate("UPDATE reg SET password = " + newPw + " WHERE name = '" + playerId.toString() + "'") > 0)
                         return true;
                 }
             }
@@ -281,12 +309,12 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery("SELECT session FROM reg WHERE name = '" + playerId + "'");
-            if (res.wasNull()) {
+            res = st.executeQuery("SELECT session FROM reg WHERE name = '" + playerId.toString() + "'");
+            if(!res.next()) {
                 updateToUUID(player, "reg", "name");
-                res = st.executeQuery("SELECT session FROM reg WHERE name = '" + playerId + "'");
+                res = st.executeQuery("SELECT session FROM reg WHERE name = '" + playerId.toString() + "'");
             }
-            while (res.next()) {
+            else {
                 session = res.getInt("session");
             }
         } catch (SQLException e) {
@@ -309,11 +337,14 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            if (st.executeUpdate("UPDATE reg SET session = " + session + " WHERE name = '" + playerId + "'") <= 0)
+            if (st.executeUpdate("UPDATE reg SET session = " + session + " WHERE name = '" + playerId.toString() + "'") <= 0)
             {
                 updateToUUID(player, "reg", "name");
-                if (st.executeUpdate("UPDATE reg SET session = " + session + " WHERE name = '" + playerId + "'") > 0)
+                if (st.executeUpdate("UPDATE reg SET session = " + session + " WHERE name = '" + playerId.toString() + "'") > 0)
                     return true;
+            }
+            else {
+                return true;
             }
         } catch (SQLException e) {
             throw e;
@@ -330,10 +361,11 @@ public class Functions {
         Connection conn = null;
         Statement st = null;
         UUID playerId = player.getUniqueId();
+        _plugin.getLogger().info("Updating name "+player.getName()+" to UUID " + playerId.toString());
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            st.executeUpdate("UPDATE " + table + " SET " + field + " = '" + playerId + "' WHERE " + field + " = '" + player.getName() + "'");
+            st.executeUpdate("UPDATE " + table + " SET " + field + " = '" + playerId.toString() + "' WHERE " + field + " = '" + player.getName() + "'");
         } catch (SQLException e) {
             throw e;
         }  catch (Exception e) {
@@ -353,12 +385,12 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery("SELECT password FROM reg WHERE name = '" + playerId + "'");
-            if (res.wasNull()) {
+            res = st.executeQuery("SELECT password FROM reg WHERE name = '" + playerId.toString() + "'");
+            if(!res.next()) {
                 updateToUUID(player, "reg", "name");
-                res = st.executeQuery("SELECT password FROM reg WHERE name = '" + playerId + "'");
+                res = st.executeQuery("SELECT password FROM reg WHERE name = '" + playerId.toString() + "'");
             }
-            while (res.next()) {
+            else {
                 password = res.getString("password");
             }
         } catch (SQLException e) {

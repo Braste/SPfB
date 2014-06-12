@@ -24,7 +24,7 @@ public class listwp implements CommandExecutor {
 
             if (player.hasPermission("SPfB.listwp")) {
                 System.out.println(player.getName() + " used SPfB.listwp");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     if (args.length == 1 && player.hasPermission("SPfB.listallwp")) {
                         funcs.listWaypoints(player, args[0]);
                         return true;

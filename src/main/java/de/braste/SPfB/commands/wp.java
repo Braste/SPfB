@@ -24,7 +24,7 @@ public class wp implements CommandExecutor {
 
             if (player.hasPermission("SPfB.wp")) {
                 System.out.println(player.getName() + " used SPfB.wp");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
 
                     if (args.length == 2 && player.hasPermission("SPfB.allwp")) {
                         funcs.getPlayerWaypoint(player, args[0], args[1]);

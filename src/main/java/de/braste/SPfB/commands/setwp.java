@@ -24,7 +24,7 @@ public class setwp implements CommandExecutor {
 
             if (player.hasPermission("SPfB.setwp")) {
                 System.out.println(player.getName() + " used SPfB.setwp");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     if (args.length == 1) {
                         return funcs.setWaypoint(player, args[0]);
                     } else if (args.length > 1) {

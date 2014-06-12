@@ -24,7 +24,7 @@ public class deletewp implements CommandExecutor {
 
             if (player.hasPermission("SPfB.deletewp")) {
                 System.out.println(player.getName() + " used SPfB.deletewp");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length == 1) {

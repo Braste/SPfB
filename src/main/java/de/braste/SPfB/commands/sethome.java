@@ -24,7 +24,7 @@ public class sethome implements CommandExecutor {
 
             if (player.hasPermission("SPfB.sethome")) {
                 System.out.println(player.getName() + " used SPfB.sethome");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     if (funcs.setHome(player)) {
                         plugin.Funcs.sendSystemMessage(player, "Home Location gesetzt");
                     }

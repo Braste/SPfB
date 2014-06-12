@@ -1,9 +1,10 @@
 package de.braste.SPfB.functions;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 import com.mysql.jdbc.Connection;
-import ru.tehkode.libs.org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool.BasePoolableObjectFactory;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class MySqlPoolableObjectFactory extends BasePoolableObjectFactory {
     private String host;

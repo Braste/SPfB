@@ -23,7 +23,7 @@ public class listwarps implements CommandExecutor {
 
             if (player.hasPermission("SPfB.listwarps")) {
                 System.out.println(player.getName() + " used SPfB.listwarps");
-                if (funcs.isLoggedIn(player)) funcs.listWarps(player);
+                if (plugin.Funcs.getIsLoggedIn(player)) funcs.listWarps(player);
                 else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }

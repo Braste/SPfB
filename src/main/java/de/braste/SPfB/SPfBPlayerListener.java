@@ -1,6 +1,6 @@
 package de.braste.SPfB;
 
-import de.braste.SPfBFunctions.Funcs;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,6 +9,7 @@ import org.bukkit.event.player.*;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,6 @@ import java.util.List;
 class SPfBPlayerListener implements Listener {
 
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public SPfBPlayerListener(final SPfB instance) {
         this.plugin = instance;
@@ -26,15 +26,28 @@ class SPfBPlayerListener implements Listener {
     public void onPlayerLogin(final PlayerLoginEvent event) {
         Player player = event.getPlayer();
 
-        if (funcs.getConfigNode("debug") == 2 && !funcs.isAdmin(player)) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Der Server wird zur Zeit gewartet!");
-        } else if (player.getName().regionMatches(true, 0, "Player", 0, 6)) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Name '" + player.getName() + "' nicht erlaubt");
+        try {
+            PermissionUser user = PermissionsEx.getUser(player);
+            if (plugin.Funcs.getConfigNodeInt("debug") == 2 && !user.inGroup("admin")) {
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Der Server wird zur Zeit gewartet!");
+            } else if (player.getName().regionMatches(true, 0, "Player", 0, 6)) {
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Name '" + player.getName() + "' nicht erlaubt");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (MySqlPoolableException e) {
+            e.printStackTrace();
         }
-        funcs.debug(player);
+        //funcs.debug(player);
 
-        if (funcs.isLoggedIn(player)) {
-            funcs.logout(player);
+        if (plugin.Funcs.getIsLoggedIn(player)) {
+            try {
+                plugin.Funcs.logout(player);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (MySqlPoolableException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -42,26 +55,34 @@ class SPfBPlayerListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        if (funcs.isInDatabase(player)) {
-            funcs.setIP(player);
-            funcs.setOnline(player, 1);
-            if (player.hasPermission("SPfB.register")) {
-                if (funcs.isRegistered(player)) {
+        //funcs.setIP(player);
+        //funcs.setOnline(player, 1);
+        if (player.hasPermission("SPfB.register")) {
+            try {
+                if (plugin.Funcs.getIsRegister(player)) {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
                 } else {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
                 }
-            } else {
-                plugin.Funcs.sendSystemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } catch (MySqlPoolableException e) {
+                e.printStackTrace();
             }
-        } else if (funcs.insertPlayer(player)) {
+        } else {
             plugin.Funcs.sendSystemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
         }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(final PlayerQuitEvent event) {
-        funcs.logout(event.getPlayer());
+        try {
+            plugin.Funcs.logout(event.getPlayer());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (MySqlPoolableException e) {
+            e.printStackTrace();
+        }
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -107,7 +128,7 @@ class SPfBPlayerListener implements Listener {
         if (event.getPlayer().getServer().getPluginCommand(command) == null) {
             System.out.println("Name: " + event.getPlayer().getName() + " - minecraft." + command);
 
-            if (!funcs.isLoggedIn(event.getPlayer()) || !event.getPlayer().hasPermission("minecraft." + command)) {
+            if (!plugin.Funcs.getIsLoggedIn(event.getPlayer()) || !event.getPlayer().hasPermission("minecraft." + command)) {
                 event.setCancelled(true);
             }
         }
@@ -115,63 +136,63 @@ class SPfBPlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDropItem(final PlayerDropItemEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(final PlayerPickupItemEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(final PlayerInteractEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteractEntity(final PlayerInteractEntityEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerBucketFill(final PlayerBucketFillEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerBucketEmpty(final PlayerBucketEmptyEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPortal(final PlayerPortalEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerShearEntity(final PlayerShearEntityEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerFish(final PlayerFishEvent event) {
-        if (!funcs.isLoggedIn(event.getPlayer())) {
+        if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
     }

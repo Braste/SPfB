@@ -1,17 +1,17 @@
 package de.braste.SPfB;
 
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 
 class SPfBBlockListener implements Listener {
 
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
-    private int blocksPlaced = 0;
 
     public SPfBBlockListener(final SPfB instance) {
         plugin = instance;
@@ -20,7 +20,7 @@ class SPfBBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(final BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if (!funcs.isLoggedIn(player)) {
+        if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
         /*else
@@ -37,7 +37,7 @@ class SPfBBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(final BlockBreakEvent event) {
         Player player = event.getPlayer();
-        if (!funcs.isLoggedIn(player)) {
+        if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
     }
@@ -45,7 +45,7 @@ class SPfBBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockDamage(final BlockDamageEvent event) {
         Player player = event.getPlayer();
-        if (!funcs.isLoggedIn(player)) {
+        if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
     }
@@ -53,7 +53,7 @@ class SPfBBlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSignChange(final SignChangeEvent event) {
         Player player = event.getPlayer();
-        if (!funcs.isLoggedIn(player)) {
+        if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
     }

@@ -40,7 +40,7 @@ public class rift implements CommandExecutor {
 
             if (player.hasPermission("SPfB.rift")) {
                 System.out.println(player.getName() + " used SPfB.rift");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     if (args.length == 1) {
                         try {
                             int time = Integer.parseInt(args[0]);

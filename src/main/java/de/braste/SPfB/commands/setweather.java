@@ -24,7 +24,7 @@ public class setweather implements CommandExecutor {
 
             if (player.hasPermission("SPfB.setweather")) {
                 System.out.println(player.getName() + " used SPfB.setweather");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length > 1) {

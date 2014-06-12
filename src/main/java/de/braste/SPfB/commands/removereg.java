@@ -55,7 +55,7 @@ public class removereg implements CommandExecutor {
 
             if (player.hasPermission("SPfB.removereg")) {
                 System.out.println(player.getName() + " used SPfB.removereg");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length == 1) {

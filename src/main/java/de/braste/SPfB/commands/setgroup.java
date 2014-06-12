@@ -55,7 +55,7 @@ public class setgroup implements CommandExecutor {
 
             if (player.hasPermission("SPfB.setgroup")) {
                 System.out.println(player.getName() + " used SPfB.setgroup");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length == 2) {

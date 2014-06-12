@@ -3,15 +3,15 @@ package de.braste.SPfB;
 import de.braste.SPfB.commands.*;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.PoolableObjectFactory;
+import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPoolFactory;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import ru.tehkode.libs.org.apache.commons.pool.ObjectPool;
-import ru.tehkode.libs.org.apache.commons.pool.PoolableObjectFactory;
-import ru.tehkode.libs.org.apache.commons.pool.impl.GenericObjectPool;
-import ru.tehkode.libs.org.apache.commons.pool.impl.GenericObjectPoolFactory;
 
 import java.util.HashMap;
 

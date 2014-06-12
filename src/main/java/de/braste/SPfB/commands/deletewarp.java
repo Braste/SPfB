@@ -24,7 +24,7 @@ public class deletewarp implements CommandExecutor {
 
             if (player.hasPermission("SPfB.deletewarp")) {
                 System.out.println(player.getName() + " used SPfB.deletewarp");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length == 1) {

@@ -24,7 +24,7 @@ public class warp implements CommandExecutor {
 
             if (player.hasPermission("SPfB.warp")) {
                 System.out.println(player.getName() + " used SPfB.warp");
-                if (funcs.isLoggedIn(player)) {
+                if (plugin.Funcs.getIsLoggedIn(player)) {
                     boolean ret = false;
 
                     if (args.length == 1) {
