@@ -14,7 +14,7 @@ class SPfBBlockListener implements Listener {
     private int blocksPlaced = 0;
 
     public SPfBBlockListener(final SPfB instance) {
-        this.plugin = instance;
+        plugin = instance;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

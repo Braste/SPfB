@@ -6,7 +6,7 @@ import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
+//TODO
 public class monster implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -27,7 +27,7 @@ public class monster implements CommandExecutor {
 
                     funcs.spawnMonster(player, );
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }*/
         return true;

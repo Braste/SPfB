@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-
+//TODO
 public class removereg implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -74,19 +74,19 @@ public class removereg implements CommandExecutor {
                         }
                         if (!funcs.isAdmin(target)) {
                             funcs.removeReg(args[0]);
-                            funcs.systemMessage(player, "Registrierung von " + args[0] + " erfolgreiche gelöscht");
+                            plugin.Funcs.sendSystemMessage(player, "Registrierung von " + args[0] + " erfolgreiche gelöscht");
                             ret = true;
                         } else {
-                            funcs.systemMessage(player, "Die Registrierung von Administratoren kann nicht gelöscht werden!");
+                            plugin.Funcs.sendSystemMessage(player, "Die Registrierung von Administratoren kann nicht gelöscht werden!");
                         }
                     } else if (args.length > 1) {
-                        funcs.systemMessage(player, "Zu viele Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else {
-                        funcs.systemMessage(player, "Zu wenig Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                     }
                     return ret;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

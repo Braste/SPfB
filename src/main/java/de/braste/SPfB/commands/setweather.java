@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+//TODO
 public class setweather implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -28,7 +28,7 @@ public class setweather implements CommandExecutor {
                     boolean ret = false;
 
                     if (args.length > 1) {
-                        funcs.systemMessage(player, "Zu viele Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else if (args.length == 1) {
 
                         try {
@@ -41,7 +41,7 @@ public class setweather implements CommandExecutor {
                             funcs.broadcastMessage(player, player.getName() + " hat das Wetter geändert.");
                             ret = true;
                         } catch (NumberFormatException e) {
-                            funcs.systemMessage(player, args[0] + " ist keine gültige Zahl.");
+                            plugin.Funcs.sendSystemMessage(player, args[0] + " ist keine gültige Zahl.");
                         }
                     } else {
                         funcs.setWeather(player, 0, false);
@@ -50,7 +50,7 @@ public class setweather implements CommandExecutor {
                     }
                     return ret;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

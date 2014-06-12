@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+//TODO
 public class register implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -30,22 +30,22 @@ public class register implements CommandExecutor {
                     if (funcs.isInGroup(player, "user")) {
                         if (args.length == 2) {
                             if (funcs.register(player, args[0], args[1])) {
-                                funcs.systemMessage(player, "Erfolgreich registriert, willkommen " + player.getName() + "!");
+                                plugin.Funcs.sendSystemMessage(player, "Erfolgreich registriert, willkommen " + player.getName() + "!");
                                 ret = true;
                             } else {
-                                funcs.systemMessage(player, "Registrierung gescheitert!");
+                                plugin.Funcs.sendSystemMessage(player, "Registrierung gescheitert!");
                             }
                         } else if (args.length > 2) {
-                            funcs.systemMessage(player, "Zu viele Parameter:");
+                            plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                         } else {
-                            funcs.systemMessage(player, "Zu wenig Parameter:");
+                            plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                         }
                     }  else {
-                        funcs.systemMessage(player, "Du bist nicht berechtigt, dich zu registrieren. Wende dich bitte an einen Administrator.");
+                        plugin.Funcs.sendSystemMessage(player, "Du bist nicht berechtigt, dich zu registrieren. Wende dich bitte an einen Administrator.");
                         ret = true;
                     }
                 } else {
-                    funcs.systemMessage(player, "Du bist schon registriert. Bitte logge dich mit '/login <password>' ein");
+                    plugin.Funcs.sendSystemMessage(player, "Du bist schon registriert. Bitte logge dich mit '/login <password>' ein");
                 }
 
                 return ret;

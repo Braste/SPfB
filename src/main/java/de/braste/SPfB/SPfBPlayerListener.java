@@ -27,9 +27,9 @@ class SPfBPlayerListener implements Listener {
         Player player = event.getPlayer();
 
         if (funcs.getConfigNode("debug") == 2 && !funcs.isAdmin(player)) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Server wird zur Zeit gewartet!");
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Der Server wird zur Zeit gewartet!");
         } else if (player.getName().regionMatches(true, 0, "Player", 0, 6)) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Name '" + player.getName() + "' not allowed");
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Name '" + player.getName() + "' nicht erlaubt");
         }
         funcs.debug(player);
 
@@ -47,15 +47,15 @@ class SPfBPlayerListener implements Listener {
             funcs.setOnline(player, 1);
             if (player.hasPermission("SPfB.register")) {
                 if (funcs.isRegistered(player)) {
-                    funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                    plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
                 } else {
-                    funcs.systemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
+                    plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
                 }
             } else {
-                funcs.systemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
+                plugin.Funcs.sendSystemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
             }
         } else if (funcs.insertPlayer(player)) {
-            funcs.systemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
+            plugin.Funcs.sendSystemMessage(player, "Du bist ein Gast. Um dich registrieren zu können, wende dich bitte an einen Administrator.");
         }
     }
 

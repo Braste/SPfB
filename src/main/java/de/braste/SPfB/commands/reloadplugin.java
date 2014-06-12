@@ -8,7 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
+//TODO
 public class reloadplugin implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -74,20 +74,20 @@ public class reloadplugin implements CommandExecutor {
                             while (!p.isEnabled()) {
 
                             }
-                            funcs.systemMessage(player, "Plugin " + args[0] + " erfolgreich geladen.");
+                            plugin.Funcs.sendSystemMessage(player, "Plugin " + args[0] + " erfolgreich geladen.");
 
                         } else {
-                            funcs.systemMessage(player, "Plugin " + args[0] + " nicht vorhanden.");
+                            plugin.Funcs.sendSystemMessage(player, "Plugin " + args[0] + " nicht vorhanden.");
                         }
                         ret = true;
                     } else if (args.length > 1) {
-                        funcs.systemMessage(player, "Zu viele Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else {
-                        funcs.systemMessage(player, "Zu wenig Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                     }
                     return ret;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

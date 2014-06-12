@@ -15,7 +15,6 @@ import java.util.UUID;
 
 public class tp implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public tp(SPfB plugin) {
         this.plugin = plugin;
@@ -23,86 +22,68 @@ public class tp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        Player target;
+        Player target = null;
         if (sender instanceof Player) {
             Player player = (Player) sender;
-            if (!player.hasPermission("SPfB.tp"))
-                return true;
-            if (funcs.isLoggedIn(player)) {
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.tp")) {
                 System.out.println(player.getName() + " used SPfB.tp");
                 if (args.length == 1) {
-                    try
-                    {
-                        UUID playerId = UUIDFetcher.getUUIDOf(args[0]);
+                    UUID playerId = plugin.Funcs.GetUUID(player);
+                    if (playerId != null)
                         target = player.getServer().getPlayer(playerId);
-                    }
-                    catch(Exception e)
-                    {
-                        sender.getServer().getLogger().warning("Exception while running UUIDFetcher");
-                        e.printStackTrace();
-                        sender.getServer().getLogger().warning("Trying with player name");
-                        target = sender.getServer().getPlayer(args[0]);
-                    }
                     if (target != null) {
                         player.teleport(target);
                         return true;
                     } else {
-                        funcs.systemMessage(player, "Spieler " + args[0] + " wurde nicht gefunden!");
+                        plugin.Funcs.sendSystemMessage(player, "Spieler " + args[0] + " wurde nicht gefunden!");
                     }
                 }
-                return true;
             }
             else  {
-                funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
-                return true;
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.tp");
             }
+            return true;
         }
         if (args.length == 2) {
-            Player source;
-
-            try
+            Player source = null;
+            Map<String, UUID> playerIds = plugin.Funcs.GetUUIDs(Arrays.asList(args));
+            if (playerIds != null)
             {
-                Map<String, UUID> playerIds = UUIDFetcher.getUUIDOf(Arrays.asList(args));
                 source = sender.getServer().getPlayer(playerIds.get(args[0]));
                 target = sender.getServer().getPlayer(playerIds.get(args[1]));
-            }
-            catch(Exception e)
-            {
-                sender.getServer().getLogger().warning("Exception while running UUIDFetcher");
-                e.printStackTrace();
-                sender.getServer().getLogger().warning("Trying with player name");
-                source = sender.getServer().getPlayer(args[0]);
-                target = sender.getServer().getPlayer(args[1]);
             }
 
             if (target != null) {
                 if (source != null) {
                     source.teleport(target);
-                    return true;
-                } else {
-                    if (sender instanceof Player)
-                        funcs.systemMessage((Player)sender, "Spieler " + args[1] + " wurde nicht gefunden!");
-                    else
-                        sender.getServer().getLogger().info("Spieler " + args[1] + " wurde nicht gefunden!");
                 }
-            } else {
-                if (sender instanceof Player)
-                    funcs.systemMessage((Player)sender, "Spieler " + args[0] + " wurde nicht gefunden!");
-                else
-                    sender.getServer().getLogger().info("Spieler " + args[0] + " wurde nicht gefunden!");
+                else {
+                    if (sender instanceof Player)
+                        plugin.Funcs.sendSystemMessage((Player)sender, "Spieler " + args[1] + " wurde nicht gefunden!");
+                    else
+                        plugin.getLogger().info("Spieler " + args[1] + " wurde nicht gefunden!");
+                }
             }
-        } else if (args.length > 2) {
-            if (sender instanceof Player)
-                funcs.systemMessage((Player)sender, "Zu viele Parameter:");
-            else
-                sender.getServer().getLogger().info("Zu viele Parameter:");
-        } else {
-            if (sender instanceof Player)
-                funcs.systemMessage((Player)sender, "Zu wenig Parameter:");
-            else
-                sender.getServer().getLogger().info("Zu wenig Parameter:");
+            else {
+                if (sender instanceof Player)
+                    plugin.Funcs.sendSystemMessage((Player)sender, "Spieler " + args[0] + " wurde nicht gefunden!");
+                else
+                    plugin.getLogger().info("Spieler " + args[0] + " wurde nicht gefunden!");
+            }
         }
-        return false;
+        else if (args.length > 2) {
+            if (sender instanceof Player)
+                plugin.Funcs.sendSystemMessage((Player)sender, "Zu viele Parameter:");
+            else
+                plugin.getLogger().info("Zu viele Parameter:");
+        }
+        else {
+            if (sender instanceof Player)
+                plugin.Funcs.sendSystemMessage((Player)sender, "Zu wenig Parameter:");
+            else
+                plugin.getLogger().info("Zu wenig Parameter:");
+        }
+        return true;
     }
 
     public SPfB getPlugin() {

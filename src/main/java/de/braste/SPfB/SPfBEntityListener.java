@@ -10,7 +10,6 @@ import org.bukkit.event.entity.*;
 
 public class SPfBEntityListener implements Listener {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public SPfBEntityListener(final SPfB instance) {
         this.plugin = instance;
@@ -19,7 +18,7 @@ public class SPfBEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if (damager instanceof Player && !funcs.isLoggedIn((Player)damager)) {
+        if (damager instanceof Player && !plugin.Funcs.getIsLoggedIn((Player)damager)) {
             event.setCancelled(true);
         }
     }

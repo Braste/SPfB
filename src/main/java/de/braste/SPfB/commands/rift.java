@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+//TODO
 public class rift implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -47,17 +47,17 @@ public class rift implements CommandExecutor {
                             funcs.broadcastMessage(player, player.getName() + " hat die Zeit auf " + args[0] + " festgesetzt.");
                             return funcs.riftTime(player, time);
                         } catch (NumberFormatException e) {
-                            funcs.systemMessage(player, args[0] + " ist keine gültige Zeit.");
+                            plugin.Funcs.sendSystemMessage(player, args[0] + " ist keine gültige Zeit.");
                         }
                     } else if (args.length > 1) {
-                        funcs.systemMessage(player, "Zu viele Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else {
                         funcs.broadcastMessage(player, player.getName() + " hat die Zeitschleife beendet.");
                         return funcs.riftTime(player, -1);
                     }
                     return false;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

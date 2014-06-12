@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 public class setspawn implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public setspawn(SPfB plugin) {
         this.plugin = plugin;
@@ -22,15 +21,13 @@ public class setspawn implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (player.hasPermission("SPfB.setspawn")) {
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.setspawn")) {
                 System.out.println(player.getName() + " used SPfB.setspawn");
-                if (funcs.isLoggedIn(player)) {
-                    if (funcs.setSpawn(player)) {
-                        player.getServer().broadcastMessage(player.getName() + " hat erfolgreich den Spawnpunkt geändert.");
+                    if (player.getWorld().setSpawnLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())) {
+                        player.getServer().broadcastMessage(player.getName() + " hat erfolgreich den Spawnpunkt gesetzt.");
                     }
-                }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
+            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setspawn");
         }
         return true;
     }

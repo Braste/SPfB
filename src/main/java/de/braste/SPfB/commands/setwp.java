@@ -7,7 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+//TODO
 public class setwp implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -28,13 +28,13 @@ public class setwp implements CommandExecutor {
                     if (args.length == 1) {
                         return funcs.setWaypoint(player, args[0]);
                     } else if (args.length > 1) {
-                        funcs.systemMessage(player, "Zu viele Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else {
-                        funcs.systemMessage(player, "Zu wenig Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                     }
                     return false;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

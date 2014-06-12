@@ -2,16 +2,17 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
+
 public class login implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
-
     public login(SPfB plugin) {
         this.plugin = plugin;
     }
@@ -19,44 +20,51 @@ public class login implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player)) {
-        } else {
+        }
+        else {
             Player player = (Player) sender;
 
             if (player.hasPermission("SPfB.login")) {
-                System.out.println(player.getName() + " used SPfB.login");
-                boolean ret = false;
+                plugin.getLogger().info(player.getName() + " used SPfB.login");
 
-                if (funcs.getConfigNode("debug") >= 1) {
-                    String sOut =  player.getName();
-                    for (String s : args) {
-                        sOut += " - " + s;
+                try {
+                    if (plugin.Funcs.getConfigNodeInt("debug") >= 1) {
+                        String sOut =  player.getName();
+                        for (String s : args) {
+                            sOut += " - " + s;
+                        }
+                        plugin.getLogger().info(sOut);
                     }
-                    System.out.println(sOut);
-                }
-
-                if (!funcs.isLoggedIn(player)) {
-                    if (funcs.isRegistered(player)) {
-                        if (args.length == 1) {
-                            if (funcs.login(player, args[0])) {
-                                funcs.systemMessage(player, "Erfolgreich eingeloggt, willkommen " + player.getName() + "!");
-                                ret = true;
+                    if (!plugin.Funcs.getIsLoggedIn(player)) {
+                        if (plugin.Funcs.getIsRegister(player)) {
+                            if (args.length == 1) {
+                                if (plugin.Funcs.login(player, args[0])) {
+                                    plugin.Funcs.sendSystemMessage(player, "Erfolgreich eingeloggt, willkommen " + player.getName() + "!");
+                                    return true;
+                                } else {
+                                    plugin.Funcs.sendSystemMessage(player, "Login gescheitert!");
+                                    return false;
+                                }
+                            } else if (args.length > 1) {
+                                plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
+                                return false;
                             } else {
-                                funcs.systemMessage(player, "Login gescheitert!");
+                                plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
+                                return false;
                             }
-                        } else if (args.length > 1) {
-                            funcs.systemMessage(player, "Zu viele Parameter:");
                         } else {
-                            funcs.systemMessage(player, "Zu wenig Parameter:");
+                            plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
+                            return true;
                         }
                     } else {
-                        funcs.systemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
-                        ret = true;
+                        plugin.Funcs.sendSystemMessage(player, "Du bist schon eingeloggt.");
+                        return true;
                     }
-                } else {
-                    funcs.systemMessage(player, "Du bist schon eingeloggt.");
-                    ret = true;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (MySqlPoolableException e) {
+                    e.printStackTrace();
                 }
-                return ret;
             }
         }
         return true;

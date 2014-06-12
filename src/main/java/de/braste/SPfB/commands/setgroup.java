@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
-
+//TODO
 public class setgroup implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -74,19 +74,19 @@ public class setgroup implements CommandExecutor {
                         }
                         if (!funcs.isAdmin(target)) {
                             funcs.setGroup(args[0], args[1]);
-                            funcs.systemMessage(player, "Gruppe von " + args[0] + " erfolgreiche auf " + args[1] + " gesetzt");
+                            plugin.Funcs.sendSystemMessage(player, "Gruppe von " + args[0] + " erfolgreiche auf " + args[1] + " gesetzt");
                             ret = true;
                         } else {
-                            funcs.systemMessage(player, "Die Gruppe von Administratoren kann nicht geändert werden!");
+                            plugin.Funcs.sendSystemMessage(player, "Die Gruppe von Administratoren kann nicht geändert werden!");
                         }
                     } else if (args.length > 2) {
-                        funcs.systemMessage(player, "Zu viele Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else {
-                        funcs.systemMessage(player, "Zu wenig Parameter:");
+                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                     }
                     return ret;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

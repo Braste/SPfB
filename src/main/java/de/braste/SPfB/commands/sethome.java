@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+//TODO
 public class sethome implements CommandExecutor {
 
     private final SPfB plugin;
@@ -26,10 +26,10 @@ public class sethome implements CommandExecutor {
                 System.out.println(player.getName() + " used SPfB.sethome");
                 if (funcs.isLoggedIn(player)) {
                     if (funcs.setHome(player)) {
-                        funcs.systemMessage(player, "Home Location gesetzt");
+                        plugin.Funcs.sendSystemMessage(player, "Home Location gesetzt");
                     }
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

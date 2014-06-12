@@ -6,7 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
+//TODO
 public class listwarps implements CommandExecutor {
     private final SPfB plugin;
     private final Funcs funcs = new Funcs();
@@ -24,7 +24,7 @@ public class listwarps implements CommandExecutor {
             if (player.hasPermission("SPfB.listwarps")) {
                 System.out.println(player.getName() + " used SPfB.listwarps");
                 if (funcs.isLoggedIn(player)) funcs.listWarps(player);
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
         }
         return true;

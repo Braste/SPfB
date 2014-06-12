@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 public class broadcast implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public broadcast(SPfB plugin) {
         this.plugin = plugin;
@@ -22,18 +21,16 @@ public class broadcast implements CommandExecutor {
         } else {
             Player player = (Player) sender;
 
-            if (player.hasPermission("SPfB.broadcast")) {
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.broadcast")) {
                 System.out.println(player.getName() + " used SPfB.broadcast");
-                if (funcs.isLoggedIn(player)) {
-                    String message = "";
+                String message = "";
 
-                    for (String aArgs : args) {
-                        message = message + " " + aArgs;
-                    }
-                    funcs.broadcastMessage(player, message);
+                for (String aArgs : args) {
+                    message = message + " " + aArgs;
                 }
-                else funcs.systemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                plugin.getServer().broadcastMessage(message);
             }
+            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.broadcast");
         }
         return true;
     }
