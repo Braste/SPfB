@@ -1,14 +1,14 @@
 package de.braste.SPfB.commands;
 
 
-import com.evilmidget38.UUIDFetcher;
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -28,9 +28,19 @@ public class tp implements CommandExecutor {
             if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.tp")) {
                 System.out.println(player.getName() + " used SPfB.tp");
                 if (args.length == 1) {
-                    UUID playerId = plugin.Funcs.GetUUID(player);
-                    if (playerId != null)
+                    UUID playerId = plugin.Funcs.GetUUID(args[0]);
+                    if (playerId != null) {
+                        try {
+                            if (plugin.Funcs.getConfigNodeInt("debug") >= 1) {
+                                 plugin.getLogger().info("Player: "+args[0]+", UUID: "+playerId.toString());
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        } catch (MySqlPoolableException e) {
+                            e.printStackTrace();
+                        }
                         target = player.getServer().getPlayer(playerId);
+                    }
                     if (target != null) {
                         player.teleport(target);
                         return true;

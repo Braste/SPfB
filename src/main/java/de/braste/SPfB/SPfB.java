@@ -14,7 +14,6 @@ import ru.tehkode.libs.org.apache.commons.pool.impl.GenericObjectPool;
 import ru.tehkode.libs.org.apache.commons.pool.impl.GenericObjectPoolFactory;
 
 import java.util.HashMap;
-import java.util.Properties;
 
 public class SPfB extends JavaPlugin {
     private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
@@ -100,7 +99,7 @@ public class SPfB extends JavaPlugin {
         getCommand("rift").setExecutor(new rift(this));
 
         //SETWEATHER
-        getCommand("setweather").setExecutor(new setweather(this));
+        //getCommand("setweather").setExecutor(new setweather(this));
 
         //RELOADPLUGIN
         getCommand("reloadplugin").setExecutor(new reloadplugin(this));
@@ -115,7 +114,7 @@ public class SPfB extends JavaPlugin {
     public void onDisable() {
         BukkitScheduler schedule = getServer().getScheduler();
         schedule.cancelTasks(getServer().getPluginManager().getPlugin("SPfB"));
-
+        Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
         getServer().getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled");
     }

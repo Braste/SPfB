@@ -4,18 +4,14 @@ import com.evilmidget38.UUIDFetcher;
 import de.braste.SPfB.SPfB;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import ru.tehkode.libs.org.apache.commons.pool.ObjectPool;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +24,16 @@ public class Functions {
     {
         _connPool = connPool;
         _plugin = instance;
+    }
+
+    public void CloseConnections()
+    {
+        try {
+            _connPool.close();
+            _connPool.clear();
+        } catch (Exception e) {
+
+        }
     }
 
     public Location getHomeLocation(Player player) throws MySqlPoolableException, SQLException {
@@ -180,6 +186,22 @@ public class Functions {
         }
         return playerId;
     }
+
+    public UUID GetUUID(String name)
+    {
+        UUID playerId = null;
+        try
+        {
+            playerId = UUIDFetcher.getUUIDOf(name);
+        }
+        catch(Exception e)
+        {
+            _plugin.getLogger().warning("Exception while running UUIDFetcher");
+            e.printStackTrace();
+        }
+        return playerId;
+    }
+
 
     public Map<String, UUID> GetUUIDs(List<String> names)
     {
