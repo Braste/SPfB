@@ -28,7 +28,7 @@ public class tp implements CommandExecutor {
             if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.tp")) {
                 System.out.println(player.getName() + " used SPfB.tp");
                 if (args.length == 1) {
-                    UUID playerId = plugin.Funcs.GetUUID(args[0]);
+                    UUID playerId = plugin.Funcs.getUUID(args[0]);
                     if (playerId != null) {
                         try {
                             if (plugin.Funcs.getConfigNodeInt("debug") >= 1) {
@@ -52,11 +52,10 @@ public class tp implements CommandExecutor {
             else  {
                 plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.tp");
             }
-            return true;
         }
         if (args.length == 2) {
             Player source = null;
-            Map<String, UUID> playerIds = plugin.Funcs.GetUUIDs(Arrays.asList(args));
+            Map<String, UUID> playerIds = plugin.Funcs.getUUIDs(Arrays.asList(args));
             if (playerIds != null)
             {
                 source = sender.getServer().getPlayer(playerIds.get(args[0]));

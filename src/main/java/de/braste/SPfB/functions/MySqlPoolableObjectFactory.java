@@ -1,8 +1,8 @@
 package de.braste.SPfB.functions;
 
-import com.mysql.jdbc.Connection;
 import org.apache.commons.pool.BasePoolableObjectFactory;
 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 

@@ -3,17 +3,14 @@ package de.braste.SPfB.commands;
 
 import com.evilmidget38.UUIDFetcher;
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import java.util.UUID;
 //TODO
 public class removereg implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public removereg(SPfB plugin) {
         this.plugin = plugin;
@@ -21,7 +18,7 @@ public class removereg implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+        /*if (!(sender instanceof Player)) {
             boolean ret = false;
 
             if (args.length == 1) {
@@ -88,7 +85,7 @@ public class removereg implements CommandExecutor {
                 }
                 else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
             }
-        }
+        }*/
         return true;
     }
 

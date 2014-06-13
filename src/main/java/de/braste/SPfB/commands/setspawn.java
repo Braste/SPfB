@@ -2,7 +2,6 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

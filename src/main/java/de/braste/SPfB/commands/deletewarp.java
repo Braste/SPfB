@@ -2,15 +2,16 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-//TODO
+
+import java.sql.SQLException;
+
 public class deletewarp implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public deletewarp(SPfB plugin) {
         this.plugin = plugin;
@@ -18,29 +19,30 @@ public class deletewarp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
-            if (player.hasPermission("SPfB.deletewarp")) {
-                System.out.println(player.getName() + " used SPfB.deletewarp");
-                if (plugin.Funcs.getIsLoggedIn(player)) {
-                    boolean ret = false;
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.deletewarp")) {
+                plugin.getLogger().info(player.getName() + " used SPfB.deletewarp");
 
-                    if (args.length == 1) {
-                        if (funcs.deleteWarp(player, args[0])) {
-                            plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " erfolgreich gelöscht.");
-                            ret = true;
-                        }
-                    } else if (args.length > 1) {
-                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
-                    } else {
-                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
+                if (args.length == 1) {
+                    try {
+                        if (plugin.Funcs.deleteWarpPoint(player, args[0])) plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " erfolgreich gelöscht.");
+                        else plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " konnte nicht gelöscht werden.");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    } catch (MySqlPoolableException e) {
+                        e.printStackTrace();
                     }
-                    return ret;
+                    return true;
+                } else if (args.length > 1) {
+                    plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
+                } else {
+                    plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                 }
-                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                return false;
             }
+            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.deletewarp");
         }
         return true;
     }

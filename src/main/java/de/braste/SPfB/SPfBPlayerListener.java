@@ -31,23 +31,21 @@ class SPfBPlayerListener implements Listener {
             if (plugin.Funcs.getConfigNodeInt("debug") == 2 && !user.inGroup("admin")) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Der Server wird zur Zeit gewartet!");
             } else if (player.getName().regionMatches(true, 0, "Player", 0, 6)) {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Name '" + player.getName() + "' nicht erlaubt");
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, String.format("Name '%s' nicht erlaubt", player.getName()));
+            }
+            if (plugin.Funcs.getIsLoggedIn(player)) {
+                try {
+                    plugin.Funcs.logout(player);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (MySqlPoolableException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         } catch (MySqlPoolableException e) {
             e.printStackTrace();
-        }
-        //funcs.debug(player);
-
-        if (plugin.Funcs.getIsLoggedIn(player)) {
-            try {
-                plugin.Funcs.logout(player);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (MySqlPoolableException e) {
-                e.printStackTrace();
-            }
         }
     }
 
@@ -55,11 +53,9 @@ class SPfBPlayerListener implements Listener {
     public void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
-        //funcs.setIP(player);
-        //funcs.setOnline(player, 1);
         if (player.hasPermission("SPfB.register")) {
             try {
-                if (plugin.Funcs.getIsRegister(player)) {
+                if (plugin.Funcs.getIsRegistered(player)) {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
                 } else {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
@@ -100,9 +96,9 @@ class SPfBPlayerListener implements Listener {
             String time = sdf.format(now);
 
             List<Player> list = event.getPlayer().getWorld().getPlayers();
-            System.out.println("[" + event.getPlayer().getName() + "]" + message);
+            plugin.getLogger().info("[" + event.getPlayer().getName() + "]" + message);
 
-            message = time + prefix + " [" + group + "]<" + event.getPlayer().getName() + ">: " + message;
+            message = String.format("%s%s [%s]<%s>: %s", time, prefix, group, event.getPlayer().getName(), message);
 
             for (Player aList : list) {
                 aList.sendMessage(message.replaceAll("(&([a-f0-9]))", "\u00A7$2"));
@@ -121,12 +117,10 @@ class SPfBPlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-
         String command = split[0].substring(1);
-        split = null;
 
         if (event.getPlayer().getServer().getPluginCommand(command) == null) {
-            System.out.println("Name: " + event.getPlayer().getName() + " - minecraft." + command);
+            plugin.getLogger().info(String.format("Name: %s - minecraft.%s", event.getPlayer().getName(), command));
 
             if (!plugin.Funcs.getIsLoggedIn(event.getPlayer()) || !event.getPlayer().hasPermission("minecraft." + command)) {
                 event.setCancelled(true);

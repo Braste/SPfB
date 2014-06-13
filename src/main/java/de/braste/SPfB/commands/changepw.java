@@ -3,7 +3,6 @@ package de.braste.SPfB.commands;
 
 import de.braste.SPfB.SPfB;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,12 +19,11 @@ public class changepw implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             try {
-                if (!plugin.Funcs.getIsRegister(player)) {
+                if (!plugin.Funcs.getIsRegistered(player)) {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password>'");
                     return false;
                 }

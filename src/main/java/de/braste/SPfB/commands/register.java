@@ -2,15 +2,15 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-//TODO
+import java.sql.SQLException;
+
 public class register implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public register(SPfB plugin) {
         this.plugin = plugin;
@@ -18,38 +18,42 @@ public class register implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             if (player.hasPermission("SPfB.register")) {
-                System.out.println(player.getName() + " used SPfB.register");
-                boolean ret = false;
+                plugin.getLogger().info(player.getName() + " used SPfB.register");
 
-                if (!funcs.isRegistered(player)) {
-                    if (funcs.isInGroup(player, "user")) {
+                try {
+                    if (!plugin.Funcs.getIsRegistered(player)) {
                         if (args.length == 2) {
-                            if (funcs.register(player, args[0], args[1])) {
-                                plugin.Funcs.sendSystemMessage(player, "Erfolgreich registriert, willkommen " + player.getName() + "!");
-                                ret = true;
-                            } else {
-                                plugin.Funcs.sendSystemMessage(player, "Registrierung gescheitert!");
+                            if (plugin.Funcs.register(player, args[0], args[1])) {
+                                plugin.Funcs.sendSystemMessage(player, String.format("Erfolgreich registriert. Willkommen %s!", player.getName()));
+                                return true;
                             }
-                        } else if (args.length > 2) {
+                            else {
+                                plugin.Funcs.sendSystemMessage(player, "Registrierung nicht erfolgreich.");
+                            }
+                        }
+                        else if (args.length > 2) {
                             plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
-                        } else {
+                        }
+                        else {
                             plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                         }
-                    }  else {
-                        plugin.Funcs.sendSystemMessage(player, "Du bist nicht berechtigt, dich zu registrieren. Wende dich bitte an einen Administrator.");
-                        ret = true;
+                        return false;
                     }
-                } else {
-                    plugin.Funcs.sendSystemMessage(player, "Du bist schon registriert. Bitte logge dich mit '/login <password>' ein");
-                }
+                    else {
+                        plugin.Funcs.sendSystemMessage(player, "Du bist schon registriert. Bitte logge dich mit '/login <password>' ein");
+                    }
 
-                return ret;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (MySqlPoolableException e) {
+                    e.printStackTrace();
+                }
             }
+            else plugin.Funcs.sendSystemMessage(player, "Du hast nicht die erforderliche Berechtigung SPfB.register");
         }
         return true;
     }

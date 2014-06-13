@@ -3,7 +3,6 @@ package de.braste.SPfB.commands;
 
 import de.braste.SPfB.SPfB;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,8 +19,7 @@ public class createwarp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.createwarp")) {
@@ -30,12 +28,12 @@ public class createwarp implements CommandExecutor {
                     try {
                         int ret = plugin.Funcs.setWarpPoint(player, args[0]);
                         if (ret == 1) {
-                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " erfolgreich gesetzt.");
+                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" erfolgreich gesetzt.");
                             return true;
                         }
                         else if (ret == -1)
                         {
-                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " existiert schon.");
+                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" bereits vorhanden.");
                             return true;
                         }
                     } catch (SQLException e) {

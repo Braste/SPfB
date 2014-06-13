@@ -3,7 +3,6 @@ package de.braste.SPfB.commands;
 
 import de.braste.SPfB.SPfB;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -36,7 +35,7 @@ public class login implements CommandExecutor {
                         plugin.getLogger().info(sOut);
                     }
                     if (!plugin.Funcs.getIsLoggedIn(player)) {
-                        if (plugin.Funcs.getIsRegister(player)) {
+                        if (plugin.Funcs.getIsRegistered(player)) {
                             if (args.length == 1) {
                                 if (plugin.Funcs.login(player, args[0])) {
                                     plugin.Funcs.sendSystemMessage(player, "Erfolgreich eingeloggt, willkommen " + player.getName() + "!");

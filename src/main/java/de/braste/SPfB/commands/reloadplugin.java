@@ -2,7 +2,6 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,7 +10,6 @@ import org.bukkit.plugin.Plugin;
 //TODO
 public class reloadplugin implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public reloadplugin(SPfB plugin) {
         this.plugin = plugin;

@@ -1,6 +1,5 @@
 package de.braste.SPfB;
 
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;

@@ -12,7 +12,6 @@
         <minecraft.version>1.7.9</minecraft.version>
         <bukkit_version>1.7.9-R0.2</bukkit_version>
         <minecraft_version>1_6_R3</minecraft_version>
-        <functions_version>1.3.0</functions_version>
     </properties>
 
     <scm>
@@ -50,18 +49,10 @@
     </repositories>
 
     <dependencies>
-		<dependency>
-		  <groupId>de.braste</groupId>
-		  <artifactId>SPfBFunctions</artifactId>
-		  <version>${functions_version}</version>
-		  <type>jar</type>
-            <scope>provided</scope>
-		</dependency>
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>${bukkit_version}</version>
-            <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -74,7 +65,6 @@
             <groupId>commons-pool</groupId>
             <artifactId>commons-pool</artifactId>
             <version>1.5.5</version>
-            <type>jar</type>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -103,7 +93,6 @@
                     <archive>
                         <addMavenDescriptor>true</addMavenDescriptor>
                          <manifestEntries>
-                            <Class-Path>SPfBFunctions.jar</Class-Path>
                             <Main-Class>de.braste.SPfB.SPfB</Main-Class>
                             <Implementation-Title>SPfB</Implementation-Title>
                             <Implementation-Version>${project.version}</Implementation-Version>
@@ -126,8 +115,6 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

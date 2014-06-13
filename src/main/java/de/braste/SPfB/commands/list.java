@@ -2,15 +2,13 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
-import de.braste.SPfBFunctions.Funcs;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-//TODO
+
 public class list implements CommandExecutor {
     private final SPfB plugin;
-    private final Funcs funcs = new Funcs();
 
     public list(SPfB plugin) {
         this.plugin = plugin;
@@ -18,14 +16,22 @@ public class list implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        String players = "", k = "";
+        Player[] playerList = plugin.getServer().getOnlinePlayers();
+
+        for (Player p : playerList) {
+            players += String.format("%s%s", k, p.getName());
+            k = ", ";
+        }
+
         if (!(sender instanceof Player)) {
-            funcs.listPlayers(sender);
+            plugin.getLogger().info(players);
         } else {
             Player player = (Player) sender;
 
             if (player.hasPermission("SPfB.list")) {
-                System.out.println(player.getName() + " used SPfB.list");
-                funcs.listPlayers(player);
+                plugin.getLogger().info(player.getName() + " used SPfB.list");
+                plugin.Funcs.sendSystemMessage(player, players);
             }
         }
         return true;
