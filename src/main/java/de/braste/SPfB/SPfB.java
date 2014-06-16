@@ -1,6 +1,7 @@
 package de.braste.SPfB;
 
 import de.braste.SPfB.commands.*;
+import de.braste.SPfB.functions.CommandFilter;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
@@ -28,6 +29,9 @@ public class SPfB extends JavaPlugin {
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);
         pm.registerEvents(new SPfBEntityListener(this), this);
+
+        CommandFilter filter = new CommandFilter();
+        getServer().getLogger().setFilter(filter);
 
         //HOME
         getCommand("home").setExecutor(new home(this));
@@ -102,7 +106,7 @@ public class SPfB extends JavaPlugin {
         //getCommand("setweather").setExecutor(new setweather(this));
 
         //RELOADPLUGIN
-        getCommand("reloadplugin").setExecutor(new reloadplugin(this));
+        //getCommand("reloadplugin").setExecutor(new reloadplugin(this));
 
         /*//MONSTER
         getCommand("monster").setExecutor(new monster(this));*/

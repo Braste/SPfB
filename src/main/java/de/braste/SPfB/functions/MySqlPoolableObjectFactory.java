@@ -28,7 +28,7 @@ public class MySqlPoolableObjectFactory extends BasePoolableObjectFactory {
             if (((Connection)conn).isValid(0))
                 return true;
         }
-        catch (SQLException e) {
+        catch (SQLException ignore) {
             // ignore
         }
         return false;
