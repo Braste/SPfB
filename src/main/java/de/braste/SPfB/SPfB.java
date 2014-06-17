@@ -26,12 +26,6 @@ public class SPfB extends JavaPlugin {
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
         PluginDescriptionFile pdfFile = this.getDescription();
-        Funcs = new Functions(initMySqlConnectionPool(), this);
-
-        pm.registerEvents(new SPfBBlockListener(this), this);
-        pm.registerEvents(new SPfBPlayerListener(this), this);
-        pm.registerEvents(new SPfBEntityListener(this), this);
-        getLogger().setFilter(new CommandFilter());
         ConfigurationSection database = getConfig().getConfigurationSection("mysql");
         if (database != null)
         {
@@ -45,6 +39,11 @@ public class SPfB extends JavaPlugin {
         {
             getLogger().warning(String.format("No database configuration found. %s won't work!", pdfFile.getName()));
         }
+        Funcs = new Functions(initMySqlConnectionPool(), this);
+        pm.registerEvents(new SPfBBlockListener(this), this);
+        pm.registerEvents(new SPfBPlayerListener(this), this);
+        pm.registerEvents(new SPfBEntityListener(this), this);
+        getLogger().setFilter(new CommandFilter());
 
         //HOME
         getCommand("home").setExecutor(new home(this));
@@ -128,7 +127,8 @@ public class SPfB extends JavaPlugin {
     public void onDisable() {
         BukkitScheduler schedule = getServer().getScheduler();
         schedule.cancelTasks(getServer().getPluginManager().getPlugin("SPfB"));
-        Funcs.CloseConnections();
+        if (Funcs != null)
+            Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
         getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
     }
