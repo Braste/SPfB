@@ -20,8 +20,7 @@ public class wp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.wp")) {
@@ -31,9 +30,7 @@ public class wp implements CommandExecutor {
                         Location loc = plugin.Funcs.getWaypoint(args[0], args[1], player.getWorld());
                         if (loc != null) player.teleport(loc);
                         else plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s von Spieler %s auf Welt %s nicht gefunden.", args[1], args[0], player.getWorld().getName()));
-                    } catch (MySqlPoolableException e) {
-                        e.printStackTrace();
-                    } catch (SQLException e) {
+                    } catch (MySqlPoolableException | SQLException e) {
                         e.printStackTrace();
                     }
                     return true;
@@ -43,9 +40,7 @@ public class wp implements CommandExecutor {
                         Location loc = plugin.Funcs.getWaypoint(player, args[0]);
                         if (loc != null) player.teleport(loc);
                         else plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s nicht gefunden.", args[0], player.getWorld().getName()));
-                    } catch (MySqlPoolableException e) {
-                        e.printStackTrace();
-                    } catch (SQLException e) {
+                    } catch (MySqlPoolableException | SQLException e) {
                         e.printStackTrace();
                     }
                     return true;
