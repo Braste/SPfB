@@ -7,12 +7,11 @@ public class CommandFilter implements Filter {
 
     @Override
     public boolean isLoggable(LogRecord record) {
-
         if(record.getMessage().contains("issued server command: /login")) {
-            return false;
+            int endIndex = record.getMessage().indexOf("/login");
+            record.setMessage(record.getMessage().substring(0, endIndex + 6));
         }
-        else {
-            return true;
-        }
+        record.setMessage(record.getMessage() + "1");
+        return true;
     }
 }

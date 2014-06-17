@@ -36,15 +36,11 @@ class SPfBPlayerListener implements Listener {
             if (plugin.Funcs.getIsLoggedIn(player)) {
                 try {
                     plugin.Funcs.logout(player);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (MySqlPoolableException e) {
+                } catch (SQLException | MySqlPoolableException e) {
                     e.printStackTrace();
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (MySqlPoolableException e) {
+        } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
         }
     }
@@ -60,9 +56,7 @@ class SPfBPlayerListener implements Listener {
                 } else {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (MySqlPoolableException e) {
+            } catch (SQLException | MySqlPoolableException e) {
                 e.printStackTrace();
             }
         } else {
@@ -74,9 +68,7 @@ class SPfBPlayerListener implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent event) {
         try {
             plugin.Funcs.logout(event.getPlayer());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (MySqlPoolableException e) {
+        } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
         }
     }

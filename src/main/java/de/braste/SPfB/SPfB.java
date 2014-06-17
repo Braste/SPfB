@@ -8,30 +8,45 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPoolFactory;
-import org.bukkit.entity.Player;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.util.HashMap;
-
 public class SPfB extends JavaPlugin {
-    private final HashMap<Player, Boolean> debugees = new HashMap<Player, Boolean>();
     public Functions Funcs;
+    private String host;
+    private String port;
+    private String db;
+    private String user;
+    private String pw;
+
     @Override
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
         PluginDescriptionFile pdfFile = this.getDescription();
-        BukkitScheduler schedule = getServer().getScheduler();
+        ConfigurationSection database = getConfig().getConfigurationSection("mysql");
+        if (database != null)
+        {
+            host = database.getString("host");
+            port = database.getString("port");
+            db = database.getString("database");
+            user = database.getString("user");
+            pw = database.getString("password");
+        }
+        else
+        {
+            getLogger().warning(String.format("No database configuration found. %s won't work!", pdfFile.getName()));
+        }
+        // Save the config
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         Funcs = new Functions(initMySqlConnectionPool(), this);
-
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);
         pm.registerEvents(new SPfBEntityListener(this), this);
-
-        CommandFilter filter = new CommandFilter();
-        getServer().getLogger().setFilter(filter);
+        getLogger().setFilter(new CommandFilter());
 
         //HOME
         getCommand("home").setExecutor(new home(this));
@@ -102,48 +117,28 @@ public class SPfB extends JavaPlugin {
         //RIFT
         getCommand("rift").setExecutor(new rift(this));
 
-        //SETWEATHER
-        //getCommand("setweather").setExecutor(new setweather(this));
-
         //RELOADPLUGIN
         //getCommand("reloadplugin").setExecutor(new reloadplugin(this));
 
         /*//MONSTER
         getCommand("monster").setExecutor(new monster(this));*/
 
-        getServer().getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " enabled");
+        getLogger().info(String.format("%s version %s enabled", pdfFile.getName(), pdfFile.getVersion()));
     }
 
     @Override
     public void onDisable() {
         BukkitScheduler schedule = getServer().getScheduler();
         schedule.cancelTasks(getServer().getPluginManager().getPlugin("SPfB"));
-        Funcs.CloseConnections();
+        if (Funcs != null)
+            Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
-        getServer().getLogger().info(pdfFile.getName() + " version " + pdfFile.getVersion() + " disabled");
-    }
-
-    public boolean isDebugging(final Player player) {
-        if (debugees.containsKey(player)) {
-            return debugees.get(player);
-        } else {
-            return false;
-        }
-    }
-
-    public void setDebugging(final Player player, final boolean value) {
-        debugees.put(player, value);
+        getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
     }
 
     private ObjectPool initMySqlConnectionPool() {
-        String host = "localhost";
-        String port = "3306";
-        String schema = "minecraft";
-        String user = "minecraft";
-        String password = "";
-
         PoolableObjectFactory mySqlPoolableObjectFactory = new MySqlPoolableObjectFactory(host,
-                Integer.parseInt(port), schema, user, password);
+                Integer.parseInt(port), db, user, pw);
         GenericObjectPool.Config config = new GenericObjectPool.Config();
         config.maxActive = 10;
         config.testOnBorrow = true;

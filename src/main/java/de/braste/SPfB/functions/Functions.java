@@ -72,7 +72,7 @@ public class Functions {
     public boolean setHomeLocation(Player player) throws MySqlPoolableException, SQLException {
         Connection conn = null;
         Statement st = null;
-        ResultSet res = null;
+        ResultSet res;
         UUID playerId = player.getUniqueId();
         String x = String.valueOf(player.getLocation().getBlockX()) + ".0";
         String y = String.valueOf(player.getLocation().getBlockY()) + ".0";
@@ -203,6 +203,7 @@ public class Functions {
         return 0;
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public String getConfigNode(String node) throws SQLException, MySqlPoolableException {
         String value = null;
         Connection conn = null;
@@ -286,9 +287,7 @@ public class Functions {
     public boolean getIsLoggedIn(Player player) {
         try {
             if (getSession(player) > 0) return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (MySqlPoolableException e) {
+        } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
         }
         return false;
@@ -298,11 +297,9 @@ public class Functions {
         password = getSHA(password);
         try {
             return password.equals(getPassword(player)) && setSession(player);
-        } catch (SQLException e) {
+        } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
 
-        } catch (MySqlPoolableException e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -437,7 +434,6 @@ public class Functions {
         }
         return 0;
     }
-
     public Location getWarpPoint(String name, World world) throws MySqlPoolableException, SQLException {
         Location loc = null;
         Connection conn = null;
@@ -468,7 +464,7 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            if (st.executeUpdate("DELETE FROM warps WHERE name = '" + name + "' AND world = '" + player.getWorld().getName() + "'") > 0)
+            if (st.executeUpdate(String.format("DELETE FROM warps WHERE name = '%s' AND world = '%s'", name, player.getWorld().getName())) > 0)
             {
                 return true;
             }
