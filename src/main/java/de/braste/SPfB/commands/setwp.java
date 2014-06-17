@@ -2,11 +2,14 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-//TODO
+
+import java.sql.SQLException;
+
 public class setwp implements CommandExecutor {
     private final SPfB plugin;
 
@@ -16,15 +19,26 @@ public class setwp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        /*if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
-            if (player.hasPermission("SPfB.setwp")) {
-                System.out.println(player.getName() + " used SPfB.setwp");
-                if (plugin.Funcs.getIsLoggedIn(player)) {
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.setwp")) {
+                plugin.getLogger().info(String.format("%s used SPfB.setwp", player.getName()));
                     if (args.length == 1) {
-                        return funcs.setWaypoint(player, args[0]);
+                        try {
+                            int result = plugin.Funcs.setWaypoint(player, args[0]);
+                            if (result == 1) {
+                                plugin.Funcs.sendSystemMessage(player, "Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" erfolgreich gesetzt.");
+                                return true;
+                            }
+                            else if (result == -1)
+                            {
+                                plugin.Funcs.sendSystemMessage(player, "Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" bereits vorhanden.");
+                                return true;
+                            }
+                        } catch (SQLException | MySqlPoolableException e) {
+                            e.printStackTrace();
+                        }
                     } else if (args.length > 1) {
                         plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
                     } else {
@@ -32,9 +46,8 @@ public class setwp implements CommandExecutor {
                     }
                     return false;
                 }
-                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
-            }
-        }*/
+            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setwp");
+        }
         return true;
     }
 

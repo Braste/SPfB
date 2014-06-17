@@ -36,9 +36,7 @@ public class createwarp implements CommandExecutor {
                             plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" bereits vorhanden.");
                             return true;
                         }
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    } catch (MySqlPoolableException e) {
+                    } catch (SQLException | MySqlPoolableException e) {
                         e.printStackTrace();
                     }
                 } else if (args.length > 1) {

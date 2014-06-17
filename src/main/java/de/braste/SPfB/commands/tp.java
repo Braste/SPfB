@@ -34,9 +34,7 @@ public class tp implements CommandExecutor {
                             if (plugin.Funcs.getConfigNodeInt("debug") >= 1) {
                                  plugin.getLogger().info("Player: "+args[0]+", UUID: "+playerId.toString());
                             }
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                        } catch (MySqlPoolableException e) {
+                        } catch (SQLException | MySqlPoolableException e) {
                             e.printStackTrace();
                         }
                         target = player.getServer().getPlayer(playerId);
@@ -45,7 +43,7 @@ public class tp implements CommandExecutor {
                         player.teleport(target);
                         return true;
                     } else {
-                        plugin.Funcs.sendSystemMessage(player, "Spieler " + args[0] + " wurde nicht gefunden!");
+                        plugin.Funcs.sendSystemMessage(player, "Spieler " + args[0] + " wurde nicht gefunden.");
                     }
                 }
             }
@@ -86,11 +84,8 @@ public class tp implements CommandExecutor {
             else
                 plugin.getLogger().info("Zu viele Parameter:");
         }
-        else {
-            if (sender instanceof Player)
-                plugin.Funcs.sendSystemMessage((Player)sender, "Zu wenig Parameter:");
-            else
-                plugin.getLogger().info("Zu wenig Parameter:");
+        else if (!(sender instanceof Player)) {
+            plugin.getLogger().info("Zu wenig Parameter:");
         }
         return true;
     }

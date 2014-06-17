@@ -174,6 +174,35 @@ public class Functions {
         return loc;
     }
 
+    public int setWaypoint(Player player, String name) throws SQLException, MySqlPoolableException {
+        Connection conn = null;
+        Statement st = null;
+        ResultSet res = null;
+        UUID playerId = player.getUniqueId();
+        Location loc = player.getLocation();
+        try {
+            conn = (Connection)_connPool.borrowObject();
+            st = conn.createStatement();
+            res = st.executeQuery(String.format("SELECT count(*) as count FROM waypoints WHERE name = '%s' AND world = '%s' AND waypoint = '%s'", playerId.toString() , player.getWorld(), name));
+            while (res.next()) {
+                if (res.getInt("count") > 0)
+                    return -1;
+                if (st.executeUpdate(String.format("INSERT INTO waypoints (id, name, world, waypoint, x, y, z, rotX, rotY) VALUES (null, '%s', %s, %s, %s, %s, 0.0, '%s')", playerId.toString(), player.getWorld(), name, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw())) > 0) {
+                    return 1;
+                }
+            }
+        } catch (SQLException e) {
+            throw e;
+        }  catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(res);
+            safeClose(st);
+            safeClose(conn);
+        }
+        return 0;
+    }
+
     public String getConfigNode(String node) throws SQLException, MySqlPoolableException {
         String value = null;
         Connection conn = null;
@@ -408,6 +437,7 @@ public class Functions {
         }
         return 0;
     }
+
     public Location getWarpPoint(String name, World world) throws MySqlPoolableException, SQLException {
         Location loc = null;
         Connection conn = null;
