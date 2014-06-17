@@ -39,6 +39,9 @@ public class SPfB extends JavaPlugin {
         {
             getLogger().warning(String.format("No database configuration found. %s won't work!", pdfFile.getName()));
         }
+        // Save the config
+        getConfig().options().copyDefaults(true);
+        saveConfig();
         Funcs = new Functions(initMySqlConnectionPool(), this);
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);

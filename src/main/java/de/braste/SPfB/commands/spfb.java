@@ -21,7 +21,11 @@ public class spfb implements CommandExecutor {
         {
             if (args[0].equals("reload"))
             {
-
+                if (sender instanceof Player)
+                    plugin.Funcs.sendSystemMessage((Player)sender, "Lade Konfig neu.");
+                else
+                    plugin.getLogger().info("Lade Konfig neu.");
+                plugin.reloadConfig();
             }
         }
         else if (args.length == 0) {
