@@ -183,11 +183,11 @@ public class Functions {
         try {
             conn = (Connection)_connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery(String.format("SELECT count(*) as count FROM waypoints WHERE name = '%s' AND world = '%s' AND waypoint = '%s'", playerId.toString() , player.getWorld(), name));
+            res = st.executeQuery(String.format("SELECT count(*) as count FROM waypoints WHERE name = '%s' AND world = '%s' AND waypoint = '%s'", playerId.toString() , player.getWorld().getName(), name));
             while (res.next()) {
                 if (res.getInt("count") > 0)
                     return -1;
-                if (st.executeUpdate(String.format("INSERT INTO waypoints (id, name, world, waypoint, x, y, z, rotX, rotY) VALUES (null, '%s', %s, %s, %s, %s, 0.0, '%s')", playerId.toString(), player.getWorld(), name, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw())) > 0) {
+                if (st.executeUpdate(String.format("INSERT INTO waypoints (id, name, world, waypoint, x, y, z, rotX, rotY) VALUES (null, '%s', '%s', '%s', %s, %s, %s, %s, 0.0)", playerId.toString(), player.getWorld().getName(), name, loc.getX(), loc.getY(), loc.getZ(), loc.getYaw())) > 0) {
                     return 1;
                 }
             }
