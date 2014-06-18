@@ -28,12 +28,12 @@ public class setwp implements CommandExecutor {
                         try {
                             int result = plugin.Funcs.setWaypoint(player, args[0]);
                             if (result == 1) {
-                                plugin.Funcs.sendSystemMessage(player, "Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" erfolgreich gesetzt.");
+                                plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s erfolgreich gesetzt.", args[0], player.getWorld().getName()));
                                 return true;
                             }
                             else if (result == -1)
                             {
-                                plugin.Funcs.sendSystemMessage(player, "Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" bereits vorhanden.");
+                                plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s bereits vorhanden.", args[0], player.getWorld().getName()));
                                 return true;
                             }
                         } catch (SQLException | MySqlPoolableException e) {

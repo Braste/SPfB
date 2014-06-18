@@ -46,7 +46,7 @@ public class SPfB extends JavaPlugin {
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);
         pm.registerEvents(new SPfBEntityListener(this), this);
-        getLogger().setFilter(new CommandFilter());
+        getServer().getLogger().setFilter(new CommandFilter());
 
         //HOME
         getCommand("home").setExecutor(new home(this));
