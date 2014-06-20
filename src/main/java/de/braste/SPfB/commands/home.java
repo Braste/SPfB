@@ -28,17 +28,15 @@ public class home implements CommandExecutor {
                 try {
                     loc = plugin.Funcs.getHomeLocation(player);
                     if (loc != null) player.teleport(loc);
-                    else plugin.Funcs.sendSystemMessage(player, "Kein Home-Punkt auf Welt" + player.getWorld().getName()+" gefunden.");
-                } catch (MySqlPoolableException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (SQLException e) {
+                    else
+                        plugin.Funcs.sendSystemMessage(player, "Kein Home-Punkt auf Welt" + player.getWorld().getName() + " gefunden.");
+                } catch (SQLException | MySqlPoolableException e) {
                     e.printStackTrace();
                     return false;
                 }
 
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.home");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.home");
         }
         return true;
     }
