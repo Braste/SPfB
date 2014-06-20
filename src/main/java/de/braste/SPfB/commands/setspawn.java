@@ -16,17 +16,16 @@ public class setspawn implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.setspawn")) {
                 System.out.println(player.getName() + " used SPfB.setspawn");
-                    if (player.getWorld().setSpawnLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())) {
-                        player.getServer().broadcastMessage(player.getName() + " hat erfolgreich den Spawnpunkt gesetzt.");
-                    }
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setspawn");
+                if (player.getWorld().setSpawnLocation(player.getLocation().getBlockX(), player.getLocation().getBlockY(), player.getLocation().getBlockZ())) {
+                    player.getServer().broadcastMessage(player.getName() + " hat erfolgreich den Spawnpunkt gesetzt.");
+                }
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setspawn");
         }
         return true;
     }

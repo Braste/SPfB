@@ -30,10 +30,9 @@ public class warp implements CommandExecutor {
                     try {
                         Location loc = plugin.Funcs.getWarpPoint(args[0], player.getWorld());
                         if (loc != null) player.teleport(loc);
-                        else plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" nicht gefunden.");
-                    } catch (MySqlPoolableException e) {
-                        e.printStackTrace();
-                    } catch (SQLException e) {
+                        else
+                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt " + player.getWorld().getName() + " nicht gefunden.");
+                    } catch (MySqlPoolableException | SQLException e) {
                         e.printStackTrace();
                     }
                     return true;
@@ -43,8 +42,8 @@ public class warp implements CommandExecutor {
                     plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                 }
                 return false;
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.warp");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.warp");
         }
         return true;
     }

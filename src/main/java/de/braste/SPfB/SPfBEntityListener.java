@@ -1,11 +1,11 @@
 package de.braste.SPfB;
 
-import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class SPfBEntityListener implements Listener {
     private final SPfB plugin;
@@ -17,7 +17,7 @@ public class SPfBEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if (damager instanceof Player && !plugin.Funcs.getIsLoggedIn((Player)damager)) {
+        if (damager instanceof Player && !plugin.Funcs.getIsLoggedIn((Player) damager)) {
             event.setCancelled(true);
         }
     }

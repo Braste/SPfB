@@ -27,15 +27,12 @@ public class sethome implements CommandExecutor {
                 try {
                     if (plugin.Funcs.setHomeLocation(player)) {
                         plugin.Funcs.sendSystemMessage(player, "Home-Punkt gesetzt.");
-                    }
-                    else plugin.Funcs.sendSystemMessage(player, "Home-Punkt konnte nicht gesetzt werden.");
-                } catch (MySqlPoolableException e) {
-                    e.printStackTrace();
-                } catch (SQLException e) {
+                    } else plugin.Funcs.sendSystemMessage(player, "Home-Punkt konnte nicht gesetzt werden.");
+                } catch (MySqlPoolableException | SQLException e) {
                     e.printStackTrace();
                 }
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.sethome");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.sethome");
         }
         return true;
     }

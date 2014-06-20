@@ -27,11 +27,11 @@ public class deletewarp implements CommandExecutor {
 
                 if (args.length == 1) {
                     try {
-                        if (plugin.Funcs.deleteWarpPoint(player, args[0])) plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " erfolgreich gelöscht.");
-                        else plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " konnte nicht gelöscht werden.");
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    } catch (MySqlPoolableException e) {
+                        if (plugin.Funcs.deleteWarpPoint(player, args[0]))
+                            plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " erfolgreich gelöscht.");
+                        else
+                            plugin.Funcs.sendSystemMessage(player, "Warppunkt " + args[0] + " konnte nicht gelöscht werden.");
+                    } catch (SQLException | MySqlPoolableException e) {
                         e.printStackTrace();
                     }
                     return true;
@@ -41,8 +41,8 @@ public class deletewarp implements CommandExecutor {
                     plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                 }
                 return false;
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.deletewarp");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.deletewarp");
         }
         return true;
     }

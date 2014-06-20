@@ -28,12 +28,10 @@ public class createwarp implements CommandExecutor {
                     try {
                         int ret = plugin.Funcs.setWarpPoint(player, args[0]);
                         if (ret == 1) {
-                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" erfolgreich gesetzt.");
+                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt " + player.getWorld().getName() + " erfolgreich gesetzt.");
                             return true;
-                        }
-                        else if (ret == -1)
-                        {
-                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt "+player.getWorld().getName()+" bereits vorhanden.");
+                        } else if (ret == -1) {
+                            plugin.Funcs.sendSystemMessage(player, "Globaler Wegpunkt " + args[0] + " auf Welt " + player.getWorld().getName() + " bereits vorhanden.");
                             return true;
                         }
                     } catch (SQLException | MySqlPoolableException e) {
@@ -45,8 +43,8 @@ public class createwarp implements CommandExecutor {
                     plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                 }
                 return false;
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.createwarp");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.createwarp");
         }
         return true;
     }

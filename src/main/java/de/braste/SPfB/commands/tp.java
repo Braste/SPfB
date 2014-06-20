@@ -31,8 +31,8 @@ public class tp implements CommandExecutor {
                     UUID playerId = plugin.Funcs.getUUID(args[0]);
                     if (playerId != null) {
                         try {
-                            if (plugin.Funcs.getConfigNodeInt("debug") >= 1) {
-                                 plugin.getLogger().info("Player: "+args[0]+", UUID: "+playerId.toString());
+                            if ((int) plugin.Funcs.getConfigNode("debug", "int") >= 1) {
+                                plugin.getLogger().info("Player: " + args[0] + ", UUID: " + playerId.toString());
                             }
                         } catch (SQLException | MySqlPoolableException e) {
                             e.printStackTrace();
@@ -46,13 +46,12 @@ public class tp implements CommandExecutor {
                         plugin.Funcs.sendSystemMessage(player, "Spieler " + args[0] + " wurde nicht gefunden.");
                     }
                 }
-            }
-            else  {
+            } else {
                 plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.tp");
             }
         }
         if (args.length == 2) {
-            if (!(sender instanceof Player) || (plugin.Funcs.getIsLoggedIn((Player)sender) && sender.hasPermission("SPfB.tp"))) {
+            if (!(sender instanceof Player) || (plugin.Funcs.getIsLoggedIn((Player) sender) && sender.hasPermission("SPfB.tp"))) {
                 Player source = null;
                 Map<String, UUID> playerIds = plugin.Funcs.getUUIDs(Arrays.asList(args));
                 if (playerIds != null) {
@@ -75,19 +74,16 @@ public class tp implements CommandExecutor {
                     else
                         plugin.getLogger().info("Spieler " + args[0] + " wurde nicht gefunden!");
                 }
+            } else {
+                plugin.Funcs.sendSystemMessage((Player) sender, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.tp");
             }
-            else {
-                plugin.Funcs.sendSystemMessage((Player)sender, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.tp");
-            }
-        }
-        else if (args.length > 2) {
+        } else if (args.length > 2) {
             if (sender instanceof Player)
-                plugin.Funcs.sendSystemMessage((Player)sender, "Zu viele Parameter:");
+                plugin.Funcs.sendSystemMessage((Player) sender, "Zu viele Parameter:");
             else
                 plugin.getLogger().info("Zu viele Parameter:");
             return false;
-        }
-        else if (!(sender instanceof Player)) {
+        } else if (!(sender instanceof Player)) {
             plugin.getLogger().info("Zu wenig Parameter:");
             return false;
         }

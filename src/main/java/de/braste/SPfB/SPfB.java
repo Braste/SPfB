@@ -27,22 +27,28 @@ public class SPfB extends JavaPlugin {
         PluginManager pm = getServer().getPluginManager();
         PluginDescriptionFile pdfFile = this.getDescription();
         ConfigurationSection database = getConfig().getConfigurationSection("mysql");
-        if (database != null)
-        {
+        if (database != null) {
             host = database.getString("host");
             port = database.getString("port");
             db = database.getString("database");
             user = database.getString("user");
             pw = database.getString("password");
-        }
-        else
-        {
+
+            if (host == null || port == null || db == null || user == null)
+                getLogger().warning(String.format("Database configuration incomplete. %s won't work!", pdfFile.getName()));
+        } else {
             getLogger().warning(String.format("No database configuration found. %s won't work!", pdfFile.getName()));
         }
         // Save the config
         getConfig().options().copyDefaults(true);
         saveConfig();
-        Funcs = new Functions(initMySqlConnectionPool(), this);
+        try {
+            Funcs = new Functions(initMySqlConnectionPool(), this);
+        } catch (Exception e) {
+            getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
+            e.printStackTrace();
+            return;
+        }
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);
         pm.registerEvents(new SPfBEntityListener(this), this);
@@ -69,7 +75,7 @@ public class SPfB extends JavaPlugin {
         //SETGROUP
         //getCommand("setgroup").setExecutor(new setgroup(this));
 
-         //GETGROUPS
+        //GETGROUPS
         //getCommand("getgroups").setExecutor(new getgroups(this));
 
         //CHANGEPW
@@ -116,12 +122,6 @@ public class SPfB extends JavaPlugin {
 
         //RIFT
         getCommand("rift").setExecutor(new rift(this));
-
-        //RELOADPLUGIN
-        //getCommand("reloadplugin").setExecutor(new reloadplugin(this));
-
-        /*//MONSTER
-        getCommand("monster").setExecutor(new monster(this));*/
 
         getLogger().info(String.format("%s version %s enabled", pdfFile.getName(), pdfFile.getVersion()));
     }

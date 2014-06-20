@@ -48,8 +48,8 @@ public class clearinventory implements CommandExecutor {
                 }
 
                 return ret;
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.clearinventory");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.clearinventory");
         }
         return true;
     }

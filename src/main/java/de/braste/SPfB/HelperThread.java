@@ -3,8 +3,8 @@ package de.braste.SPfB;
 @SuppressWarnings("UnusedDeclaration")
 public class HelperThread extends Thread {
 
-    @Override public void run()
-    {
+    @Override
+    public void run() {
         Runtime rt = Runtime.getRuntime();
         long isFree = rt.freeMemory();
         long wasFree;

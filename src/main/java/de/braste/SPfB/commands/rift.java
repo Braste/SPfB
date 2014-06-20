@@ -5,7 +5,7 @@ import de.braste.SPfB.SPfB;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+
 //TODO
 public class rift implements CommandExecutor {
     private final SPfB plugin;
