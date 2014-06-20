@@ -52,30 +52,32 @@ public class tp implements CommandExecutor {
             }
         }
         if (args.length == 2) {
-            Player source = null;
-            Map<String, UUID> playerIds = plugin.Funcs.getUUIDs(Arrays.asList(args));
-            if (playerIds != null)
-            {
-                source = sender.getServer().getPlayer(playerIds.get(args[0]));
-                target = sender.getServer().getPlayer(playerIds.get(args[1]));
-            }
-
-            if (target != null) {
-                if (source != null) {
-                    source.teleport(target);
+            if (!(sender instanceof Player) || (plugin.Funcs.getIsLoggedIn((Player)sender) && sender.hasPermission("SPfB.tp"))) {
+                Player source = null;
+                Map<String, UUID> playerIds = plugin.Funcs.getUUIDs(Arrays.asList(args));
+                if (playerIds != null) {
+                    source = sender.getServer().getPlayer(playerIds.get(args[0]));
+                    target = sender.getServer().getPlayer(playerIds.get(args[1]));
                 }
-                else {
+
+                if (target != null) {
+                    if (source != null) {
+                        source.teleport(target);
+                    } else {
+                        if (sender instanceof Player)
+                            plugin.Funcs.sendSystemMessage((Player) sender, "Spieler " + args[1] + " wurde nicht gefunden!");
+                        else
+                            plugin.getLogger().info("Spieler " + args[1] + " wurde nicht gefunden!");
+                    }
+                } else {
                     if (sender instanceof Player)
-                        plugin.Funcs.sendSystemMessage((Player)sender, "Spieler " + args[1] + " wurde nicht gefunden!");
+                        plugin.Funcs.sendSystemMessage((Player) sender, "Spieler " + args[0] + " wurde nicht gefunden!");
                     else
-                        plugin.getLogger().info("Spieler " + args[1] + " wurde nicht gefunden!");
+                        plugin.getLogger().info("Spieler " + args[0] + " wurde nicht gefunden!");
                 }
             }
             else {
-                if (sender instanceof Player)
-                    plugin.Funcs.sendSystemMessage((Player)sender, "Spieler " + args[0] + " wurde nicht gefunden!");
-                else
-                    plugin.getLogger().info("Spieler " + args[0] + " wurde nicht gefunden!");
+                plugin.Funcs.sendSystemMessage((Player)sender, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.tp");
             }
         }
         else if (args.length > 2) {
@@ -83,9 +85,11 @@ public class tp implements CommandExecutor {
                 plugin.Funcs.sendSystemMessage((Player)sender, "Zu viele Parameter:");
             else
                 plugin.getLogger().info("Zu viele Parameter:");
+            return false;
         }
         else if (!(sender instanceof Player)) {
             plugin.getLogger().info("Zu wenig Parameter:");
+            return false;
         }
         return true;
     }

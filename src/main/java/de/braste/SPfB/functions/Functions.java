@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -201,6 +202,38 @@ public class Functions {
             safeClose(conn);
         }
         return 0;
+    }
+
+    public List<String[]> listWaypoints(Player player) throws SQLException, MySqlPoolableException {
+        return listWaypoints(player.getUniqueId());
+    }
+
+    public List<String[]> listWaypoints(String playerName) throws SQLException, MySqlPoolableException {
+        return listWaypoints(getUUID(playerName));
+    }
+
+    public List<String[]> listWaypoints(UUID playerId) throws SQLException, MySqlPoolableException {
+        List<String[]> waypoints = new ArrayList<>();
+        Connection conn = null;
+        Statement st = null;
+        ResultSet res = null;
+        try {
+            conn = (Connection)_connPool.borrowObject();
+            st = conn.createStatement();
+            res = st.executeQuery(String.format("SELECT waypoint, world FROM waypoints WHERE name = '%s'", playerId.toString()));
+            while (res.next()) {
+                waypoints.add(new String[]{res.getString("waypoint"), res.getString("world")});
+            }
+        } catch (SQLException e) {
+            throw e;
+        }  catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(res);
+            safeClose(st);
+            safeClose(conn);
+        }
+        return waypoints;
     }
 
     @SuppressWarnings("UnusedDeclaration")
