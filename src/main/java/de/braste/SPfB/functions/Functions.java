@@ -229,6 +229,8 @@ public class Functions {
         Connection conn = null;
         Statement st = null;
         ResultSet res = null;
+        if (playerId == null)
+            return waypoints;
         try {
             conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
