@@ -9,8 +9,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version>unknown</api.version>
-        <minecraft.version>1.7.9</minecraft.version>
-        <bukkit_version>1.7.9-R0.2</bukkit_version>
+        <minecraft.version>1.7.10</minecraft.version>
+        <spigot_version>1.7.10-R0.1-SNAPSHOT</spigot_version>
         <minecraft_version>1_7_R3</minecraft_version>
     </properties>
 
@@ -35,8 +35,8 @@
 
     <repositories>
         <repository>
-            <id>bukkit-repo</id>
-            <url>http://repo.bukkit.org/content/groups/public/</url>
+            <id>spigotmc-repo</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
         <repository>
             <id>braste-repo</id>
@@ -50,9 +50,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>${bukkit_version}</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>${spigot_version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -98,9 +98,9 @@
                             <Implementation-Title>SPfB</Implementation-Title>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <Implementation-Vendor>Braste</Implementation-Vendor>
-                            <Specification-Title>Bukkit</Specification-Title>
-                            <Specification-Version>${bukkit_version}</Specification-Version>
-                            <Specification-Vendor>Bukkit Team</Specification-Vendor>
+                            <Specification-Title>Spigot</Specification-Title>
+                            <Specification-Version>${spigot_version}</Specification-Version>
+                            <Specification-Vendor>Spigot Team</Specification-Vendor>
                             <Sealed>true</Sealed>
                         </manifestEntries>
                     </archive>

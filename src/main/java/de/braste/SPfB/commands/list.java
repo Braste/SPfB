@@ -7,6 +7,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
+
 public class list implements CommandExecutor {
     private final SPfB plugin;
 
@@ -17,7 +19,8 @@ public class list implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         String players = "", k = "";
-        Player[] playerList = plugin.getServer().getOnlinePlayers();
+
+        Collection<? extends Player> playerList = plugin.getServer().getOnlinePlayers();
 
         for (Player p : playerList) {
             players += String.format("%s%s", k, p.getName());
