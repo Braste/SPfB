@@ -61,7 +61,7 @@ public class SPfB extends JavaPlugin {
         getCommand("setspawn").setExecutor(new setspawn(this));
 
         //LOGIN
-        getCommand("login").setExecutor(new login(this));
+        //getCommand("login").setExecutor(new login(this));
 
         //REGISTER
         getCommand("register").setExecutor(new register(this));

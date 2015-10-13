@@ -304,6 +304,16 @@ public class Functions {
         return false;
     }
 
+    public boolean login(Player player) {
+        //password = getSHA(password);
+        try {
+            return setSession(player);
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public void logout(Player player) throws SQLException, MySqlPoolableException {
         Connection conn = null;
         Statement st = null;

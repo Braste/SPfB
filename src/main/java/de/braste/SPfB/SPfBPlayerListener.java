@@ -52,7 +52,11 @@ class SPfBPlayerListener implements Listener {
         if (player.hasPermission("SPfB.register")) {
             try {
                 if (plugin.Funcs.getIsRegistered(player)) {
-                    plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+                    if (plugin.Funcs.login(player))
+                        plugin.Funcs.sendSystemMessage(player, "Erfolgreich eingeloggt, willkommen " + player.getName() + "!");
+                    else
+                        plugin.Funcs.sendSystemMessage(player, "Login gescheitert!");
+                    //plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
                 } else {
                     plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
                 }
