@@ -58,7 +58,9 @@ class SPfBPlayerListener implements Listener {
                         plugin.Funcs.sendSystemMessage(player, "Login gescheitert!");
                     //plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
                 } else {
-                    plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
+                    if (plugin.Funcs.register(player, "12345", "12345"))
+                        plugin.Funcs.sendSystemMessage(player, String.format("Erfolgreich registriert. Willkommen %s!", player.getName()));
+                    //plugin.Funcs.sendSystemMessage(player, "Du bist nicht registriert. Bitte registriere dich mit '/register <password> <password>'");
                 }
             } catch (SQLException | MySqlPoolableException e) {
                 e.printStackTrace();

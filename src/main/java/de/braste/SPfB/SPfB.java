@@ -70,7 +70,7 @@ public class SPfB extends JavaPlugin {
         //getCommand("login").setExecutor(new login(this));
 
         //REGISTER
-        getCommand("register").setExecutor(new register(this));
+        //getCommand("register").setExecutor(new register(this));
 
         //SETGROUP
         //getCommand("setgroup").setExecutor(new setgroup(this));
