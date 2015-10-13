@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import java.sql.SQLException;
 
 public class register implements CommandExecutor {
@@ -30,30 +31,23 @@ public class register implements CommandExecutor {
                             if (plugin.Funcs.register(player, args[0], args[1])) {
                                 plugin.Funcs.sendSystemMessage(player, String.format("Erfolgreich registriert. Willkommen %s!", player.getName()));
                                 return true;
-                            }
-                            else {
+                            } else {
                                 plugin.Funcs.sendSystemMessage(player, "Registrierung nicht erfolgreich.");
                             }
-                        }
-                        else if (args.length > 2) {
+                        } else if (args.length > 2) {
                             plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
-                        }
-                        else {
+                        } else {
                             plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                         }
                         return false;
-                    }
-                    else {
+                    } else {
                         plugin.Funcs.sendSystemMessage(player, "Du bist schon registriert. Bitte logge dich mit '/login <password>' ein");
                     }
 
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (MySqlPoolableException e) {
+                } catch (SQLException | MySqlPoolableException e) {
                     e.printStackTrace();
                 }
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du hast nicht die erforderliche Berechtigung SPfB.register");
+            } else plugin.Funcs.sendSystemMessage(player, "Du hast nicht die erforderliche Berechtigung SPfB.register");
         }
         return true;
     }

@@ -18,15 +18,13 @@ public class spawn implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        }
-        else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             if (player.hasPermission("SPfB.spawn")) {
                 plugin.getLogger().info(player.getName() + " used SPfB.spawn");
                 World world = player.getWorld();
-                Location loc = world.getSpawnLocation().add(0.0,2.0,0.0);
+                Location loc = world.getSpawnLocation().add(0.0, 2.0, 0.0);
                 if (loc != null) player.teleport(loc);
             }
         }

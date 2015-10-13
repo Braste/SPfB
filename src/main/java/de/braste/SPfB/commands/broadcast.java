@@ -27,8 +27,8 @@ public class broadcast implements CommandExecutor {
                     message = message + " " + aArgs;
                 }
                 plugin.getServer().broadcastMessage(message);
-            }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.broadcast");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.broadcast");
         }
         return true;
     }

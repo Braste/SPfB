@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,14 +22,32 @@ public class Functions {
     private final ObjectPool _connPool;
     private final SPfB _plugin;
 
-    public Functions(ObjectPool connPool, final SPfB instance)
-    {
+    public Functions(ObjectPool connPool, final SPfB instance) throws MySqlPoolableException {
         _connPool = connPool;
         _plugin = instance;
+        Connection conn = null;
+
+        try {
+            conn = (Connection) _connPool.borrowObject();
+        } catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(conn);
+        }
     }
 
-    public void CloseConnections()
-    {
+    private static String bytesToHex(byte[] b) {
+        char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
+                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        StringBuilder buf = new StringBuilder();
+        for (byte aB : b) {
+            buf.append(hexDigit[(aB >> 4) & 0x0f]);
+            buf.append(hexDigit[aB & 0x0f]);
+        }
+        return buf.toString();
+    }
+
+    public void CloseConnections() {
         try {
             _connPool.close();
             _connPool.clear();
@@ -44,22 +63,21 @@ public class Functions {
         ResultSet res = null;
         UUID playerId = player.getUniqueId();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM homes WHERE name = '%s' AND world = '%s'", playerId.toString(), player.getWorld().getName()));
-            if(!res.next()) {
+            if (!res.next()) {
                 updateToUUID(player, "homes", "name");
                 res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM homes WHERE name = '%s' AND world = '%s'", playerId.toString(), player.getWorld().getName()));
                 while (res.next()) {
                     loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
                 }
-            }
-            else {
+            } else {
                 loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -79,13 +97,11 @@ public class Functions {
         String z = String.valueOf(player.getLocation().getBlockZ()) + ".0";
         String yaw = String.valueOf(player.getLocation().getYaw());
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT count(*) as count FROM homes WHERE name = '%s' AND world = '%s'", playerId.toString(), player.getWorld().getName()));
-            if(res.next())
-            {
-                if (res.getInt("count") > 0)
-                {
+            if (res.next()) {
+                if (res.getInt("count") > 0) {
                     if (st.executeUpdate(String.format("UPDATE homes SET x = %s WHERE name = '%s' AND world = '%s'", x, playerId.toString(), player.getWorld().getName())) > 0) {
                         if (st.executeUpdate(String.format("UPDATE homes SET y = %s WHERE name = '%s' AND world = '%s'", y, playerId.toString(), player.getWorld().getName())) > 0) {
                             if (st.executeUpdate(String.format("UPDATE homes SET z = %s WHERE name = '%s' AND world = '%s'", z, playerId.toString(), player.getWorld().getName())) > 0) {
@@ -95,13 +111,12 @@ public class Functions {
                             }
                         }
                     }
-                }
-                else if (st.executeUpdate(String.format("INSERT INTO homes (id, name, x, y, z, rotX, rotY, world) VALUES (null, '%s', %s, %s, %s, %s, 0.0, '%s')", playerId.toString(), x, y, z, yaw, player.getWorld().getName())) > 0)
-                        return true;
+                } else if (st.executeUpdate(String.format("INSERT INTO homes (id, name, x, y, z, rotX, rotY, world) VALUES (null, '%s', %s, %s, %s, %s, 0.0, '%s')", playerId.toString(), x, y, z, yaw, player.getWorld().getName())) > 0)
+                    return true;
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -117,22 +132,21 @@ public class Functions {
         ResultSet res = null;
         UUID playerId = player.getUniqueId();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), player.getWorld().getName(), waypoint));
-            if(!res.next()) {
+            if (!res.next()) {
                 updateToUUID(player, "waypoints", "name");
                 res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), player.getWorld().getName(), waypoint));
                 while (res.next()) {
                     loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
                 }
-            }
-            else {
+            } else {
                 loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -149,22 +163,21 @@ public class Functions {
         ResultSet res = null;
         UUID playerId = getUUID(playerName);
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), world.getName(), waypoint));
-            if(!res.next()) {
+            if (!res.next()) {
                 updateToUUID(playerId, playerName, "waypoints", "name");
                 res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), world.getName(), waypoint));
                 while (res.next()) {
                     loc = new Location(world, res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
                 }
-            }
-            else {
+            } else {
                 loc = new Location(world, res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -181,9 +194,9 @@ public class Functions {
         UUID playerId = player.getUniqueId();
         Location loc = player.getLocation();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery(String.format("SELECT count(*) as count FROM waypoints WHERE name = '%s' AND world = '%s' AND waypoint = '%s'", playerId.toString() , player.getWorld().getName(), name));
+            res = st.executeQuery(String.format("SELECT count(*) as count FROM waypoints WHERE name = '%s' AND world = '%s' AND waypoint = '%s'", playerId.toString(), player.getWorld().getName(), name));
             while (res.next()) {
                 if (res.getInt("count") > 0)
                     return -1;
@@ -193,7 +206,7 @@ public class Functions {
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -203,46 +216,65 @@ public class Functions {
         return 0;
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public String getConfigNode(String node) throws SQLException, MySqlPoolableException {
-        String value = null;
+    public List<String[]> listWaypoints(Player player) throws SQLException, MySqlPoolableException {
+        return listWaypoints(player.getUniqueId());
+    }
+
+    public List<String[]> listWaypoints(String playerName) throws SQLException, MySqlPoolableException {
+        return listWaypoints(getUUID(playerName));
+    }
+
+    public List<String[]> listWaypoints(UUID playerId) throws SQLException, MySqlPoolableException {
+        List<String[]> waypoints = new ArrayList<>();
         Connection conn = null;
         Statement st = null;
         ResultSet res = null;
+        if (playerId == null)
+            return waypoints;
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
-            res = st.executeQuery(String.format("SELECT value FROM config WHERE node = '%s'", node));
+            res = st.executeQuery(String.format("SELECT waypoint, world FROM waypoints WHERE name = '%s' ORDER BY world, waypoint", playerId.toString()));
             while (res.next()) {
-                value = res.getString("value");
+                waypoints.add(new String[]{res.getString("waypoint"), res.getString("world")});
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
             safeClose(st);
             safeClose(conn);
         }
-        return value;
+        return waypoints;
     }
 
-    public int getConfigNodeInt(String node) throws SQLException, MySqlPoolableException {
-        int value = 0;
+    public Object getConfigNode(String node, String type) throws SQLException, MySqlPoolableException {
+        Object value = null;
         Connection conn = null;
         Statement st = null;
         ResultSet res = null;
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT value FROM config WHERE node = '%s'", node));
-            while (res.next()) {
-                value = res.getInt("value");
+            if (res.next()) {
+                switch (type) {
+                    case "String":
+                        value = res.getString("value");
+                        break;
+                    case "int":
+                        value = res.getInt("value");
+                        break;
+                    case "boolean":
+                        value = res.getBoolean("value");
+                        break;
+                }
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -258,12 +290,11 @@ public class Functions {
         ResultSet res = null;
         UUID playerId = player.getUniqueId();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT count(*) as count FROM reg WHERE name = '%s'", playerId.toString()));
             if (res.next()) {
-                if (res.getInt("count") == 0)
-                {
+                if (res.getInt("count") == 0) {
                     updateToUUID(player, "reg", "name");
                     res = st.executeQuery(String.format("SELECT count(*) as count FROM reg WHERE name = '%s'", playerId.toString()));
                     if (res.next()) {
@@ -274,7 +305,7 @@ public class Functions {
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -327,7 +358,7 @@ public class Functions {
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -349,7 +380,7 @@ public class Functions {
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -365,12 +396,9 @@ public class Functions {
 
     public UUID getUUID(String name) {
         UUID playerId = null;
-        try
-        {
+        try {
             playerId = UUIDFetcher.getUUIDOf(name);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             _plugin.getLogger().warning("Exception while running UUIDFetcher");
             e.printStackTrace();
         }
@@ -379,12 +407,9 @@ public class Functions {
 
     public Map<String, UUID> getUUIDs(List<String> names) {
         Map<String, UUID> playerIds = null;
-        try
-        {
-             playerIds = UUIDFetcher.getUUIDOf(names);
-        }
-        catch(Exception e)
-        {
+        try {
+            playerIds = UUIDFetcher.getUUIDOf(names);
+        } catch (Exception e) {
             _plugin.getLogger().warning("Exception while running UUIDFetcher");
             e.printStackTrace();
         }
@@ -408,7 +433,7 @@ public class Functions {
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -423,7 +448,7 @@ public class Functions {
         ResultSet res = null;
         Location loc = player.getLocation();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT count(*) as count FROM warps WHERE name = '%s' AND world = '%s'", name, player.getWorld()));
             while (res.next()) {
@@ -435,7 +460,7 @@ public class Functions {
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -444,21 +469,22 @@ public class Functions {
         }
         return 0;
     }
+
     public Location getWarpPoint(String name, World world) throws MySqlPoolableException, SQLException {
         Location loc = null;
         Connection conn = null;
         Statement st = null;
         ResultSet res = null;
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM warps WHERE name = '%s' AND world = '%s'", name, world.getName()));
-            while(!res.next()) {
+            while (!res.next()) {
                 loc = new Location(world, res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -472,15 +498,14 @@ public class Functions {
         Connection conn = null;
         Statement st = null;
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
-            if (st.executeUpdate(String.format("DELETE FROM warps WHERE name = '%s' AND world = '%s'", name, player.getWorld().getName())) > 0)
-            {
+            if (st.executeUpdate(String.format("DELETE FROM warps WHERE name = '%s' AND world = '%s'", name, player.getWorld().getName())) > 0) {
                 return true;
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -497,19 +522,18 @@ public class Functions {
         ResultSet res = null;
         UUID playerId = player.getUniqueId();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT session FROM reg WHERE name = '%s'", playerId.toString()));
-            if(!res.next()) {
+            if (!res.next()) {
                 updateToUUID(player, "reg", "name");
                 res = st.executeQuery(String.format("SELECT session FROM reg WHERE name = '%s'", playerId.toString()));
-            }
-            else {
+            } else {
                 session = res.getInt("session");
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -525,20 +549,18 @@ public class Functions {
         UUID playerId = player.getUniqueId();
         int session = (int) (System.currentTimeMillis() / 1000);
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
-            if (st.executeUpdate(String.format("UPDATE reg SET session = %d WHERE name = '%s'", session, playerId.toString())) <= 0)
-            {
+            if (st.executeUpdate(String.format("UPDATE reg SET session = %d WHERE name = '%s'", session, playerId.toString())) <= 0) {
                 updateToUUID(player, "reg", "name");
                 if (st.executeUpdate(String.format("UPDATE reg SET session = %d WHERE name = '%s'", session, playerId.toString())) > 0)
                     return true;
-            }
-            else {
+            } else {
                 return true;
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -554,14 +576,14 @@ public class Functions {
     private void updateToUUID(UUID playerId, String playerName, String table, String field) throws SQLException, MySqlPoolableException {
         Connection conn = null;
         Statement st = null;
-        _plugin.getLogger().info("Updating name "+playerName+" to UUID " + playerId.toString() + " in table "+ table);
+        _plugin.getLogger().info("Updating name " + playerName + " to UUID " + playerId.toString() + " in table " + table);
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             st.executeUpdate(String.format("UPDATE %s SET %s = '%s' WHERE %s = '%s'", table, field, playerId.toString(), field, playerName));
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(st);
@@ -576,19 +598,18 @@ public class Functions {
         ResultSet res = null;
         UUID playerId = player.getUniqueId();
         try {
-            conn = (Connection)_connPool.borrowObject();
+            conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT password FROM reg WHERE name = '%s'", playerId.toString()));
-            if(!res.next()) {
+            if (!res.next()) {
                 updateToUUID(player, "reg", "name");
                 res = st.executeQuery(String.format("SELECT password FROM reg WHERE name = '%s'", playerId.toString()));
-            }
-            else {
+            } else {
                 password = res.getString("password");
             }
         } catch (SQLException e) {
             throw e;
-        }  catch (Exception e) {
+        } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
             safeClose(res);
@@ -602,8 +623,7 @@ public class Functions {
         if (conn != null) {
             try {
                 _connPool.returnObject(conn);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 _plugin.getLogger().warning("Failed to return the connection to the pool");
                 e.printStackTrace();
             }
@@ -630,17 +650,6 @@ public class Functions {
                 e.printStackTrace();
             }
         }
-    }
-
-    private static String bytesToHex(byte[] b) {
-        char hexDigit[] = {'0', '1', '2', '3', '4', '5', '6', '7',
-                '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-        StringBuilder buf = new StringBuilder();
-        for (byte aB : b) {
-            buf.append(hexDigit[(aB >> 4) & 0x0f]);
-            buf.append(hexDigit[aB & 0x0f]);
-        }
-        return buf.toString();
     }
 
     private String getSHA(String password) {

@@ -1,13 +1,11 @@
 package de.braste.SPfB.commands;
 
 
-import com.evilmidget38.UUIDFetcher;
 import de.braste.SPfB.SPfB;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import java.util.UUID;
+
 //TODO
 public class removereg implements CommandExecutor {
     private final SPfB plugin;

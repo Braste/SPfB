@@ -17,28 +17,23 @@ public class spfb implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-        if (args.length == 1)
-        {
-            if (args[0].equals("reload"))
-            {
+        if (args.length == 1) {
+            if (args[0].equals("reload")) {
                 if (sender instanceof Player)
-                    plugin.Funcs.sendSystemMessage((Player)sender, "Lade Konfig neu.");
+                    plugin.Funcs.sendSystemMessage((Player) sender, "Lade Konfig neu.");
                 else
                     plugin.getLogger().info("Lade Konfig neu.");
                 plugin.reloadConfig();
             }
-        }
-        else if (args.length == 0) {
+        } else if (args.length == 0) {
             if (sender instanceof Player)
-                plugin.Funcs.sendSystemMessage((Player)sender, "Zu wenig Parameter:");
+                plugin.Funcs.sendSystemMessage((Player) sender, "Zu wenig Parameter:");
             else
                 plugin.getLogger().info("Zu wenig Parameter:");
             return false;
-        }
-
-        else {
+        } else {
             if (sender instanceof Player)
-                plugin.Funcs.sendSystemMessage((Player)sender, "Zu viele Parameter:");
+                plugin.Funcs.sendSystemMessage((Player) sender, "Zu viele Parameter:");
             else
                 plugin.getLogger().info("Zu viele Parameter:");
             return false;

@@ -25,10 +25,9 @@ public class MySqlPoolableObjectFactory extends BasePoolableObjectFactory {
     @Override
     public boolean validateObject(Object conn) {
         try {
-            if (((Connection)conn).isValid(0))
+            if (((Connection) conn).isValid(0))
                 return true;
-        }
-        catch (SQLException ignore) {
+        } catch (SQLException ignore) {
             // ignore
         }
         return false;

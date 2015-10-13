@@ -24,29 +24,27 @@ public class setwp implements CommandExecutor {
 
             if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.setwp")) {
                 plugin.getLogger().info(String.format("%s used SPfB.setwp", player.getName()));
-                    if (args.length == 1) {
-                        try {
-                            int result = plugin.Funcs.setWaypoint(player, args[0]);
-                            if (result == 1) {
-                                plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s erfolgreich gesetzt.", args[0], player.getWorld().getName()));
-                                return true;
-                            }
-                            else if (result == -1)
-                            {
-                                plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s bereits vorhanden.", args[0], player.getWorld().getName()));
-                                return true;
-                            }
-                        } catch (SQLException | MySqlPoolableException e) {
-                            e.printStackTrace();
+                if (args.length == 1) {
+                    try {
+                        int result = plugin.Funcs.setWaypoint(player, args[0]);
+                        if (result == 1) {
+                            plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s erfolgreich gesetzt.", args[0], player.getWorld().getName()));
+                            return true;
+                        } else if (result == -1) {
+                            plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s bereits vorhanden.", args[0], player.getWorld().getName()));
+                            return true;
                         }
-                    } else if (args.length > 1) {
-                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
-                    } else {
-                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
+                    } catch (SQLException | MySqlPoolableException e) {
+                        e.printStackTrace();
                     }
-                    return false;
+                } else if (args.length > 1) {
+                    plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
+                } else {
+                    plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                 }
-            else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setwp");
+                return false;
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setwp");
         }
         return true;
     }

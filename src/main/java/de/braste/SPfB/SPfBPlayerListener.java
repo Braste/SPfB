@@ -28,7 +28,7 @@ class SPfBPlayerListener implements Listener {
 
         try {
             PermissionUser user = PermissionsEx.getUser(player);
-            if (plugin.Funcs.getConfigNodeInt("debug") == 2 && !user.inGroup("admin")) {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") == 2 && !user.inGroup("admin")) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Der Server wird zur Zeit gewartet!");
             } else if (player.getName().regionMatches(true, 0, "Player", 0, 6)) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, String.format("Name '%s' nicht erlaubt", player.getName()));

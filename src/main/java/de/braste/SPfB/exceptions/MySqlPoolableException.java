@@ -1,4 +1,5 @@
 package de.braste.SPfB.exceptions;
+
 @SuppressWarnings("serial")
 
 public class MySqlPoolableException extends Exception {

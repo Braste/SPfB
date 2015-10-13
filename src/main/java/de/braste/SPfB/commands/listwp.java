@@ -2,10 +2,15 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-//TODO
+import org.bukkit.entity.Player;
+
+import java.sql.SQLException;
+import java.util.List;
+
 public class listwp implements CommandExecutor {
     private final SPfB plugin;
 
@@ -15,30 +20,50 @@ public class listwp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        /*if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
-            if (player.hasPermission("SPfB.listwp")) {
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.listwp")) {
                 System.out.println(player.getName() + " used SPfB.listwp");
-                if (plugin.Funcs.getIsLoggedIn(player)) {
-                    if (args.length == 1 && player.hasPermission("SPfB.listallwp")) {
-                        funcs.listWaypoints(player, args[0]);
-                        return true;
-                    } else if (args.length < 1) {
-                        funcs.listWaypoints(player, null);
-                        return true;
-                    } else if (args.length > 1) {
-                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
-                    } else {
-                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
+                if (args.length == 0) {
+                    try {
+                        showWaypoints(sender, plugin.Funcs.listWaypoints(player));
+                    } catch (SQLException | MySqlPoolableException e) {
+                        e.printStackTrace();
                     }
-                    return false;
+                    return true;
                 }
-                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.listwp");
+        }
+        if (args.length == 1) {
+            if (!(sender instanceof Player) || (plugin.Funcs.getIsLoggedIn((Player) sender) && sender.hasPermission("SPfB.listallwp"))) {
+                try {
+                    showWaypoints(sender, plugin.Funcs.listWaypoints(args[0]));
+                } catch (SQLException | MySqlPoolableException e) {
+                    e.printStackTrace();
+                }
+                return true;
+            } else {
+                plugin.Funcs.sendSystemMessage((Player) sender, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.listallwp");
             }
-        }*/
+        } else if (args.length > 1) {
+            if (sender instanceof Player)
+                plugin.Funcs.sendSystemMessage((Player) sender, "Zu viele Parameter:");
+            else
+                plugin.getLogger().info("Zu viele Parameter:");
+            return false;
+        }
         return true;
+    }
+
+    private void showWaypoints(CommandSender sender, List<String[]> waypoints) {
+        for (String[] s : waypoints) {
+            if (sender instanceof Player)
+                plugin.Funcs.sendSystemMessage((Player) sender, String.format("%s: %s", s[1], s[0]));
+            else
+                plugin.getLogger().info(String.format("%s: %s", s[1], s[0]));
+        }
     }
 
     public SPfB getPlugin() {

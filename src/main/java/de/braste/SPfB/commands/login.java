@@ -12,23 +12,22 @@ import java.sql.SQLException;
 
 public class login implements CommandExecutor {
     private final SPfB plugin;
+
     public login(SPfB plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-        }
-        else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
             if (player.hasPermission("SPfB.login")) {
                 plugin.getLogger().info(player.getName() + " used SPfB.login");
 
                 try {
-                    if (plugin.Funcs.getConfigNodeInt("debug") >= 1) {
-                        String sOut =  player.getName();
+                    if ((int) plugin.Funcs.getConfigNode("debug", "int") >= 1) {
+                        String sOut = player.getName();
                         for (String s : args) {
                             sOut += " - " + s;
                         }
@@ -59,9 +58,7 @@ public class login implements CommandExecutor {
                         plugin.Funcs.sendSystemMessage(player, "Du bist schon eingeloggt.");
                         return true;
                     }
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (MySqlPoolableException e) {
+                } catch (SQLException | MySqlPoolableException e) {
                     e.printStackTrace();
                 }
             }
