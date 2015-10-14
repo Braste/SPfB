@@ -23,15 +23,6 @@ class SPfBBlockListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        /*else
-        {
-            blocksPlaced++;
-            if (blocksPlaced > 200)
-            {
-                blocksPlaced = 0;
-                new HelperThread().start();
-            }
-        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -17,6 +17,10 @@ public class SPfBEntityListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamageByEntity(final EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
+        Entity damaged = event.getEntity();
+        if (damaged instanceof Player && (!(damaged).hasPermission("SPfB.register") || !plugin.Funcs.getIsLoggedIn((Player) damaged))) {
+            event.setCancelled(true);
+        }
         if (damager instanceof Player && !plugin.Funcs.getIsLoggedIn((Player) damager)) {
             event.setCancelled(true);
         }

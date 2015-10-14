@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.braste</groupId>
     <artifactId>SPfB</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.1</version>
     <name>SPfB</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version>unknown</api.version>
-        <minecraft.version>1.7.10</minecraft.version>
-        <spigot_version>1.7.10-R0.1-SNAPSHOT</spigot_version>
-        <minecraft_version>1_7_R3</minecraft_version>
+        <minecraft.version>1.8</minecraft.version>
+        <spigot_version>1.8-R0.1-SNAPSHOT</spigot_version>
+        <minecraft_version>1_8</minecraft_version>
     </properties>
 
     <scm>
@@ -24,27 +24,41 @@
         <repository>
             <id>deployment</id>
             <name>repo.crm-braun.de Releases</name>
-            <url>http://repo.crm-braun.de/content/repositories/releases/</url>
+            <url>http://repo.crm-braun.de/artifactory/libs-release-local/</url>
         </repository>
         <snapshotRepository>
             <id>snapshot</id>
             <name>repo.crm-braun.de Snapshots</name>
-            <url>http://repo.crm-braun.de/content/repositories/snapshots/</url>
+            <url>http://repo.crm-braun.de/artifactory/libs-snapshot-local/</url>
         </snapshotRepository>
     </distributionManagement>
 
     <repositories>
         <repository>
-            <id>spigotmc-repo</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
         <repository>
             <id>braste-repo</id>
             <url>http://repo.crm-braun.de/content/groups/public/</url>
         </repository>
         <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>deployment</id>
+            <name>libs-release</name>
+            <url>http://repo.crm-braun.de/artifactory/libs-release</url>
+        </repository>
+        <repository>
+            <snapshots />
+            <id>snapshots</id>
+            <name>libs-snapshot</name>
+            <url>http://repo.crm-braun.de/artifactory/libs-snapshot</url>
+        </repository>
+        <repository>
             <id>pex-repo</id>
-            <url>http://pex-repo.zachsthings.com</url>
+            <url>http://pex-repo.aoeu.xyz</url>
         </repository>
     </repositories>
 
