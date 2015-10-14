@@ -20,7 +20,7 @@
         <url>https://github.com/Braste/SPfB</url>
     </scm>
 
-    <distributionManagement>
+    <!--<distributionManagement>
         <repository>
             <id>deployment</id>
             <name>repo.crm-braun.de Releases</name>
@@ -31,7 +31,7 @@
             <name>repo.crm-braun.de Snapshots</name>
             <url>http://repo.crm-braun.de/artifactory/libs-snapshot-local/</url>
         </snapshotRepository>
-    </distributionManagement>
+    </distributionManagement>-->
 
     <repositories>
         <repository>
