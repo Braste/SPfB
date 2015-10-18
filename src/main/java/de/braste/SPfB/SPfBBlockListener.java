@@ -38,10 +38,10 @@ class SPfBBlockListener implements Listener {
                     plugin.getLogger().info(String.format("Lava: %s", lava.getType().toString()));
                 }
                 if (lava.getType() == Material.LAVA || lava.getType() == Material.STATIONARY_LAVA) {
-                    BlockFace face = ((Furnace) furnace).getFacing();
+                    BlockFace face = ((Furnace) furnace.getState().getData()).getFacing();
                     furnace.setType(Material.BURNING_FURNACE);
-                    ((Furnace) furnace).setFacingDirection(face);
-                    ((org.bukkit.block.Furnace) furnace) .setBurnTime((short)10000);
+                    ((Furnace) furnace.getState().getData()).setFacingDirection(face);
+                    ((org.bukkit.block.Furnace) furnace).setBurnTime((short)10000);
                 }
             }
         } catch (SQLException | MySqlPoolableException e) {
@@ -59,10 +59,10 @@ class SPfBBlockListener implements Listener {
         if (lava.getType() == Material.LAVA || lava.getType() == Material.STATIONARY_LAVA) {
             Block furnace = lava.getRelative(BlockFace.UP);
             if (furnace.getType() == Material.BURNING_FURNACE) {
-                BlockFace face = ((Furnace) furnace).getFacing();
+                BlockFace face = ((Furnace) furnace.getState().getData()).getFacing();
                 furnace.setType(Material.FURNACE);
-                ((Furnace) furnace).setFacingDirection(face);
-                ((org.bukkit.block.Furnace) furnace) .setBurnTime((short)0);
+                ((Furnace) furnace.getState().getData()).setFacingDirection(face);
+                ((org.bukkit.block.Furnace) furnace).setBurnTime((short)0);
             }
         }
     }
@@ -98,10 +98,10 @@ class SPfBBlockListener implements Listener {
                 if (event.getToBlock().getRelative(BlockFace.UP).getType() == Material.FURNACE)
                 {
                     Block block = event.getToBlock().getRelative(BlockFace.UP);
-                    BlockFace face = ((Furnace) block).getFacing();
+                    BlockFace face = ((Furnace) block.getState().getData()).getFacing();
                     block.setType(Material.BURNING_FURNACE);
-                    ((Furnace) block).setFacingDirection(face);
-                    ((org.bukkit.block.Furnace) block) .setBurnTime((short)10000);
+                    ((Furnace) block.getState().getData()).setFacingDirection(face);
+                    ((org.bukkit.block.Furnace) block).setBurnTime((short)10000);
                 }
             }
         } catch (SQLException | MySqlPoolableException e) {
