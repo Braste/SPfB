@@ -1,17 +1,13 @@
 package de.braste.SPfB;
 
-import de.braste.SPfB.exceptions.MySqlPoolableException;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
-import org.bukkit.material.Furnace;
-
-import java.sql.SQLException;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 
 class SPfBBlockListener implements Listener {
 
@@ -27,7 +23,7 @@ class SPfBBlockListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        Block furnace = event.getBlock();
+        /*Block furnace = event.getBlock();
         try {
             if (furnace.getType() == Material.FURNACE) {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
@@ -46,7 +42,7 @@ class SPfBBlockListener implements Listener {
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -55,7 +51,7 @@ class SPfBBlockListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        Block lava = event.getBlock();
+        /*Block lava = event.getBlock();
         if (lava.getType() == Material.LAVA || lava.getType() == Material.STATIONARY_LAVA) {
             Block furnace = lava.getRelative(BlockFace.UP);
             if (furnace.getType() == Material.BURNING_FURNACE) {
@@ -64,7 +60,7 @@ class SPfBBlockListener implements Listener {
                 ((Furnace) furnace.getState().getData()).setFacingDirection(face);
                 ((org.bukkit.block.Furnace) furnace).setBurnTime((short)0);
             }
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -83,7 +79,7 @@ class SPfBBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    /*@EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockFromTo(final BlockFromToEvent event) {
         try {
             Block lava = event.getBlock();
@@ -108,7 +104,7 @@ class SPfBBlockListener implements Listener {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
     public SPfB getPlugin() {
         return plugin;
