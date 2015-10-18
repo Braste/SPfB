@@ -4,7 +4,6 @@ import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Furnace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,13 +31,22 @@ class SPfBBlockListener implements Listener {
             if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
                 plugin.getLogger().info(String.format("Furnace: %s", furnace.getType().toString()));
             }
-            if (furnace instanceof Furnace) {
+            if (furnace.getType() == Material.FURNACE) {
                 Block lava = furnace.getRelative(BlockFace.DOWN);
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
                     plugin.getLogger().info(String.format("Lava: %s", lava.getType().toString()));
                 }
                 if (lava.getType() == Material.LAVA || lava.getType() == Material.STATIONARY_LAVA) {
                     furnace.setType(Material.BURNING_FURNACE);
+                }
+            }
+            else if (furnace.getType() == Material.LAVA || furnace.getType() == Material.STATIONARY_LAVA) {
+                Block lava = furnace.getRelative(BlockFace.UP);
+                if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                    plugin.getLogger().info(String.format("Lava: %s", lava.getType().toString()));
+                }
+                if (lava.getType() == Material.FURNACE) {
+                    lava.setType(Material.BURNING_FURNACE);
                 }
             }
         } catch (SQLException | MySqlPoolableException e) {
