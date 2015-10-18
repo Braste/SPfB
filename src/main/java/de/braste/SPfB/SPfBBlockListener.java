@@ -27,7 +27,7 @@ class SPfBBlockListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        Block furnace = event.getBlockPlaced();
+        Block furnace = event.getBlock();
         try {
             if (furnace.getType() == Material.FURNACE) {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
@@ -41,7 +41,7 @@ class SPfBBlockListener implements Listener {
                     BlockFace face = ((Furnace) furnace.getState().getData()).getFacing();
                     furnace.setType(Material.BURNING_FURNACE);
                     ((Furnace) furnace.getState().getData()).setFacingDirection(face);
-                    ((org.bukkit.block.Furnace) furnace.getState().getBlock()).setBurnTime((short)10000);
+                    ((org.bukkit.block.Furnace) furnace).setBurnTime((short)10000);
                 }
             }
         } catch (SQLException | MySqlPoolableException e) {
