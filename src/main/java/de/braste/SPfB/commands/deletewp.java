@@ -2,9 +2,13 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.sql.SQLException;
 
 //TODO
 public class deletewp implements CommandExecutor {
@@ -16,30 +20,32 @@ public class deletewp implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        /*if (!(sender instanceof Player)) {
-        } else {
+        if ((sender instanceof Player)) {
             Player player = (Player) sender;
 
-            if (player.hasPermission("SPfB.deletewp")) {
-                System.out.println(player.getName() + " used SPfB.deletewp");
-                if (plugin.Funcs.getIsLoggedIn(player)) {
-                    boolean ret = false;
-
-                    if (args.length == 1) {
-                        if (funcs.deleteWaypoint(player, args[0])) {
-                            plugin.Funcs.sendSystemMessage(player, "Waypoint " + args[0] + " erfolgreich gelöscht.");
-                            ret = true;
+            if (plugin.Funcs.getIsLoggedIn(player) && player.hasPermission("SPfB.deletewp")) {
+                plugin.getLogger().info(String.format("%s used SPfB.deletewp", player.getName()));
+                if (args.length == 1) {
+                    try {
+                        if (plugin.Funcs.deleteWaypoint(player, args[0])) {
+                            plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s erfolgreich gelöscht.", args[0], player.getWorld().getName()));
+                            return true;
                         }
-                    } else if (args.length > 1) {
-                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
-                    } else {
-                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
+                        else {
+                            plugin.Funcs.sendSystemMessage(player, String.format("Wegpunkt %s auf Welt %s nicht gefunden.", args[0], player.getWorld().getName()));
+                        }
+                    } catch (SQLException | MySqlPoolableException e) {
+                        e.printStackTrace();
                     }
-                    return ret;
+                } else if (args.length > 1) {
+                    plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
+                } else {
+                    plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
                 }
-                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
-            }
-        }*/
+                return false;
+            } else
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setwp");
+        }
         return true;
     }
 

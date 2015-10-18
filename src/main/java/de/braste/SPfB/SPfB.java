@@ -52,6 +52,8 @@ public class SPfB extends JavaPlugin {
         pm.registerEvents(new SPfBBlockListener(this), this);
         pm.registerEvents(new SPfBPlayerListener(this), this);
         pm.registerEvents(new SPfBEntityListener(this), this);
+        pm.registerEvents(new SPfBInventoryListener(this), this);
+
         getServer().getLogger().setFilter(new CommandFilter());
 
         //HOME
@@ -79,7 +81,7 @@ public class SPfB extends JavaPlugin {
         //getCommand("getgroups").setExecutor(new getgroups(this));
 
         //CHANGEPW
-        getCommand("changepw").setExecutor(new changepw(this));
+        //getCommand("changepw").setExecutor(new changepw(this));
 
         //WARP
         getCommand("warp").setExecutor(new warp(this));
@@ -121,7 +123,7 @@ public class SPfB extends JavaPlugin {
         getCommand("broadcast").setExecutor(new broadcast(this));
 
         //RIFT
-        getCommand("rift").setExecutor(new rift(this));
+        //getCommand("rift").setExecutor(new rift(this));
 
         getLogger().info(String.format("%s version %s enabled", pdfFile.getName(), pdfFile.getVersion()));
     }

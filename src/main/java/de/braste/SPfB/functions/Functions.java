@@ -216,6 +216,30 @@ public class Functions {
         return 0;
     }
 
+    public boolean deleteWaypoint(Player player, String name) throws SQLException, MySqlPoolableException {
+        if (getWaypoint(player, name) != null) {
+            Connection conn = null;
+            Statement st = null;
+            UUID playerId = player.getUniqueId();
+            try {
+                conn = (Connection) _connPool.borrowObject();
+                st = conn.createStatement();
+                if (st.executeUpdate(String.format("DELETE FROM waypoints WHERE name = '%s' AND world = '%s' AND waypoint = '%s'", playerId.toString(), player.getWorld().getName(), name)) > 0) {
+                    return true;
+                }
+            } catch (SQLException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+            } finally {
+                safeClose(st);
+                safeClose(conn);
+            }
+            return false;
+        }
+        return false;
+    }
+
     public List<String[]> listWaypoints(Player player) throws SQLException, MySqlPoolableException {
         return listWaypoints(player.getUniqueId());
     }
