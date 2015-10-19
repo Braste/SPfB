@@ -1,5 +1,9 @@
 package de.braste.SPfB;
 
+import de.braste.SPfB.exceptions.MySqlPoolableException;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -8,6 +12,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+
+import java.sql.SQLException;
 
 class SPfBBlockListener implements Listener {
 
@@ -23,26 +29,27 @@ class SPfBBlockListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        /*Block furnace = event.getBlock();
+        Block placedBlock = event.getBlock();
         try {
-            if (furnace.getType() == Material.FURNACE) {
+            if (placedBlock.getType() == Material.FURNACE) {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                    plugin.getLogger().info(String.format("Furnace: %s", furnace.getType().toString()));
+                    plugin.getLogger().info(String.format("Furnace: %s", placedBlock.getType().toString()));
+                    plugin.getLogger().info(String.format("BlockInstance: %s", placedBlock.toString()));
                 }
-                Block lava = furnace.getRelative(BlockFace.DOWN);
+                Block blockUnder = placedBlock.getRelative(BlockFace.DOWN);
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                    plugin.getLogger().info(String.format("Lava: %s", lava.getType().toString()));
+                    plugin.getLogger().info(String.format("Lava: %s", blockUnder.getType().toString()));
                 }
-                if (lava.getType() == Material.LAVA || lava.getType() == Material.STATIONARY_LAVA) {
+                /*if (lava.getType() == Material.LAVA || lava.getType() == Material.STATIONARY_LAVA) {
                     BlockFace face = ((Furnace) furnace.getState().getData()).getFacing();
                     furnace.setType(Material.BURNING_FURNACE);
                     ((Furnace) furnace.getState().getData()).setFacingDirection(face);
                     ((org.bukkit.block.Furnace) furnace).setBurnTime((short)10000);
-                }
+                }*/
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
-        }*/
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
