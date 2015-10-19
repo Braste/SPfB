@@ -48,9 +48,7 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                Furnace state = ((Furnace) placedBlock.getState());
-                state.setBurnTime(burnTimeAdd);
-                state.setType(Material.BURNING_FURNACE);
+                ((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
                 AddFurnace(placedBlock, "onBlockPlace");
             }
         }
@@ -63,19 +61,6 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
         }
         Block blockBreak = event.getBlock();
-        try
-        {
-            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info(String.format("BreakedBlock: %s", blockBreak.toString()));
-                plugin.getLogger().info(String.format("IsInFurnaceBlocks: %s", plugin.FurnaceBlocks.contains(blockBreak)));
-                for (Block b: plugin.FurnaceBlocks)
-                {
-                    plugin.getLogger().info(String.format("BlockInFurnaceBlocks: %s", b.toString()));
-                }
-            }
-        } catch (SQLException | MySqlPoolableException e) {
-            e.printStackTrace();
-        }
         if (blockBreak.getType() == Material.LAVA || blockBreak.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = blockBreak.getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
@@ -109,17 +94,8 @@ class SPfBListener implements Listener {
         if (blockFrom.getType() == Material.LAVA || blockFrom.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = event.getToBlock().getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                try
-                {
-                    if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                        plugin.getLogger().info(String.format("BlockInfo: %s", blockOver.toString()));
-                        plugin.getLogger().info(String.format("BlockState: %s", blockOver.getState().toString()));
-                    }
-                } catch (SQLException | MySqlPoolableException e) {
-                    e.printStackTrace();
-                }
-                AddFurnace(blockOver, "onBlockFromTo");
                 ((Furnace) blockOver.getState()).setBurnTime(burnTimeAdd);
+                AddFurnace(blockOver, "onBlockFromTo");
             }
         }
     }
@@ -272,23 +248,8 @@ class SPfBListener implements Listener {
         if (event.getBucket() == Material.LAVA_BUCKET)
         {
             BlockFace face = event.getBlockFace();
-            Block blockToCheck;
-            switch (face)
-            {
-                case UP: blockToCheck = event.getBlockClicked().getRelative(UP, 1);
-                    break;
-                default: blockToCheck = event.getBlockClicked().getRelative(face).getRelative(BlockFace.UP);
-            }
+            Block blockToCheck = event.getBlockClicked().getRelative(face).getRelative(BlockFace.UP);
             if (blockToCheck.getType() == Material.BURNING_FURNACE || blockToCheck.getType() == Material.FURNACE) {
-                try
-                {
-                    if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                        plugin.getLogger().info(String.format("BlockInfo: %s", blockToCheck.toString()));
-                        plugin.getLogger().info(String.format("BlockState: %s", blockToCheck.getState().toString()));
-                    }
-                } catch (SQLException | MySqlPoolableException e) {
-                    e.printStackTrace();
-                }
                 AddFurnace(blockToCheck, "onBlockFromTo");
                 ((Furnace) blockToCheck.getState()).setBurnTime(burnTimeAdd);
             }
@@ -345,15 +306,6 @@ class SPfBListener implements Listener {
                 ((Furnace) block.getState()).setBurnTime((short) 0);
             }
         }
-        try
-        {
-            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info(String.format("BlockInfo: %s", block.toString()));
-                plugin.getLogger().info(String.format("BlockState: %s", block.getState().toString()));
-            }
-        } catch (SQLException | MySqlPoolableException e) {
-            e.printStackTrace();
-        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -374,7 +326,6 @@ class SPfBListener implements Listener {
                     event.setCancelled(true);
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
                     furnace.setBurnTime(burnTimeAdd);
-                    furnace.setType(Material.BURNING_FURNACE);
                     AddFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
                 }
             } else if (plugin.FurnaceBlocks.contains(furnace.getBlock())) {
