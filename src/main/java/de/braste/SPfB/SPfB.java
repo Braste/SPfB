@@ -53,12 +53,12 @@ public class SPfB extends JavaPlugin {
             Funcs = new Functions(initMySqlConnectionPool(), this);
             FurnaceBlocks = new ArrayList<>();
 
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            /*Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
                 public void run() {
                     UpdateFurnace();
                 }
-            }, 5L, 5L);
+            }, 5L, 5L);  */
         } catch (Exception e) {
             getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
             e.printStackTrace();
