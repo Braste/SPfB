@@ -4,6 +4,7 @@ import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -51,8 +52,13 @@ class SPfBListener implements Listener {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
                     plugin.getLogger().info(String.format("Lava: %s", blockUnder.getType().toString()));
                     plugin.getLogger().info(String.format("BlockInstance: %s", blockUnder.toString()));
-                    Block testBlock = blockUnder.getChunk().getBlock(blockUnder.getX(), blockUnder.getY(), blockUnder.getZ());
+                    BlockState testBlock = blockUnder.getState();
                     plugin.getLogger().info(String.format("TestInstance: %s", testBlock.toString()));
+                    try
+                    {
+                        Furnace f = (Furnace)testBlock;
+                        plugin.getLogger().info(String.format("Furnace: %s", f.toString()));
+                    }   catch(Exception e) {}
                 }
                 if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
 
