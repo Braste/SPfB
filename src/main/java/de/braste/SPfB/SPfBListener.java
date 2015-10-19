@@ -299,8 +299,13 @@ class SPfBListener implements Listener {
             Block blockUnder = block.getRelative(BlockFace.DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
                 ((Furnace) block.getState()).setBurnTime(burnTimeAdd);
+                if (!plugin.FurnaceBlocks.contains(block)) {
+                    plugin.FurnaceBlocks.add(block);
+                }
             } else {
-                plugin.FurnaceBlocks.remove(block);
+                if (plugin.FurnaceBlocks.contains(block)) {
+                    plugin.FurnaceBlocks.remove(block);
+                }
                 ((Furnace) block.getState()).setBurnTime((short) 0);
                 try
                 {
@@ -325,18 +330,10 @@ class SPfBListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFurnaceClickedEvent(final InventoryClickEvent event) {
-        try
-        {
-            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info(String.format("InventoryType: %s", event.getInventory().getType().toString()));
-            }
-        } catch (SQLException | MySqlPoolableException e) {
-            e.printStackTrace();
-        }
         if (event.getInventory().getType() == InventoryType.FURNACE) {
             Furnace furnace = ((FurnaceInventory) event.getInventory()).getHolder();
-            //Block blockUnder = furnace.getBlock().getRelative(BlockFace.DOWN);
-            if (plugin.FurnaceBlocks.contains(furnace)) {
+            Block blockUnder = furnace.getBlock().getRelative(BlockFace.DOWN);
+            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
                 try
                 {
                     if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
@@ -348,16 +345,12 @@ class SPfBListener implements Listener {
                 if (event.getSlotType() == InventoryType.SlotType.FUEL) {
                     event.setCancelled(true);
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
+                    if (!plugin.FurnaceBlocks.contains(furnace.getBlock())) {
+                        plugin.FurnaceBlocks.add(furnace.getBlock());
+                    }
                     furnace.setBurnTime(burnTimeAdd);
                 }
             }
-            /*if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                if (event.getSlotType() == InventoryType.SlotType.FUEL) {
-                    event.setCancelled(true);
-                } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
-                    furnace.setBurnTime(burnTimeAdd);
-                }
-            } */
         }
     }
     //endregion
