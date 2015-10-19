@@ -61,6 +61,19 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
         }
         Block blockBreak = event.getBlock();
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info(String.format("BreakedBlock: %s", blockBreak.toString()));
+                plugin.getLogger().info(String.format("IsInFurnaceBlocks: %s", plugin.FurnaceBlocks.contains(blockBreak)));
+                for (Block b: plugin.FurnaceBlocks)
+                {
+                    plugin.getLogger().info(String.format("BreakedBlock: %s", b.toString()));
+                }
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
         if (blockBreak.getType() == Material.LAVA || blockBreak.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = blockBreak.getRelative(BlockFace.UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
@@ -70,7 +83,7 @@ class SPfBListener implements Listener {
                 ((Furnace) blockBreak.getState()).setBurnTime((short)0);
             }
         } else if (plugin.FurnaceBlocks.contains(blockBreak)) {
-            plugin.FurnaceBlocks.remove(blockBreak);
+            RemoveFurnace(blockBreak);
         }
     }
 
