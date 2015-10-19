@@ -47,18 +47,19 @@ class SPfBListener implements Listener {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
                     plugin.getLogger().info(String.format("Furnace: %s", placedBlock.getType().toString()));
                     plugin.getLogger().info(String.format("BlockInstance: %s", placedBlock.toString()));
-                }
-                Block blockUnder = placedBlock.getRelative(BlockFace.DOWN);
-                if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                    plugin.getLogger().info(String.format("Lava: %s", blockUnder.getType().toString()));
-                    plugin.getLogger().info(String.format("BlockInstance: %s", blockUnder.toString()));
-                    BlockState testBlock = blockUnder.getState();
+                    BlockState testBlock = placedBlock.getState();
                     plugin.getLogger().info(String.format("TestInstance: %s", testBlock.toString()));
                     try
                     {
                         Furnace f = (Furnace)testBlock;
                         plugin.getLogger().info(String.format("Furnace: %s", f.toString()));
                     }   catch(Exception e) {}
+
+                }
+                Block blockUnder = placedBlock.getRelative(BlockFace.DOWN);
+                if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                    plugin.getLogger().info(String.format("Lava: %s", blockUnder.getType().toString()));
+                    plugin.getLogger().info(String.format("BlockInstance: %s", blockUnder.toString()));
                 }
                 if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
 
