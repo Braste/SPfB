@@ -158,14 +158,14 @@ public class SPfB extends JavaPlugin {
     }
 
     private void UpdateFurnace() {
-        ArrayList<Block> blocks = FurnaceBlocks;
+        Block[] blocks = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
 
         for (Block b: blocks) {
             Block blockUpper = b.getRelative(BlockFace.UP);
             if (b.getType() != Material.LAVA && b.getType() != Material.STATIONARY_LAVA) {
                 FurnaceBlocks.remove(b);
                 if (blockUpper.getType() == Material.FURNACE || blockUpper.getType() == Material.BURNING_FURNACE) {
-                    ((Furnace) blockUpper).setBurnTime((short)0);
+                    //((Furnace) blockUpper).setBurnTime((short)0);
                 }
                 continue;
             }
@@ -173,7 +173,7 @@ public class SPfB extends JavaPlugin {
                 FurnaceBlocks.remove(b);
                 continue;
             }
-            ((Furnace) blockUpper).setBurnTime((short)10000);
+            //((Furnace) blockUpper).setBurnTime((short)10000);
         }
     }
 }

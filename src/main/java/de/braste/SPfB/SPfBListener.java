@@ -50,8 +50,10 @@ class SPfBListener implements Listener {
                 Block blockUnder = placedBlock.getRelative(BlockFace.DOWN);
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
                     plugin.getLogger().info(String.format("Lava: %s", blockUnder.getType().toString()));
+                    plugin.getLogger().info(String.format("BlockInstance: %s", blockUnder.toString()));
                 }
                 if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
+
                     plugin.FurnaceBlocks.add(blockUnder);
                 }
             }
