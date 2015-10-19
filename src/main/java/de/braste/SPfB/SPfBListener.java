@@ -16,7 +16,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.FurnaceInventory;
+import org.bukkit.inventory.ItemStack;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -28,7 +31,7 @@ import java.util.List;
 class SPfBListener implements Listener {
 
     private final SPfB plugin;
-    private final short burnTimeAdd = (short)50;
+    private final short burnTimeAdd = (short)10000;
 
     public SPfBListener(final SPfB instance) {
         plugin = instance;
@@ -45,8 +48,9 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(BlockFace.DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                short burnTime = ((Furnace) placedBlock.getState()).getBurnTime();
-                ((Furnace) placedBlock.getState()).setBurnTime(((short) (burnTime + burnTimeAdd)));
+                plugin.FurnaceBlocks.add(placedBlock);
+                ((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
+
             }
         }
     }
@@ -61,8 +65,10 @@ class SPfBListener implements Listener {
         if (blockBreak.getType() == Material.LAVA || blockBreak.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = blockBreak.getRelative(BlockFace.UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                short burnTime = ((Furnace) blockBreak.getState()).getBurnTime();
-                ((Furnace) blockBreak.getState()).setBurnTime(((short) (burnTime - burnTimeAdd)));
+                if (plugin.FurnaceBlocks.contains(blockOver)) {
+                    plugin.FurnaceBlocks.remove(blockOver);
+                }
+                ((Furnace) blockBreak.getState()).setBurnTime((short)0);
             }
         }
     }
@@ -89,8 +95,8 @@ class SPfBListener implements Listener {
         if (blockFrom.getType() == Material.LAVA || blockFrom.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = event.getToBlock().getRelative(BlockFace.UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                short burnTime = ((Furnace) blockOver.getState()).getBurnTime();
-                ((Furnace) blockOver.getState()).setBurnTime(((short) (burnTime + burnTimeAdd)));
+                plugin.FurnaceBlocks.add(blockOver);
+                ((Furnace) blockOver.getState()).setBurnTime(burnTimeAdd);
             }
         }
     }
@@ -279,32 +285,50 @@ class SPfBListener implements Listener {
     //endregion
 
     //region Inventory
-    /*@EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onFurnaceSmeltEvent(final FurnaceSmeltEvent event) {
         Block block = event.getBlock();
-        Block blockUnder = block.getRelative(BlockFace.DOWN);
-        if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-            ((Furnace) block.getState()).setBurnTime((short)10000);
-        } else {
-            ((Furnace) block.getState()).setBurnTime((short)0);
+        if (plugin.FurnaceBlocks.contains(block)) {
+            Block blockUnder = block.getRelative(BlockFace.DOWN);
+            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
+                ((Furnace) block.getState()).setBurnTime(burnTimeAdd);
+            } else {
+                plugin.FurnaceBlocks.remove(block);
+                ((Furnace) block.getState()).setBurnTime((short) 0);
+            }
         }
-    }*/
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onFurnaceBurnEvent(final FurnaceBurnEvent event) {
-        Block block = event.getBlock();
-        Block blockUnder = block.getRelative(BlockFace.DOWN);
-        if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-            short burnTime = ((Furnace) block.getState()).getBurnTime();
-            ((Furnace) block.getState()).setBurnTime(((short) (burnTime + burnTimeAdd)));
-        }/* else {
-            ((Furnace) block.getState()).setBurnTime((short)0);
-        } */
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info(String.format("BlockInfo: %s", block.toString()));
+                plugin.getLogger().info(String.format("BlockState: %s", block.getState().toString()));
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
     }
 
-    /*@EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onFurnaceClickedEvent(final InventoryClickEvent event) {
-
-    }*/
+        if (event.getInventory().getType() == InventoryType.FURNACE) {
+            Furnace furnace = ((FurnaceInventory) event.getInventory()).getHolder();
+            //Block blockUnder = furnace.getBlock().getRelative(BlockFace.DOWN);
+            if (plugin.FurnaceBlocks.contains(furnace)) {
+                if (event.getSlotType() == InventoryType.SlotType.FUEL) {
+                    event.setCancelled(true);
+                } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
+                    furnace.setBurnTime(burnTimeAdd);
+                }
+            }
+            /*if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
+                if (event.getSlotType() == InventoryType.SlotType.FUEL) {
+                    event.setCancelled(true);
+                } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
+                    furnace.setBurnTime(burnTimeAdd);
+                }
+            } */
+        }
+    }
     //endregion
 
     public SPfB getPlugin() {

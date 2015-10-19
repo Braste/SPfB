@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -58,7 +59,7 @@ public class SPfB extends JavaPlugin {
                 public void run() {
                     UpdateFurnace();
                 }
-            }, 5L, 5L);  */
+            }, 5L, 5L);*/
         } catch (Exception e) {
             getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
             e.printStackTrace();
@@ -165,6 +166,7 @@ public class SPfB extends JavaPlugin {
             if (b.getType() != Material.LAVA && b.getType() != Material.STATIONARY_LAVA) {
                 FurnaceBlocks.remove(b);
                 if (blockUpper.getType() == Material.FURNACE || blockUpper.getType() == Material.BURNING_FURNACE) {
+
                     //((Furnace) blockUpper).setBurnTime((short)0);
                 }
                 continue;
