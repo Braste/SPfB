@@ -50,11 +50,11 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                AddFurnace(placedBlock, "onBlockPlace");
                 Furnace state = ((Furnace) placedBlock.getState());
                 state.setBurnTime(burnTimeAdd);
                 state.setType(Material.BURNING_FURNACE);
                 state.update();
+                AddFurnace(placedBlock, "onBlockPlace");
             }
         }
     }
@@ -376,8 +376,10 @@ class SPfBListener implements Listener {
                 if (event.getSlotType() == InventoryType.SlotType.FUEL) {
                     event.setCancelled(true);
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
-                    AddFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
                     furnace.setBurnTime(burnTimeAdd);
+                    furnace.setType(Material.BURNING_FURNACE);
+                    furnace.update();
+                    AddFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
                 }
             } else if (plugin.FurnaceBlocks.contains(furnace.getBlock())) {
                 RemoveFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
