@@ -13,7 +13,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -26,6 +28,7 @@ import java.util.List;
 class SPfBListener implements Listener {
 
     private final SPfB plugin;
+    private final short burnTimeAdd = (short)50;
 
     public SPfBListener(final SPfB instance) {
         plugin = instance;
@@ -42,7 +45,8 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(BlockFace.DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                ((Furnace)placedBlock.getState()).setBurnTime((short)10000);
+                short burnTime = ((Furnace) placedBlock.getState()).getBurnTime();
+                ((Furnace) placedBlock.getState()).setBurnTime(((short) (burnTime + burnTimeAdd)));
             }
         }
     }
@@ -57,7 +61,8 @@ class SPfBListener implements Listener {
         if (blockBreak.getType() == Material.LAVA || blockBreak.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = blockBreak.getRelative(BlockFace.UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                ((Furnace) blockOver.getState()).setBurnTime((short)0);
+                short burnTime = ((Furnace) blockBreak.getState()).getBurnTime();
+                ((Furnace) blockBreak.getState()).setBurnTime(((short) (burnTime - burnTimeAdd)));
             }
         }
     }
@@ -84,7 +89,8 @@ class SPfBListener implements Listener {
         if (blockFrom.getType() == Material.LAVA || blockFrom.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = event.getToBlock().getRelative(BlockFace.UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                ((Furnace) blockOver).setBurnTime((short)10000);
+                short burnTime = ((Furnace) blockOver.getState()).getBurnTime();
+                ((Furnace) blockOver.getState()).setBurnTime(((short) (burnTime + burnTimeAdd)));
             }
         }
     }
@@ -273,7 +279,7 @@ class SPfBListener implements Listener {
     //endregion
 
     //region Inventory
-    @EventHandler(priority = EventPriority.NORMAL)
+    /*@EventHandler(priority = EventPriority.NORMAL)
     public void onFurnaceSmeltEvent(final FurnaceSmeltEvent event) {
         Block block = event.getBlock();
         Block blockUnder = block.getRelative(BlockFace.DOWN);
@@ -282,7 +288,23 @@ class SPfBListener implements Listener {
         } else {
             ((Furnace) block.getState()).setBurnTime((short)0);
         }
+    }*/
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onFurnaceBurnEvent(final FurnaceBurnEvent event) {
+        Block block = event.getBlock();
+        Block blockUnder = block.getRelative(BlockFace.DOWN);
+        if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
+            short burnTime = ((Furnace) block.getState()).getBurnTime();
+            ((Furnace) block.getState()).setBurnTime(((short) (burnTime + burnTimeAdd)));
+        }/* else {
+            ((Furnace) block.getState()).setBurnTime((short)0);
+        } */
     }
+
+    /*@EventHandler(priority = EventPriority.NORMAL)
+    public void onFurnaceClickedEvent(final InventoryClickEvent event) {
+
+    }*/
     //endregion
 
     public SPfB getPlugin() {
