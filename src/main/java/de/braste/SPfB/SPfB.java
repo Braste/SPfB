@@ -8,14 +8,23 @@ import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPoolFactory;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.lang.reflect.Array;
+import java.util.*;
+
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
+    public ArrayList<Block> FurnaceBlocks;
     private String host;
     private String port;
     private String db;
@@ -44,15 +53,22 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
+            FurnaceBlocks = new ArrayList<>();
+
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+                @Override
+                public void run() {
+                    UpdateFurnace();
+                }
+            }, 5L, 5L);
         } catch (Exception e) {
             getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
             e.printStackTrace();
             return;
         }
-        pm.registerEvents(new SPfBBlockListener(this), this);
-        pm.registerEvents(new SPfBPlayerListener(this), this);
-        pm.registerEvents(new SPfBEntityListener(this), this);
-        pm.registerEvents(new SPfBInventoryListener(this), this);
+        pm.registerEvents(new SPfBListener(this), this);
+
+
 
         getServer().getLogger().setFilter(new CommandFilter());
 
@@ -68,20 +84,14 @@ public class SPfB extends JavaPlugin {
         //SETSPAWN
         getCommand("setspawn").setExecutor(new setspawn(this));
 
-        //LOGIN
-        //getCommand("login").setExecutor(new login(this));
-
-        //REGISTER
-        //getCommand("register").setExecutor(new register(this));
-
         //SETGROUP
         //getCommand("setgroup").setExecutor(new setgroup(this));
 
         //GETGROUPS
         //getCommand("getgroups").setExecutor(new getgroups(this));
 
-        //CHANGEPW
-        //getCommand("changepw").setExecutor(new changepw(this));
+        //RIFT
+        //getCommand("rift").setExecutor(new rift(this));
 
         //WARP
         getCommand("warp").setExecutor(new warp(this));
@@ -122,9 +132,6 @@ public class SPfB extends JavaPlugin {
         //BROADCAST
         getCommand("broadcast").setExecutor(new broadcast(this));
 
-        //RIFT
-        //getCommand("rift").setExecutor(new rift(this));
-
         getLogger().info(String.format("%s version %s enabled", pdfFile.getName(), pdfFile.getVersion()));
     }
 
@@ -150,5 +157,25 @@ public class SPfB extends JavaPlugin {
 
         GenericObjectPoolFactory genericObjectPoolFactory = new GenericObjectPoolFactory(mySqlPoolableObjectFactory, config);
         return genericObjectPoolFactory.createPool();
+    }
+
+    private void UpdateFurnace() {
+        Block[] blocks = (Block[])FurnaceBlocks.toArray();
+
+        for (Block b: blocks) {
+            Block blockUpper = b.getRelative(BlockFace.UP);
+            if (b.getType() != Material.LAVA && b.getType() != Material.STATIONARY_LAVA) {
+                FurnaceBlocks.remove(b);
+                if (blockUpper.getType() == Material.FURNACE || blockUpper.getType() == Material.BURNING_FURNACE) {
+                    ((Furnace) blockUpper).setBurnTime((short)0);
+                }
+                continue;
+            }
+            if (blockUpper.getType() != Material.FURNACE && blockUpper.getType() != Material.BURNING_FURNACE) {
+                FurnaceBlocks.remove(b);
+                continue;
+            }
+            ((Furnace) blockUpper).setBurnTime((short)10000);
+        }
     }
 }
