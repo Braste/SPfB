@@ -18,8 +18,6 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
-
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class SPfB extends JavaPlugin {
@@ -160,7 +158,7 @@ public class SPfB extends JavaPlugin {
     }
 
     private void UpdateFurnace() {
-        Block[] blocks = (Block[])FurnaceBlocks.toArray();
+        ArrayList<Block> blocks = FurnaceBlocks;
 
         for (Block b: blocks) {
             Block blockUpper = b.getRelative(BlockFace.UP);
