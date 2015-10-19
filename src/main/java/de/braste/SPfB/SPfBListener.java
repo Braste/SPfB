@@ -50,7 +50,14 @@ class SPfBListener implements Listener {
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
                 plugin.FurnaceBlocks.add(placedBlock);
                 ((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
-
+                try
+                {
+                    if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                        plugin.getLogger().info(String.format("FurnaBlocks: %s", plugin.FurnaceBlocks.size()));
+                    }
+                } catch (SQLException | MySqlPoolableException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -295,6 +302,14 @@ class SPfBListener implements Listener {
             } else {
                 plugin.FurnaceBlocks.remove(block);
                 ((Furnace) block.getState()).setBurnTime((short) 0);
+                try
+                {
+                    if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                        plugin.getLogger().info(String.format("FurnaBlocks: %s", plugin.FurnaceBlocks.size()));
+                    }
+                } catch (SQLException | MySqlPoolableException e) {
+                    e.printStackTrace();
+                }
             }
         }
         try
@@ -310,10 +325,26 @@ class SPfBListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFurnaceClickedEvent(final InventoryClickEvent event) {
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info(String.format("InventoryType: %s", event.getInventory().getType().toString()));
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
         if (event.getInventory().getType() == InventoryType.FURNACE) {
             Furnace furnace = ((FurnaceInventory) event.getInventory()).getHolder();
             //Block blockUnder = furnace.getBlock().getRelative(BlockFace.DOWN);
             if (plugin.FurnaceBlocks.contains(furnace)) {
+                try
+                {
+                    if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                        plugin.getLogger().info(String.format("SlotType: %s", event.getSlotType().toString()));
+                    }
+                } catch (SQLException | MySqlPoolableException e) {
+                    e.printStackTrace();
+                }
                 if (event.getSlotType() == InventoryType.SlotType.FUEL) {
                     event.setCancelled(true);
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
