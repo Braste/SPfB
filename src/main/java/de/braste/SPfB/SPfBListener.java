@@ -4,7 +4,6 @@ import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -26,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static org.bukkit.block.BlockFace.*;
 import static org.bukkit.block.BlockFace.DOWN;
 import static org.bukkit.block.BlockFace.UP;
 
@@ -53,7 +51,6 @@ class SPfBListener implements Listener {
                 Furnace state = ((Furnace) placedBlock.getState());
                 state.setBurnTime(burnTimeAdd);
                 state.setType(Material.BURNING_FURNACE);
-                state.update();
                 AddFurnace(placedBlock, "onBlockPlace");
             }
         }
@@ -378,7 +375,6 @@ class SPfBListener implements Listener {
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
                     furnace.setBurnTime(burnTimeAdd);
                     furnace.setType(Material.BURNING_FURNACE);
-                    furnace.update();
                     AddFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
                 }
             } else if (plugin.FurnaceBlocks.contains(furnace.getBlock())) {
