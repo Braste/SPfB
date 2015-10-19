@@ -12,11 +12,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.FurnaceInventory;
+import org.bukkit.inventory.ItemStack;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -48,7 +50,9 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                ((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
+                FurnaceBurnEvent furnaceBurnEvent = new FurnaceBurnEvent(placedBlock, new ItemStack(Material.COAL, 1), (short)10000);
+                plugin.getServer().getPluginManager().callEvent(furnaceBurnEvent);
+                //((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
                 AddFurnace(placedBlock, "onBlockPlace");
             }
         }
