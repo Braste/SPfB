@@ -175,20 +175,6 @@ class SPfBListener implements Listener {
         }
 
     }
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockEvent(final BlockEvent event) {
-        Block block = event.getBlock();
-        try
-        {
-            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info("onBlockEvent");
-                plugin.getLogger().info(String.format("Block: %s", block));
-            }
-        } catch (SQLException | MySqlPoolableException e) {
-            e.printStackTrace();
-        }
-
-    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockSpread(final BlockSpreadEvent event) {
