@@ -65,11 +65,8 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
         }
         Block blockBreak = event.getBlock();
-        if (blockBreak.getType() == Material.LAVA || blockBreak.getType() == Material.STATIONARY_LAVA) {
-            Block blockOver = blockBreak.getRelative(UP);
-            if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                RemoveFurnace(blockOver, event);
-            }
+        if (plugin.FurnaceBlocks.containsKey(blockBreak)) {
+            RemoveFurnace(blockBreak, event);
         }
     }
 
@@ -310,6 +307,14 @@ class SPfBListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
+        Block clickedBlock = event.getClickedBlock();
+
+        if (clickedBlock != null && clickedBlock.getType() != null && (clickedBlock.getType() == Material.FURNACE || clickedBlock.getType() == Material.BURNING_FURNACE)) {
+            Block blockUnder = clickedBlock.getRelative(BlockFace.DOWN);
+            if (blockUnder != null && blockUnder.getType() != null && (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA)) {
+                AddFurnace(clickedBlock, event);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -395,8 +400,10 @@ class SPfBListener implements Listener {
     public void onFurnaceClickedEvent(final InventoryClickEvent event) {
         if (event.getInventory().getType() == InventoryType.FURNACE) {
             Furnace furnace = ((FurnaceInventory) event.getInventory()).getHolder();
-            if (plugin.FurnaceBlocks.containsKey(furnace.getBlock()) && event.getSlotType() == InventoryType.SlotType.FUEL) {
-                event.setCancelled(true);
+            if (plugin.FurnaceBlocks.containsKey(furnace.getBlock())) {
+                if (event.getSlotType() == InventoryType.SlotType.FUEL) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
