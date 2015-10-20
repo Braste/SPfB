@@ -20,10 +20,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SPfB extends JavaPlugin {
@@ -57,7 +54,7 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            try {
+            /*try {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 getLogger().info(data.toString());
@@ -69,7 +66,7 @@ public class SPfB extends JavaPlugin {
                 FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
             } catch (IOException e) {
                 FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
-            }
+            }*/
 
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
@@ -158,7 +155,7 @@ public class SPfB extends JavaPlugin {
         if (Funcs != null)
             Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
-        try {
+        /*try {
             File datafolder = getDataFolder();
             File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
             if (!data.isFile())
@@ -173,7 +170,7 @@ public class SPfB extends JavaPlugin {
             getLogger().warning("Could not save furnace blocks!: "+ e);
         } catch (IOException e) {
             getLogger().warning("Could not save furnace blocks!: "+ e);
-        }
+        }*/
         getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
     }
 
