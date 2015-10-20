@@ -17,6 +17,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.FurnaceInventory;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.material.MaterialData;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -48,6 +50,10 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
+                MaterialData data = placedBlock.getState().getData();
+                placedBlock.setType(Material.AIR, true);
+                placedBlock.setType(Material.BURNING_FURNACE, true);
+                placedBlock.getState().setData(data);
                 ((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
                 AddFurnace(placedBlock, "onBlockPlace");
             }
