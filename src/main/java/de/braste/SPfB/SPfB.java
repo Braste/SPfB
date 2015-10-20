@@ -14,6 +14,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -23,7 +24,7 @@ import java.util.*;
 
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
-    public ArrayList<Block> FurnaceBlocks;
+    public LinkedHashMap<Block, Event> FurnaceBlocks;
     private String host;
     private String port;
     private String db;
@@ -52,7 +53,7 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            FurnaceBlocks = new ArrayList<>();
+            FurnaceBlocks = new LinkedHashMap<>();
 
             /*Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
@@ -159,7 +160,7 @@ public class SPfB extends JavaPlugin {
     }
 
     private void UpdateFurnace() {
-        Block[] blocks = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
+        /*Block[] blocks = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
 
         for (Block b: blocks) {
             Block blockUpper = b.getRelative(BlockFace.UP);
@@ -176,6 +177,6 @@ public class SPfB extends JavaPlugin {
                 continue;
             }
             //((Furnace) blockUpper).setBurnTime((short)10000);
-        }
+        }*/
     }
 }

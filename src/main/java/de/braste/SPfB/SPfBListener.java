@@ -8,6 +8,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -32,7 +33,6 @@ import static org.bukkit.block.BlockFace.UP;
 class SPfBListener implements Listener {
 
     private final SPfB plugin;
-    private final short burnTimeAdd = (short)10000;
 
     public SPfBListener(final SPfB instance) {
         plugin = instance;
@@ -49,7 +49,7 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                AddFurnace(placedBlock, "onBlockPlace");
+                AddFurnace(placedBlock, event);
             }
         }
     }
@@ -64,10 +64,10 @@ class SPfBListener implements Listener {
         if (blockBreak.getType() == Material.LAVA || blockBreak.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = blockBreak.getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                RemoveFurnace(blockOver, "onBlockBreak");
+                RemoveFurnace(blockOver, event);
             }
-        } else if (plugin.FurnaceBlocks.contains(blockBreak)) {
-            RemoveFurnace(blockBreak, "onBlockBreak");
+        } else if (plugin.FurnaceBlocks.containsKey(blockBreak)) {
+            RemoveFurnace(blockBreak, event);
         }
     }
 
@@ -89,14 +89,14 @@ class SPfBListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockFromTo(final BlockFromToEvent event) {
-        Block blockFrom = event.getBlock();
+        /*Block blockFrom = event.getBlock();
 
         if (blockFrom.getType() == Material.LAVA || blockFrom.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = event.getToBlock().getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
                 AddFurnace(blockOver, "onBlockFromTo");
             }
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -154,7 +154,7 @@ class SPfBListener implements Listener {
         Block block = event.getBlock();
         Material mat = event.getChangedType();
 
-        if ((mat == Material.LAVA || mat == Material.STATIONARY_LAVA) && block.getType() == Material.BURNING_FURNACE) {
+        if ((block.getType() == Material.BURNING_FURNACE || block.getType() == Material.FURNACE)) {
             try
             {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
@@ -165,8 +165,8 @@ class SPfBListener implements Listener {
             } catch (SQLException | MySqlPoolableException e) {
                 e.printStackTrace();
             }
-            if (plugin.FurnaceBlocks.contains(block)) {
-                RemoveFurnace(block, "onBlockPhysics");
+            if (plugin.FurnaceBlocks.containsKey(block)) {
+                RemoveFurnace(block, event);
             }
         }
 
@@ -339,7 +339,7 @@ class SPfBListener implements Listener {
             BlockFace face = event.getBlockFace();
             Block blockToCheck = event.getBlockClicked().getRelative(face).getRelative(BlockFace.UP);
             if (blockToCheck.getType() == Material.BURNING_FURNACE || blockToCheck.getType() == Material.FURNACE) {
-                AddFurnace(blockToCheck, "onBlockFromTo");
+                AddFurnace(blockToCheck, event);
             }
         }
     }
@@ -384,12 +384,12 @@ class SPfBListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onFurnaceSmeltEvent(final FurnaceSmeltEvent event) {
         Block block = event.getBlock();
-        if (plugin.FurnaceBlocks.contains(block)) {
+        if (plugin.FurnaceBlocks.containsKey(block)) {
             Block blockUnder = block.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                AddFurnace(block, "onFurnaceSmeltEvent");
+                AddFurnace(block, event);
             } else {
-                RemoveFurnace(block, "onFurnaceSmeltEvent");
+                RemoveFurnace(block, event);
             }
         }
     }
@@ -398,23 +398,14 @@ class SPfBListener implements Listener {
     public void onFurnaceClickedEvent(final InventoryClickEvent event) {
         if (event.getInventory().getType() == InventoryType.FURNACE) {
             Furnace furnace = ((FurnaceInventory) event.getInventory()).getHolder();
-            if (plugin.FurnaceBlocks.contains(furnace.getBlock()) && event.getSlotType() == InventoryType.SlotType.FUEL) {
+            if (plugin.FurnaceBlocks.containsKey(furnace.getBlock()) && event.getSlotType() == InventoryType.SlotType.FUEL) {
                 event.setCancelled(true);
             }
-            /*if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                if (event.getSlotType() == InventoryType.SlotType.FUEL) {
-                    event.setCancelled(true);
-                } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
-                    AddFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
-                }
-            } else if (plugin.FurnaceBlocks.contains(furnace.getBlock())) {
-                RemoveFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
-            }*/
         }
     }
     //endregion
 
-    private void AddFurnace(Block furnace, String function)
+    private void AddFurnace(Block furnace, Event event)
     {
         BlockState state = furnace.getState();
         BlockFace face = ((org.bukkit.material.Furnace) state.getData()).getFacing();
@@ -423,17 +414,19 @@ class SPfBListener implements Listener {
         org.bukkit.material.Furnace data = (org.bukkit.material.Furnace) state.getData();
         data.setFacingDirection(face);
         state.setData(data);
+        short burnTimeAdd = (short) 10000;
         ((Furnace) state).setBurnTime(burnTimeAdd);
         state.update(true);
 
-        if (!plugin.FurnaceBlocks.contains(furnace)) {
-            plugin.FurnaceBlocks.add(furnace);
+        if (!plugin.FurnaceBlocks.containsKey(furnace)) {
+
+            plugin.FurnaceBlocks.put(furnace, event);
             try
             {
                 if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                    plugin.getLogger().info(String.format("Function: %s", function));
+                    plugin.getLogger().info(String.format("Event: %s", event.getEventName()));
                     plugin.getLogger().info(String.format("FurnaceBlocks: %s", plugin.FurnaceBlocks.size()));
-                    for (Block b: plugin.FurnaceBlocks)
+                    for (Block b: plugin.FurnaceBlocks.keySet())
                     {
                         plugin.getLogger().info(String.format("BlockInFurnaceBlocks: %s", b.toString()));
                     }
@@ -443,9 +436,9 @@ class SPfBListener implements Listener {
             }
         }
     }
-    private void RemoveFurnace(Block furnace, String function)
+    private void RemoveFurnace(Block furnace, Event event)
     {
-        if (plugin.FurnaceBlocks.contains(furnace)) {
+        if (plugin.FurnaceBlocks.containsKey(furnace)) {
             plugin.FurnaceBlocks.remove(furnace);
 
             BlockState state = furnace.getState();
@@ -461,9 +454,9 @@ class SPfBListener implements Listener {
         try
         {
             if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info(String.format("Function: %s", function));
+                plugin.getLogger().info(String.format("Event: %s", event.getEventName()));
                 plugin.getLogger().info(String.format("FurnaceBlocks: %s", plugin.FurnaceBlocks.size()));
-                for (Block b: plugin.FurnaceBlocks)
+                for (Block b: plugin.FurnaceBlocks.keySet())
                 {
                     plugin.getLogger().info(String.format("BlockInFurnaceBlocks: %s", b.toString()));
                 }
