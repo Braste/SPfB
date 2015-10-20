@@ -102,14 +102,81 @@ class SPfBListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onBlockFade(final BlockFadeEvent event) {
+         public void onBlockFade(final BlockFadeEvent event) {
         Block block = event.getBlock();
         BlockState newBlock =  event.getNewState();
         try
         {
             if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info("BlockFadeEvent");
                 plugin.getLogger().info(String.format("Block from: %s", block));
                 plugin.getLogger().info(String.format("BlockState to: %s", newBlock));
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
+    }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockForm(final BlockFormEvent event) {
+        Block block = event.getBlock();
+        BlockState newBlock =  event.getNewState();
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info("BlockFormEvent");
+                plugin.getLogger().info(String.format("Block from: %s", block));
+                plugin.getLogger().info(String.format("BlockState to: %s", newBlock));
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockMultiPlace(final BlockMultiPlaceEvent event) {
+        Block block = event.getBlock();
+        List<BlockState> blocks = event.getReplacedBlockStates();
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info("BlockMultiPlaceEvent");
+                plugin.getLogger().info(String.format("Block from: %s", block));
+                for (BlockState b: blocks)
+                {
+                    plugin.getLogger().info(String.format("BlockState: %s", b));
+                }
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockPhysics(final BlockPhysicsEvent event) {
+        Block block = event.getBlock();
+        Material mat = event.getChangedType();
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info("BlockPhysicsEvent");
+                plugin.getLogger().info(String.format("Block: %s", block));
+                plugin.getLogger().info(String.format("Material: %s", mat));
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockSpread(final BlockSpreadEvent event) {
+        Block block = event.getBlock();
+        Block source = event.getSource();
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info("BlockSpreadEvent");
+                plugin.getLogger().info(String.format("Block: %s", block));
+                plugin.getLogger().info(String.format("Source: %s", source));
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
