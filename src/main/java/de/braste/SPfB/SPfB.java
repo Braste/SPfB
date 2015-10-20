@@ -21,6 +21,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SPfB extends JavaPlugin {
@@ -54,6 +56,7 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
+            FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
             /*try {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
@@ -63,7 +66,7 @@ public class SPfB extends JavaPlugin {
                 FurnaceBlocks = Collections.synchronizedList((ArrayList)in.readObject());
                 fileIn.close();
             } catch (FileNotFoundException e) {
-                FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
+
             } catch (IOException e) {
                 FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
             }*/
@@ -73,7 +76,7 @@ public class SPfB extends JavaPlugin {
                 public void run() {
                     UpdateFurnace();
                 }
-            }, 1200L, 1200L);
+            }, 2400L, 2400L);
         } catch (Exception e) {
             getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
             e.printStackTrace();

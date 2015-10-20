@@ -44,7 +44,7 @@ public class deletewp implements CommandExecutor {
                 }
                 return false;
             } else
-                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.setwp");
+                plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.deletewp");
         }
         return true;
     }
