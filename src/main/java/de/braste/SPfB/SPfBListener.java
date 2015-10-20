@@ -1,9 +1,11 @@
 package de.braste.SPfB;
 
 import de.braste.SPfB.exceptions.MySqlPoolableException;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Furnace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -50,11 +52,6 @@ class SPfBListener implements Listener {
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                MaterialData data = placedBlock.getState().getData();
-                placedBlock.setType(Material.AIR, true);
-                placedBlock.setType(Material.BURNING_FURNACE, true);
-                placedBlock.getState().setData(data);
-                ((Furnace) placedBlock.getState()).setBurnTime(burnTimeAdd);
                 AddFurnace(placedBlock, "onBlockPlace");
             }
         }
@@ -71,7 +68,6 @@ class SPfBListener implements Listener {
             Block blockOver = blockBreak.getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
                 RemoveFurnace(blockOver, "onBlockBreak");
-                ((Furnace) blockBreak.getState()).setBurnTime((short)0);
             }
         } else if (plugin.FurnaceBlocks.contains(blockBreak)) {
             RemoveFurnace(blockBreak, "onBlockBreak");
@@ -100,11 +96,26 @@ class SPfBListener implements Listener {
         if (blockFrom.getType() == Material.LAVA || blockFrom.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = event.getToBlock().getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
-                ((Furnace) blockOver.getState()).setBurnTime(burnTimeAdd);
                 AddFurnace(blockOver, "onBlockFromTo");
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockFade(final BlockFadeEvent event) {
+        Block block = event.getBlock();
+        BlockState newBlock =  event.getNewState();
+        try
+        {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                plugin.getLogger().info(String.format("Block from: %s", block));
+                plugin.getLogger().info(String.format("BlockState to: %s", newBlock));
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
+    }
+
     //endregion
 
     //region Player
@@ -257,7 +268,6 @@ class SPfBListener implements Listener {
             Block blockToCheck = event.getBlockClicked().getRelative(face).getRelative(BlockFace.UP);
             if (blockToCheck.getType() == Material.BURNING_FURNACE || blockToCheck.getType() == Material.FURNACE) {
                 AddFurnace(blockToCheck, "onBlockFromTo");
-                ((Furnace) blockToCheck.getState()).setBurnTime(burnTimeAdd);
             }
         }
     }
@@ -305,11 +315,9 @@ class SPfBListener implements Listener {
         if (plugin.FurnaceBlocks.contains(block)) {
             Block blockUnder = block.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                ((Furnace) block.getState()).setBurnTime(burnTimeAdd);
                 AddFurnace(block, "onFurnaceSmeltEvent");
             } else {
                 RemoveFurnace(block, "onFurnaceSmeltEvent");
-                ((Furnace) block.getState()).setBurnTime((short) 0);
             }
         }
     }
@@ -331,12 +339,10 @@ class SPfBListener implements Listener {
                 if (event.getSlotType() == InventoryType.SlotType.FUEL) {
                     event.setCancelled(true);
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
-                    furnace.setBurnTime(burnTimeAdd);
                     AddFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
                 }
             } else if (plugin.FurnaceBlocks.contains(furnace.getBlock())) {
                 RemoveFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
-                furnace.setBurnTime((short)0);
             }
         }
     }
@@ -345,7 +351,18 @@ class SPfBListener implements Listener {
     private void AddFurnace(Block furnace, String function)
     {
         if (!plugin.FurnaceBlocks.contains(furnace)) {
+            BlockState state = furnace.getState();
+            BlockFace face = ((org.bukkit.material.Furnace) state.getData()).getFacing();
+            furnace.setType(Material.BURNING_FURNACE);
+            state = furnace.getState();
+            org.bukkit.material.Furnace data = (org.bukkit.material.Furnace) state.getData();
+            data.setFacingDirection(face);
+            state.setData(data);
+            ((Furnace) state).setBurnTime(burnTimeAdd);
+            state.update(true);
             plugin.FurnaceBlocks.add(furnace);
+        } else {
+            ((Furnace) furnace.getState()).setBurnTime(burnTimeAdd);
         }
         try
         {
@@ -365,6 +382,16 @@ class SPfBListener implements Listener {
     {
         if (plugin.FurnaceBlocks.contains(furnace)) {
             plugin.FurnaceBlocks.remove(furnace);
+
+            BlockState state = furnace.getState();
+            BlockFace face = ((org.bukkit.material.Furnace) state.getData()).getFacing();
+            furnace.setType(Material.FURNACE);
+            state = furnace.getState();
+            org.bukkit.material.Furnace data = (org.bukkit.material.Furnace) state.getData();
+            data.setFacingDirection(face);
+            state.setData(data);
+            ((Furnace) state).setBurnTime((short)0);
+            state.update(true);
         }
         try
         {
