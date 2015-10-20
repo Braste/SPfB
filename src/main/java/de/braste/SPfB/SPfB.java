@@ -59,7 +59,7 @@ public class SPfB extends JavaPlugin {
             Funcs = new Functions(initMySqlConnectionPool(), this);
             try {
                 File datafolder = getDataFolder();
-                File data = new File(datafolder.getAbsolutePath().toString() + "Furnaceblocks.dat");
+                File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 getLogger().info(data.toString());
                 FileInputStream fileIn = new FileInputStream(data);
                 ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -160,7 +160,7 @@ public class SPfB extends JavaPlugin {
         PluginDescriptionFile pdfFile = this.getDescription();
         try {
             File datafolder = getDataFolder();
-            File data = new File(datafolder.getAbsolutePath().toString() + "Furnaceblocks.dat");
+            File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
             if (!data.isFile())
             {
                 data.createNewFile();
@@ -170,9 +170,9 @@ public class SPfB extends JavaPlugin {
             out.writeObject(FurnaceBlocks);
             fileOut.close();
         } catch (FileNotFoundException e) {
-            getLogger().warning("Could not save furnace blocks!");
+            getLogger().warning("Could not save furnace blocks!: "+ e);
         } catch (IOException e) {
-            getLogger().warning("Could not save furnace blocks!");
+            getLogger().warning("Could not save furnace blocks!: "+ e);
         }
         getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
     }
