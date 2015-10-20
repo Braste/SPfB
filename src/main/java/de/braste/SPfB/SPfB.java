@@ -58,7 +58,10 @@ public class SPfB extends JavaPlugin {
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
             try {
-                FileInputStream fileIn = new FileInputStream(String.format("%sFurnaceblocks.dat", getDataFolder()));
+                File datafolder = getDataFolder();
+                File data = new File(datafolder.getAbsolutePath().toString() + "Furnaceblocks.dat");
+                getLogger().info(data.toString());
+                FileInputStream fileIn = new FileInputStream(data);
                 ObjectInputStream in = new ObjectInputStream(fileIn);
                 FurnaceBlocks = Collections.synchronizedList((ArrayList)in.readObject());
                 fileIn.close();
@@ -156,7 +159,13 @@ public class SPfB extends JavaPlugin {
             Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
         try {
-            FileOutputStream fileOut = new FileOutputStream(String.format("%sFurnaceblocks.dat", getDataFolder()));
+            File datafolder = getDataFolder();
+            File data = new File(datafolder.getAbsolutePath().toString() + "Furnaceblocks.dat");
+            if (!data.isFile())
+            {
+                data.createNewFile();
+            }
+            FileOutputStream fileOut = new FileOutputStream(data);
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(FurnaceBlocks);
             fileOut.close();
