@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -93,6 +94,7 @@ class SPfBListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockFromTo(final BlockFromToEvent event) {
         Block blockFrom = event.getBlock();
+
         if (blockFrom.getType() == Material.LAVA || blockFrom.getType() == Material.STATIONARY_LAVA) {
             Block blockOver = event.getToBlock().getRelative(UP);
             if (blockOver.getType() == Material.BURNING_FURNACE || blockOver.getType() == Material.FURNACE) {
@@ -102,8 +104,8 @@ class SPfBListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-         public void onBlockFade(final BlockFadeEvent event) {
-        Block block = event.getBlock();
+    public void onBlockFade(final BlockFadeEvent event) {
+        /*Block block = event.getBlock();
         BlockState newBlock =  event.getNewState();
         try
         {
@@ -114,11 +116,11 @@ class SPfBListener implements Listener {
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
-        }
+        }*/
     }
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockForm(final BlockFormEvent event) {
-        Block block = event.getBlock();
+        /*Block block = event.getBlock();
         BlockState newBlock =  event.getNewState();
         try
         {
@@ -129,12 +131,12 @@ class SPfBListener implements Listener {
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockMultiPlace(final BlockMultiPlaceEvent event) {
-        Block block = event.getBlock();
+        /*Block block = event.getBlock();
         List<BlockState> blocks = event.getReplacedBlockStates();
         try
         {
@@ -148,28 +150,49 @@ class SPfBListener implements Listener {
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPhysics(final BlockPhysicsEvent event) {
         Block block = event.getBlock();
         Material mat = event.getChangedType();
+
+        if ((mat == Material.LAVA || mat == Material.STATIONARY_LAVA) && block.getType() == Material.BURNING_FURNACE) {
+            try
+            {
+                if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                    plugin.getLogger().info("BlockPhysicsEvent");
+                    plugin.getLogger().info(String.format("Block: %s", block));
+                    plugin.getLogger().info(String.format("Material: %s", mat));
+                }
+            } catch (SQLException | MySqlPoolableException e) {
+                e.printStackTrace();
+            }
+            if (plugin.FurnaceBlocks.contains(block)) {
+                RemoveFurnace(block, "onBlockPhysics");
+            }
+        }
+
+    }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockEvent(final BlockEvent event) {
+        Block block = event.getBlock();
         try
         {
             if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info("BlockPhysicsEvent");
+                plugin.getLogger().info("onBlockEvent");
                 plugin.getLogger().info(String.format("Block: %s", block));
-                plugin.getLogger().info(String.format("Material: %s", mat));
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
         }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockSpread(final BlockSpreadEvent event) {
-        Block block = event.getBlock();
+        /*Block block = event.getBlock();
         Block source = event.getSource();
         try
         {
@@ -180,7 +203,7 @@ class SPfBListener implements Listener {
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     //endregion
@@ -393,16 +416,10 @@ class SPfBListener implements Listener {
     public void onFurnaceClickedEvent(final InventoryClickEvent event) {
         if (event.getInventory().getType() == InventoryType.FURNACE) {
             Furnace furnace = ((FurnaceInventory) event.getInventory()).getHolder();
-            Block blockUnder = furnace.getBlock().getRelative(DOWN);
-            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                try
-                {
-                    if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                        plugin.getLogger().info(String.format("SlotType: %s", event.getSlotType().toString()));
-                    }
-                } catch (SQLException | MySqlPoolableException e) {
-                    e.printStackTrace();
-                }
+            if (plugin.FurnaceBlocks.contains(furnace.getBlock()) && event.getSlotType() == InventoryType.SlotType.FUEL) {
+                event.setCancelled(true);
+            }
+            /*if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
                 if (event.getSlotType() == InventoryType.SlotType.FUEL) {
                     event.setCancelled(true);
                 } else if (event.getSlotType() == InventoryType.SlotType.CRAFTING) {
@@ -410,39 +427,38 @@ class SPfBListener implements Listener {
                 }
             } else if (plugin.FurnaceBlocks.contains(furnace.getBlock())) {
                 RemoveFurnace(furnace.getBlock(), "onFurnaceClickedEvent");
-            }
+            }*/
         }
     }
     //endregion
 
     private void AddFurnace(Block furnace, String function)
     {
+        BlockState state = furnace.getState();
+        BlockFace face = ((org.bukkit.material.Furnace) state.getData()).getFacing();
+        furnace.setType(Material.BURNING_FURNACE);
+        state = furnace.getState();
+        org.bukkit.material.Furnace data = (org.bukkit.material.Furnace) state.getData();
+        data.setFacingDirection(face);
+        state.setData(data);
+        ((Furnace) state).setBurnTime(burnTimeAdd);
+        state.update(true);
+
         if (!plugin.FurnaceBlocks.contains(furnace)) {
-            BlockState state = furnace.getState();
-            BlockFace face = ((org.bukkit.material.Furnace) state.getData()).getFacing();
-            furnace.setType(Material.BURNING_FURNACE);
-            state = furnace.getState();
-            org.bukkit.material.Furnace data = (org.bukkit.material.Furnace) state.getData();
-            data.setFacingDirection(face);
-            state.setData(data);
-            ((Furnace) state).setBurnTime(burnTimeAdd);
-            state.update(true);
             plugin.FurnaceBlocks.add(furnace);
-        } else {
-            ((Furnace) furnace.getState()).setBurnTime(burnTimeAdd);
-        }
-        try
-        {
-            if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
-                plugin.getLogger().info(String.format("Function: %s", function));
-                plugin.getLogger().info(String.format("FurnaceBlocks: %s", plugin.FurnaceBlocks.size()));
-                for (Block b: plugin.FurnaceBlocks)
-                {
-                    plugin.getLogger().info(String.format("BlockInFurnaceBlocks: %s", b.toString()));
+            try
+            {
+                if ((int) plugin.Funcs.getConfigNode("debug", "int") > 0) {
+                    plugin.getLogger().info(String.format("Function: %s", function));
+                    plugin.getLogger().info(String.format("FurnaceBlocks: %s", plugin.FurnaceBlocks.size()));
+                    for (Block b: plugin.FurnaceBlocks)
+                    {
+                        plugin.getLogger().info(String.format("BlockInFurnaceBlocks: %s", b.toString()));
+                    }
                 }
+            } catch (SQLException | MySqlPoolableException e) {
+                e.printStackTrace();
             }
-        } catch (SQLException | MySqlPoolableException e) {
-            e.printStackTrace();
         }
     }
     private void RemoveFurnace(Block furnace, String function)
