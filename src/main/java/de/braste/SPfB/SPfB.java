@@ -14,17 +14,18 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.Event;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
-    public LinkedHashMap<Block, Event> FurnaceBlocks;
+    public List<Block> FurnaceBlocks;
     private String host;
     private String port;
     private String db;
@@ -53,14 +54,14 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            FurnaceBlocks = new LinkedHashMap<>();
+            FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
 
-            /*Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
                 public void run() {
                     UpdateFurnace();
                 }
-            }, 5L, 5L);*/
+            }, 600L, 600L);
         } catch (Exception e) {
             getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
             e.printStackTrace();
@@ -160,23 +161,19 @@ public class SPfB extends JavaPlugin {
     }
 
     private void UpdateFurnace() {
-        /*Block[] blocks = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
-
+        Block[] blocks;
+        synchronized (FurnaceBlocks) {
+            blocks  = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
+        }
         for (Block b: blocks) {
-            Block blockUpper = b.getRelative(BlockFace.UP);
-            if (b.getType() != Material.LAVA && b.getType() != Material.STATIONARY_LAVA) {
-                FurnaceBlocks.remove(b);
-                if (blockUpper.getType() == Material.FURNACE || blockUpper.getType() == Material.BURNING_FURNACE) {
-
-                    //((Furnace) blockUpper).setBurnTime((short)0);
-                }
+            Block blockUnder = b.getRelative(BlockFace.DOWN);
+            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.BURNING_FURNACE) {
+                ((Furnace) b).setBurnTime((short)10000);
                 continue;
             }
-            if (blockUpper.getType() != Material.FURNACE && blockUpper.getType() != Material.BURNING_FURNACE) {
+            synchronized (FurnaceBlocks) {
                 FurnaceBlocks.remove(b);
-                continue;
             }
-            //((Furnace) blockUpper).setBurnTime((short)10000);
-        }*/
+        }
     }
 }
