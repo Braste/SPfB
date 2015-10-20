@@ -1,6 +1,7 @@
 package de.braste.SPfB;
 
 import de.braste.SPfB.commands.*;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import de.braste.SPfB.functions.CommandFilter;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
@@ -19,6 +20,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,14 +57,23 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
+            try {
+                FileInputStream fileIn = new FileInputStream(String.format("%sFurnaceblocks.dat", getDataFolder()));
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                FurnaceBlocks = Collections.synchronizedList((ArrayList)in.readObject());
+                fileIn.close();
+            } catch (FileNotFoundException e) {
+                FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
+            } catch (IOException e) {
+                FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
+            }
 
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
                 public void run() {
                     UpdateFurnace();
                 }
-            }, 600L, 600L);
+            }, 1200L, 1200L);
         } catch (Exception e) {
             getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
             e.printStackTrace();
@@ -143,6 +155,16 @@ public class SPfB extends JavaPlugin {
         if (Funcs != null)
             Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
+        try {
+            FileOutputStream fileOut = new FileOutputStream(String.format("%sFurnaceblocks.dat", getDataFolder()));
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(FurnaceBlocks);
+            fileOut.close();
+        } catch (FileNotFoundException e) {
+            getLogger().warning("Could not save furnace blocks!");
+        } catch (IOException e) {
+            getLogger().warning("Could not save furnace blocks!");
+        }
         getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
     }
 
@@ -161,14 +183,21 @@ public class SPfB extends JavaPlugin {
     }
 
     private void UpdateFurnace() {
+        try {
+            if ((int) Funcs.getConfigNode("debug", "int") > 1) {
+                getLogger().info("Updating furnaces");
+            }
+        } catch (SQLException | MySqlPoolableException e) {
+            e.printStackTrace();
+        }
         Block[] blocks;
         synchronized (FurnaceBlocks) {
             blocks  = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
         }
         for (Block b: blocks) {
             Block blockUnder = b.getRelative(BlockFace.DOWN);
-            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.BURNING_FURNACE) {
-                ((Furnace) b).setBurnTime((short)10000);
+            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
+                ((Furnace) b.getState()).setBurnTime((short)10000);
                 continue;
             }
             synchronized (FurnaceBlocks) {
