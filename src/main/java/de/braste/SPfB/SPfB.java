@@ -68,8 +68,9 @@ public class SPfB extends JavaPlugin {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
-                Map<String, List<double[]>> map = new HashMap<>();
-                config.get("Furnace", map);
+                List<Map<?, ?>> configMap = config.getMapList("Furnace");
+
+                Map<String, List<double[]>> map = (Map<String, List<double[]>>) config.get("Furnace");
 
                 for (Map.Entry<String, List<double[]>> e: map.entrySet()) {
                     String worldName = e.getKey();
