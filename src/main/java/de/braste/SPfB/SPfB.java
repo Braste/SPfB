@@ -69,21 +69,22 @@ public class SPfB extends JavaPlugin {
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
 
-                Object map = config.get("Furnace");
+                ConfigurationSection furnaces = config.getConfigurationSection("Furnace");
+                Set<String> keys = furnaces.getKeys(true);
 
-                /*for (Map.Entry<String, List<double[]>> e: map.entrySet()) {
-                    String worldName = e.getKey();
-                    for (double[] d: e.getValue()) {
-                        Block b = getServer().getWorld(worldName).getBlockAt((int)d[0], (int)d[1], (int)d[2]);
+                for (String key: keys) {
+                   List<double[]> map = (List<double[]>) furnaces.get(key);
+                    for (double[] d: map) {
+                        Block b = getServer().getWorld(key).getBlockAt((int)d[0], (int)d[1], (int)d[2]);
                         if (b != null) {
                             synchronized (FurnaceBlocks) {
                                 FurnaceBlocks.add(b);
                             }
                         }
                     }
-                }*/
+                }
             } catch(Exception e) {
-
+                getLogger().warning("Can not load Furnaces from Config file: " + e);
             }
             /* {
                 File datafolder = getDataFolder();
