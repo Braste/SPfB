@@ -57,6 +57,11 @@ public class SPfB extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
             FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
             try {
