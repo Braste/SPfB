@@ -10,20 +10,25 @@ import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
 import org.apache.commons.pool.impl.GenericObjectPoolFactory;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.configuration.serialization.DelegateDeserialization;
+import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
@@ -57,12 +62,12 @@ public class SPfB extends JavaPlugin {
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
             FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
-            /*try {
+            /* {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 getLogger().info(data.toString());
-                FileInputStream fileIn = new FileInputStream(data);
-                ObjectInputStream in = new ObjectInputStream(fileIn);
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(data);
+                //config.getMapList()
                 FurnaceBlocks = Collections.synchronizedList((ArrayList)in.readObject());
                 fileIn.close();
             } catch (FileNotFoundException e) {
@@ -158,6 +163,27 @@ public class SPfB extends JavaPlugin {
         if (Funcs != null)
             Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
+        try {
+            File datafolder = getDataFolder();
+            File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
+            YamlConfiguration config = YamlConfiguration.loadConfiguration(data);
+
+            Map<Integer, double[]> map = new HashMap<Integer, double[]>();
+
+            for (int i = 0; i < FurnaceBlocks.size(); i++) {
+
+                double[] coords = new double[3];
+                Location loc = FurnaceBlocks.get(i).getLocation();
+                coords[0] = loc.getX();
+                coords[1] = loc.getY();
+                coords[2] = loc.getZ();
+                map.put(i, coords);
+            }
+            config.set("Furnace", map);
+            config.save(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
+        } catch(Exception e) {
+
+        }
         /*try {
             File datafolder = getDataFolder();
             File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
