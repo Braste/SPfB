@@ -5,7 +5,6 @@ import de.braste.SPfB.exceptions.MySqlPoolableException;
 import de.braste.SPfB.functions.CommandFilter;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
-import org.apache.commons.collections.keyvalue.DefaultKeyValue;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -25,9 +24,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
@@ -66,12 +63,12 @@ public class SPfB extends JavaPlugin {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
-                List<DefaultKeyValue> map = new ArrayList<>();
+                List<Map.Entry<String, double[]>> map = new ArrayList<>();
                 config.get("Furnace", map);
 
-                for (DefaultKeyValue d: map) {
-                    String worldName = (String)d.getKey();
-                    double[] coords = (double[])d.getValue();
+                for (Map.Entry<String, double[]> d: map) {
+                    String worldName = d.getKey();
+                    double[] coords = d.getValue();
                     Block b = getServer().getWorld(worldName).getBlockAt((int)coords[0], (int)coords[1], (int)coords[2]);
 
                     if (b != null) {
@@ -186,7 +183,7 @@ public class SPfB extends JavaPlugin {
         PluginDescriptionFile pdfFile = this.getDescription();
         try {
             File datafolder = getDataFolder();
-            List<DefaultKeyValue> map = new ArrayList<>();
+            List<Map.Entry<String, double[]>> map = new ArrayList<>();
 
             for (int i = 0; i < FurnaceBlocks.size(); i++) {
 
@@ -195,8 +192,8 @@ public class SPfB extends JavaPlugin {
                 coords[0] = loc.getX();
                 coords[1] = loc.getY();
                 coords[2] = loc.getZ();
-                DefaultKeyValue pair = new DefaultKeyValue(loc.getWorld().getName(), coords);
-                map.add(pair);
+                Map.Entry<String, double[]> pair = new AbstractMap.SimpleEntry<>(loc.getWorld().getName(), coords);
+                 map.add(pair);
             }
             config.set("Furnace", map);
             config.save(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
