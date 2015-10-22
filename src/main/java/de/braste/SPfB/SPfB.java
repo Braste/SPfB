@@ -68,7 +68,8 @@ public class SPfB extends JavaPlugin {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
-                Map<String, List<double[]>> map = (Map<String, List<double[]>>) config.getMapList("Furnace");
+                Map<String, List<double[]>> map = new HashMap<>();
+                config.get("Furnace", map);
 
                 for (Map.Entry<String, List<double[]>> e: map.entrySet()) {
                     String worldName = e.getKey();
@@ -209,22 +210,6 @@ public class SPfB extends JavaPlugin {
         } catch(Exception e) {
 
         }
-        /*try {
-            File datafolder = getDataFolder();
-            File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
-            if (!data.isFile())
-            {
-                data.createNewFile();
-            }
-            FileOutputStream fileOut = new FileOutputStream(data);
-            ObjectOutputStream out = new ObjectOutputStream(fileOut);
-            out.writeObject(FurnaceBlocks);
-            fileOut.close();
-        } catch (FileNotFoundException e) {
-            getLogger().warning("Could not save furnace blocks!: "+ e);
-        } catch (IOException e) {
-            getLogger().warning("Could not save furnace blocks!: "+ e);
-        }*/
         getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
     }
 
