@@ -73,9 +73,9 @@ public class SPfB extends JavaPlugin {
                 Set<String> keys = furnaces.getKeys(true);
 
                 for (String key: keys) {
-                   List<double[]> map = (List<double[]>) furnaces.get(key);
-                    for (double[] d: map) {
-                        Block b = getServer().getWorld(key).getBlockAt((int) d[0], (int) d[1], (int) d[2]);
+                   List<List<Double>> map = (List<List<Double>>) furnaces.get(key);
+                    for (List<Double> d: map) {
+                        Block b = getServer().getWorld(key).getBlockAt(d.get(0).intValue(), d.get(1).intValue(), d.get(2).intValue());
                         if (b != null) {
                             synchronized (FurnaceBlocks) {
                                 FurnaceBlocks.add(b);
