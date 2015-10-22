@@ -102,7 +102,6 @@ class SPfBListener implements Listener {
                 RemoveFurnace(block, event);
             }
         }
-
     }
     //endregion
 
@@ -236,6 +235,7 @@ class SPfBListener implements Listener {
             if (blockUnder != null && blockUnder.getType() != null && (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA)) {
                 AddFurnace(clickedBlock, event);
             }
+
         }
     }
 

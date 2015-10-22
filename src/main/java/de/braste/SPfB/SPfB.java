@@ -57,11 +57,6 @@ public class SPfB extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
             FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
             try {
@@ -86,6 +81,7 @@ public class SPfB extends JavaPlugin {
             } catch(Exception e) {
                 getLogger().warning("Can not load Furnaces from Config file: " + e);
             }
+
 
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
