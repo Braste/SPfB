@@ -68,11 +68,10 @@ public class SPfB extends JavaPlugin {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
-                List<Map<?, ?>> configMap = config.getMapList("Furnace");
 
-                Map<String, List<double[]>> map = (Map<String, List<double[]>>) config.get("Furnace");
+                Object map = config.get("Furnace");
 
-                for (Map.Entry<String, List<double[]>> e: map.entrySet()) {
+                /*for (Map.Entry<String, List<double[]>> e: map.entrySet()) {
                     String worldName = e.getKey();
                     for (double[] d: e.getValue()) {
                         Block b = getServer().getWorld(worldName).getBlockAt((int)d[0], (int)d[1], (int)d[2]);
@@ -82,7 +81,7 @@ public class SPfB extends JavaPlugin {
                             }
                         }
                     }
-                }
+                }*/
             } catch(Exception e) {
 
             }
