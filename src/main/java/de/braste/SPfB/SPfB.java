@@ -5,7 +5,6 @@ import de.braste.SPfB.exceptions.MySqlPoolableException;
 import de.braste.SPfB.functions.CommandFilter;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
-import javafx.util.Pair;
 import org.apache.commons.collections.keyvalue.DefaultKeyValue;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
