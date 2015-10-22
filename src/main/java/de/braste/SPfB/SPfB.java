@@ -6,6 +6,7 @@ import de.braste.SPfB.functions.CommandFilter;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
 import javafx.util.Pair;
+import org.apache.commons.collections.keyvalue.DefaultKeyValue;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -66,13 +67,12 @@ public class SPfB extends JavaPlugin {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
-
-                List<Pair<String, double[]>> map = new ArrayList<>();
+                List<DefaultKeyValue> map = new ArrayList<>();
                 config.get("Furnace", map);
 
-                for (Pair<String, double[]> d: map) {
-                    String worldName = d.getKey();
-                    double[] coords = d.getValue();
+                for (DefaultKeyValue d: map) {
+                    String worldName = (String)d.getKey();
+                    double[] coords = (double[])d.getValue();
                     Block b = getServer().getWorld(worldName).getBlockAt((int)coords[0], (int)coords[1], (int)coords[2]);
 
                     if (b != null) {
@@ -187,7 +187,7 @@ public class SPfB extends JavaPlugin {
         PluginDescriptionFile pdfFile = this.getDescription();
         try {
             File datafolder = getDataFolder();
-            List<Pair<String, double[]>> map = new ArrayList<>();
+            List<DefaultKeyValue> map = new ArrayList<>();
 
             for (int i = 0; i < FurnaceBlocks.size(); i++) {
 
@@ -196,7 +196,7 @@ public class SPfB extends JavaPlugin {
                 coords[0] = loc.getX();
                 coords[1] = loc.getY();
                 coords[2] = loc.getZ();
-                Pair<String, double[]> pair = new Pair<>(loc.getWorld().getName(), coords);
+                DefaultKeyValue pair = new DefaultKeyValue(loc.getWorld().getName(), coords);
                 map.add(pair);
             }
             config.set("Furnace", map);
