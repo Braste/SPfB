@@ -63,17 +63,16 @@ public class SPfB extends JavaPlugin {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
-                List<Map.Entry<String, double[]>> map = new ArrayList<>();
-                config.get("Furnace", map);
+                Map<String, List<double[]>> map = (Map<String, List<double[]>>) config.getMapList("Furnace");
 
-                for (Map.Entry<String, double[]> d: map) {
-                    String worldName = d.getKey();
-                    double[] coords = d.getValue();
-                    Block b = getServer().getWorld(worldName).getBlockAt((int)coords[0], (int)coords[1], (int)coords[2]);
-
-                    if (b != null) {
-                        synchronized (FurnaceBlocks) {
-                            FurnaceBlocks.add(b);
+                for (Map.Entry<String, List<double[]>> e: map.entrySet()) {
+                    String worldName = e.getKey();
+                    for (double[] d: e.getValue()) {
+                        Block b = getServer().getWorld(worldName).getBlockAt((int)d[0], (int)d[1], (int)d[2]);
+                        if (b != null) {
+                            synchronized (FurnaceBlocks) {
+                                FurnaceBlocks.add(b);
+                            }
                         }
                     }
                 }
@@ -183,7 +182,7 @@ public class SPfB extends JavaPlugin {
         PluginDescriptionFile pdfFile = this.getDescription();
         try {
             File datafolder = getDataFolder();
-            List<Map.Entry<String, double[]>> map = new ArrayList<>();
+            Map<String, List<double[]>> map = new HashMap<>();
 
             for (int i = 0; i < FurnaceBlocks.size(); i++) {
 
@@ -192,8 +191,13 @@ public class SPfB extends JavaPlugin {
                 coords[0] = loc.getX();
                 coords[1] = loc.getY();
                 coords[2] = loc.getZ();
-                Map.Entry<String, double[]> pair = new AbstractMap.SimpleEntry<>(loc.getWorld().getName(), coords);
-                 map.add(pair);
+                if (map.containsKey(loc.getWorld().getName())) {
+                    map.get(loc.getWorld().getName()).add(coords);
+                } else {
+                    List<double[]> list = new ArrayList();
+                    list.add(coords);
+                    map.put(loc.getWorld().getName(), list);
+                }
             }
             config.set("Furnace", map);
             config.save(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
