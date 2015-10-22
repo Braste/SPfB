@@ -86,19 +86,6 @@ public class SPfB extends JavaPlugin {
             } catch(Exception e) {
                 getLogger().warning("Can not load Furnaces from Config file: " + e);
             }
-            /* {
-                File datafolder = getDataFolder();
-                File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
-                getLogger().info(data.toString());
-                YamlConfiguration config = YamlConfiguration.loadConfiguration(data);
-                //config.getMapList()
-                FurnaceBlocks = Collections.synchronizedList((ArrayList)in.readObject());
-                fileIn.close();
-            } catch (FileNotFoundException e) {
-
-            } catch (IOException e) {
-                FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
-            }*/
 
             Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 @Override
