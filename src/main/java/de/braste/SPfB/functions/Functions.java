@@ -67,7 +67,7 @@ public class Functions {
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM homes WHERE name = '%s' AND world = '%s'", playerId.toString(), player.getWorld().getName()));
             if (!res.next()) {
-                updateToUUID(player, "homes", "name");
+                updateToUUID(player, "homes", "name", "getHomeLocation");
                 res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM homes WHERE name = '%s' AND world = '%s'", playerId.toString(), player.getWorld().getName()));
                 while (res.next()) {
                     loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
@@ -136,7 +136,7 @@ public class Functions {
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), player.getWorld().getName(), waypoint));
             if (!res.next()) {
-                updateToUUID(player, "waypoints", "name");
+                updateToUUID(player, "waypoints", "name", "getWaypoint");
                 res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), player.getWorld().getName(), waypoint));
                 while (res.next()) {
                     loc = new Location(player.getWorld(), res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
@@ -167,7 +167,7 @@ public class Functions {
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), world.getName(), waypoint));
             if (!res.next()) {
-                updateToUUID(playerId, playerName, "waypoints", "name");
+                updateToUUID(playerId, playerName, "waypoints", "name", "getWaypoint");
                 res = st.executeQuery(String.format("SELECT x, y, z, rotX FROM waypoints WHERE name = '%s' AND world = '%s' and waypoint = '%s'", playerId.toString(), world.getName(), waypoint));
                 while (res.next()) {
                     loc = new Location(world, res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
@@ -319,7 +319,7 @@ public class Functions {
             res = st.executeQuery(String.format("SELECT count(*) as count FROM reg WHERE name = '%s'", playerId.toString()));
             if (res.next()) {
                 if (res.getInt("count") == 0) {
-                    updateToUUID(player, "reg", "name");
+                    updateToUUID(player, "reg", "name", "getIsRegistered");
                     res = st.executeQuery(String.format("SELECT count(*) as count FROM reg WHERE name = '%s'", playerId.toString()));
                     if (res.next()) {
                         return (res.getInt("count") > 0);
@@ -377,7 +377,7 @@ public class Functions {
             conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             if (st.executeUpdate(String.format("UPDATE reg SET session = 0 WHERE name = '%s'", playerId.toString())) <= 0) {
-                updateToUUID(player, "reg", "name");
+                updateToUUID(player, "reg", "name", "logout");
                 st.executeUpdate(String.format("UPDATE reg SET session = 0 WHERE name = '%s'", playerId.toString()));
             }
         } catch (SQLException e) {
@@ -450,7 +450,7 @@ public class Functions {
                 conn = (Connection) _connPool.borrowObject();
                 st = conn.createStatement();
                 if (st.executeUpdate(String.format("UPDATE reg SET password = %s WHERE name = '%s'", newPw, playerId.toString())) <= 0) {
-                    updateToUUID(player, "reg", "name");
+                    updateToUUID(player, "reg", "name", "chagnePassword");
                     if (st.executeUpdate(String.format("UPDATE reg SET password = %s WHERE name = '%s'", newPw, playerId.toString())) > 0)
                         return true;
                 }
@@ -544,13 +544,15 @@ public class Functions {
         Connection conn = null;
         Statement st = null;
         ResultSet res = null;
+        if (!_plugin.getServer().getOnlinePlayers().contains(player))
+            return 1;
         UUID playerId = player.getUniqueId();
         try {
             conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT session FROM reg WHERE name = '%s'", playerId.toString()));
             if (!res.next()) {
-                updateToUUID(player, "reg", "name");
+                updateToUUID(player, "reg", "name", "getSession");
                 res = st.executeQuery(String.format("SELECT session FROM reg WHERE name = '%s'", playerId.toString()));
             } else {
                 session = res.getInt("session");
@@ -576,7 +578,7 @@ public class Functions {
             conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             if (st.executeUpdate(String.format("UPDATE reg SET session = %d WHERE name = '%s'", session, playerId.toString())) <= 0) {
-                updateToUUID(player, "reg", "name");
+                updateToUUID(player, "reg", "name", "setSession");
                 if (st.executeUpdate(String.format("UPDATE reg SET session = %d WHERE name = '%s'", session, playerId.toString())) > 0)
                     return true;
             } else {
@@ -593,15 +595,18 @@ public class Functions {
         return false;
     }
 
-    private void updateToUUID(Player player, String table, String field) throws SQLException, MySqlPoolableException {
-        updateToUUID(player.getUniqueId(), player.getName(), table, field);
+    private void updateToUUID(Player player, String table, String field, String function) throws SQLException, MySqlPoolableException {
+        updateToUUID(player.getUniqueId(), player.getName(), table, field, function);
     }
 
-    private void updateToUUID(UUID playerId, String playerName, String table, String field) throws SQLException, MySqlPoolableException {
+    private void updateToUUID(UUID playerId, String playerName, String table, String field, String function) throws SQLException, MySqlPoolableException {
         Connection conn = null;
         Statement st = null;
-        _plugin.getLogger().info("Updating name " + playerName + " to UUID " + playerId.toString() + " in table " + table);
+
         try {
+            if ((int) getConfigNode("debug", "int") > 0) {
+                _plugin.getLogger().info("Updating name " + playerName + " to UUID " + playerId.toString() + " in table " + table + " for function " + function);
+            }
             conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             st.executeUpdate(String.format("UPDATE %s SET %s = '%s' WHERE %s = '%s'", table, field, playerId.toString(), field, playerName));
@@ -626,7 +631,7 @@ public class Functions {
             st = conn.createStatement();
             res = st.executeQuery(String.format("SELECT password FROM reg WHERE name = '%s'", playerId.toString()));
             if (!res.next()) {
-                updateToUUID(player, "reg", "name");
+                updateToUUID(player, "reg", "name", "getPassword");
                 res = st.executeQuery(String.format("SELECT password FROM reg WHERE name = '%s'", playerId.toString()));
             } else {
                 password = res.getString("password");
