@@ -2,7 +2,6 @@ package de.braste.SPfB;
 
 import de.braste.SPfB.commands.*;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
-import de.braste.SPfB.functions.CommandFilter;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
 import org.apache.commons.pool.ObjectPool;
@@ -26,6 +25,8 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
 
+import static java.lang.String.format;
+
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
     public List<Block> FurnaceBlocks;
@@ -48,20 +49,21 @@ public class SPfB extends JavaPlugin {
             user = database.getString("user");
             pw = database.getString("password");
 
-            if (host == null || port == null || db == null || user == null)
-                getLogger().warning(String.format("Database configuration incomplete. %s won't work!", pdfFile.getName()));
+            if (host == null || port == null || db == null || user == null) {
+                getLogger().warning(format("Datenbankkonfiguration unvollständig. %s wird nicht laufen!", pdfFile.getName()));
+            }
         } else {
-            getLogger().warning(String.format("No database configuration found. %s won't work!", pdfFile.getName()));
+            getLogger().warning(format("Keine Datenbankkonfiguration gefunden. %s wird nicht laufen!", pdfFile.getName()));
         }
         // Save the config
         getConfig().options().copyDefaults(true);
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            FurnaceBlocks = Collections.synchronizedList(new ArrayList<Block>());
+            FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
             try {
                 File datafolder = getDataFolder();
-                File data = new File(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
+                File data = new File(datafolder.getAbsolutePath() + "/FurnaceBlocks.dat");
                 config = YamlConfiguration.loadConfiguration(data);
 
                 ConfigurationSection furnaces = config.getConfigurationSection("Furnace");
@@ -78,27 +80,24 @@ public class SPfB extends JavaPlugin {
                         }
                     }
                 }
+                getLogger().info(format("%s Öfen geladen.", FurnaceBlocks.size()));
             } catch(Exception e) {
-                getLogger().warning("Can not load Furnaces from Config file: " + e);
+                getLogger().warning("Fehler beim Laden der Öfen aus YAML: ");
+                e.printStackTrace();
             }
 
 
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    UpdateFurnace();
-                }
-            }, 2400L, 2400L);
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::UpdateFurnace, 2400L, 2400L);
         } catch (Exception e) {
-            getLogger().warning(String.format("%s version %s can't be enabled: ", pdfFile.getName(), pdfFile.getVersion()));
-            e.printStackTrace();
+            getLogger().warning(format("%s kann nicht geladen werden: ", pdfFile.getName()));
+
             return;
         }
         pm.registerEvents(new SPfBListener(this), this);
 
 
 
-        getServer().getLogger().setFilter(new CommandFilter());
+        //getServer().getLogger().setFilter(new CommandFilter());
 
         //HOME
         getCommand("home").setExecutor(new home(this));
@@ -160,7 +159,7 @@ public class SPfB extends JavaPlugin {
         //BROADCAST
         getCommand("broadcast").setExecutor(new broadcast(this));
 
-        getLogger().info(String.format("%s version %s enabled", pdfFile.getName(), pdfFile.getVersion()));
+        getLogger().info(format("%s erfolgreich geladen!", pdfFile.getName()));
     }
 
     @Override
@@ -174,27 +173,27 @@ public class SPfB extends JavaPlugin {
             File datafolder = getDataFolder();
             Map<String, List<double[]>> map = new HashMap<>();
 
-            for (int i = 0; i < FurnaceBlocks.size(); i++) {
+            for (Block FurnaceBlock : FurnaceBlocks) {
 
                 double[] coords = new double[3];
-                Location loc = FurnaceBlocks.get(i).getLocation();
+                Location loc = FurnaceBlock.getLocation();
                 coords[0] = loc.getX();
                 coords[1] = loc.getY();
                 coords[2] = loc.getZ();
                 if (map.containsKey(loc.getWorld().getName())) {
                     map.get(loc.getWorld().getName()).add(coords);
                 } else {
-                    List<double[]> list = new ArrayList();
+                    List<double[]> list = new ArrayList<>();
                     list.add(coords);
                     map.put(loc.getWorld().getName(), list);
                 }
             }
             config.set("Furnace", map);
-            config.save(datafolder.getAbsolutePath().toString() + "/FurnaceBlocks.dat");
-        } catch(Exception e) {
+            config.save(datafolder.getAbsolutePath() + "/FurnaceBlocks.dat");
+        } catch(Exception ignored) {
 
         }
-        getLogger().info(String.format("%s version %s disabled", pdfFile.getName(), pdfFile.getVersion()));
+        getLogger().info(format("%s deaktiviert.", pdfFile.getName()));
     }
 
     private ObjectPool initMySqlConnectionPool() {
@@ -214,7 +213,7 @@ public class SPfB extends JavaPlugin {
     private void UpdateFurnace() {
         try {
             if ((int) Funcs.getConfigNode("debug", "int") > 1) {
-                getLogger().info("Updating furnaces");
+                getLogger().info("Aktualisiere Öfen");
             }
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
