@@ -25,18 +25,6 @@ commands:
   description: Ruft alle Gruppen des Servers ab.
   usage: <command>
   aliases: ['groups']
- login:
-  description: Loggt den Spieler ein.
-  usage: <command> <password>
-  aliases: ['join']
- register:
-  description: Registriert den Spieler.
-  usage: <command> <password> <password>
-  aliases: ['reg']
- changepw:
-  description: Aendert das Passwort.
-  usage: <command> <old password> <new password> <new password> 
-  aliases: ['cpw']
  warp:
   description: Teleportiert den Spieler zu dem angegebenen Warppunkt in der aktuellen Welt.
   usage: <command> <warplocation>
@@ -52,10 +40,6 @@ commands:
   description: Loescht den angegebenen Warppunkt in der aktuellen Welt.
   usage: <command> <warplocation>
   aliases: ['dwarp']
- removereg:
-  description: Entfernt die Registrierung des angegebenen Spielers.
-  usage: <command> <player>
-  aliases: ['rreg']
  clearinventory:
   description: Leert das Inventar.
   usage: <command> <main|bar|all>
@@ -88,7 +72,3 @@ commands:
  rift:
   description: Die Zeit ist eine Schleife.
   usage: <command> [time]
- reloadplugin:
-  description: Startet ein Plugin (neu).
-  usage: <command> <name>
-  aliases: ['reloadp']
