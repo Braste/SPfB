@@ -129,7 +129,7 @@ public class SPfB extends JavaPlugin {
         getCommand("deletewarp").setExecutor(new deletewarp(this));
 
         //REMOVEREG
-        getCommand("removereg").setExecutor(new removereg(this));
+        //getCommand("removereg").setExecutor(new removereg(this));
 
         //CLEARINVENTORY
         getCommand("clearinventory").setExecutor(new clearinventory(this));
