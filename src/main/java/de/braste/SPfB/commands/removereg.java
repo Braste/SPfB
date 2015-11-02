@@ -2,11 +2,15 @@ package de.braste.SPfB.commands;
 
 
 import de.braste.SPfB.SPfB;
+import de.braste.SPfB.exceptions.MySqlPoolableException;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-//TODO
+import java.sql.SQLException;
+import java.util.UUID;
+
 public class removereg implements CommandExecutor {
     private final SPfB plugin;
 
@@ -16,74 +20,39 @@ public class removereg implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        /*if (!(sender instanceof Player)) {
-            boolean ret = false;
-
+        if (!(sender instanceof Player) || (plugin.Funcs.getIsLoggedIn((Player)sender) && sender.hasPermission("SPfB.removereg"))) {
             if (args.length == 1) {
-                Player target;
-                try
-                {
-                    UUID playerId = UUIDFetcher.getUUIDOf(args[0]);
-                    target = sender.getServer().getPlayer(playerId);
-                }
-                catch(Exception e)
-                {
-                    sender.getServer().getLogger().warning("Exception while running UUIDFetcher");
-                    e.printStackTrace();
-                    sender.getServer().getLogger().warning("Trying with player name");
-                    target = sender.getServer().matchPlayer(args[0]).get(0);
-                }
-                if (target != null)
-                {
-                    funcs.removeReg(args[0]);
-                    System.out.println("Registrierung von " + args[0] + " erfolgreiche gelöscht");
-                    ret = true;
-                }
-            } else if (args.length > 1) {
-                System.out.println("Zu viele Parameter:");
-            } else {
-                System.out.println("Zu wenig Parameter:");
-            }
-            return ret;
-        } else {
-            Player player = (Player) sender;
-
-            if (player.hasPermission("SPfB.removereg")) {
-                System.out.println(player.getName() + " used SPfB.removereg");
-                if (plugin.Funcs.getIsLoggedIn(player)) {
-                    boolean ret = false;
-
-                    if (args.length == 1) {
-                        Player target;
-                        try
-                        {
-                            UUID playerId = UUIDFetcher.getUUIDOf(args[0]);
-                            target = sender.getServer().getPlayer(playerId);
-                        }
-                        catch(Exception e)
-                        {
-                            sender.getServer().getLogger().warning("Exception while running UUIDFetcher");
-                            e.printStackTrace();
-                            sender.getServer().getLogger().warning("Trying with player name");
-                            target = sender.getServer().matchPlayer(args[0]).get(0);
-                        }
-                        if (!funcs.isAdmin(target)) {
-                            funcs.removeReg(args[0]);
-                            plugin.Funcs.sendSystemMessage(player, "Registrierung von " + args[0] + " erfolgreiche gelöscht");
-                            ret = true;
-                        } else {
-                            plugin.Funcs.sendSystemMessage(player, "Die Registrierung von Administratoren kann nicht gelöscht werden!");
-                        }
-                    } else if (args.length > 1) {
-                        plugin.Funcs.sendSystemMessage(player, "Zu viele Parameter:");
+                UUID playerId = plugin.Funcs.getUUID(args[0]);
+                try {
+                    if (plugin.Funcs.removeReg(playerId)) {
+                        if (sender instanceof Player)
+                            plugin.Funcs.sendSystemMessage((Player)sender, "Registrierung von " + args[0] + " erfolgreich gelöscht");
+                        else
+                            plugin.getLogger().info("Registrierung von " + args[0] + " erfolgreich gelöscht");
                     } else {
-                        plugin.Funcs.sendSystemMessage(player, "Zu wenig Parameter:");
+                        if (sender instanceof Player)
+                            plugin.Funcs.sendSystemMessage((Player)sender, "Registrierung von " + args[0] + " konnte nicht gelöscht werden");
+                        else
+                            plugin.getLogger().info("Registrierung von " + args[0] + " konnte nicht gelöscht werden");
                     }
-                    return ret;
+                } catch (SQLException | MySqlPoolableException e) {
+                    e.printStackTrace();
                 }
-                else plugin.Funcs.sendSystemMessage(player, "Du bist nicht eingeloggt. Bitte logge dich mit '/login <password>' ein");
+
+            } else if (args.length > 1) {
+                if (sender instanceof Player)
+                    plugin.Funcs.sendSystemMessage((Player)sender, "Zu viele Parameter:");
+                else
+                    plugin.getLogger().info("Zu viele Parameter:");
+            } else {
+                if (sender instanceof Player)
+                    plugin.Funcs.sendSystemMessage((Player)sender, "Zu wenig Parameter:");
+                else
+                    plugin.getLogger().info("Zu wenig Parameter:");
             }
-        }*/
+        } else {
+            plugin.Funcs.sendSystemMessage((Player)sender, "Du bist nicht eingeloggt oder hast nicht die erforderliche Berechtigung SPfB.removereg");
+        }
         return true;
     }
 

@@ -7,16 +7,15 @@ import org.apache.commons.pool.ObjectPool;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import ru.tehkode.permissions.PermissionUser;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class Functions {
     private final ObjectPool _connPool;
@@ -348,19 +347,7 @@ public class Functions {
         return false;
     }
 
-    public boolean login(Player player, String password) {
-        password = getSHA(password);
-        try {
-            return password.equals(getPassword(player)) && setSession(player);
-        } catch (SQLException | MySqlPoolableException e) {
-            e.printStackTrace();
-
-        }
-        return false;
-    }
-
     public boolean login(Player player) {
-        //password = getSHA(password);
         try {
             return setSession(player);
         } catch (SQLException | MySqlPoolableException e) {
@@ -413,6 +400,35 @@ public class Functions {
         return false;
     }
 
+    public boolean removeReg(Player player) throws SQLException, MySqlPoolableException {
+        return removeReg(player.getUniqueId());
+    }
+
+    public boolean removeReg(UUID playerId) throws SQLException, MySqlPoolableException {
+        Connection conn = null;
+        Statement st = null;
+        PermissionUser user = PermissionsEx.getUser(playerId.toString());
+        if (user.inGroup("admin"))
+            return false;
+        try {
+            conn = (Connection) _connPool.borrowObject();
+            st = conn.createStatement();
+            if (st.executeUpdate(String.format("DELETE FROM reg WHERE name = '%s'", playerId.toString())) > 0) {
+                Collection<String> groups = PermissionsEx.getPermissionManager().getGroupNames();
+                groups.stream().filter(user::inGroup).forEach(user::removeGroup);
+                return true;
+            }
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(st);
+            safeClose(conn);
+        }
+        return false;
+    }
+
     public void sendSystemMessage(Player player, String message) {
         message = "&6[SYSTEM] " + message;
         player.sendMessage(message.replaceAll("(&([a-f0-9]))", "\u00A7$2"));
@@ -440,30 +456,32 @@ public class Functions {
         return playerIds;
     }
 
-    public boolean changePassword(Player player, String oldPw, String newPw, String controlPw) throws SQLException, MySqlPoolableException {
+    public List<String[]> listWarpPoints(World world) throws SQLException, MySqlPoolableException {
+        return listWarpPoints(world.getName());
+    }
+
+    public List<String[]> listWarpPoints(String world) throws SQLException, MySqlPoolableException {
+        List<String[]> warppoints = new ArrayList<>();
         Connection conn = null;
         Statement st = null;
-        UUID playerId = player.getUniqueId();
-        oldPw = getSHA(oldPw);
+        ResultSet res = null;
         try {
-            if (newPw.equals(controlPw) && getPassword(player).equals(oldPw)) {
-                conn = (Connection) _connPool.borrowObject();
-                st = conn.createStatement();
-                if (st.executeUpdate(String.format("UPDATE reg SET password = %s WHERE name = '%s'", newPw, playerId.toString())) <= 0) {
-                    updateToUUID(player, "reg", "name", "chagnePassword");
-                    if (st.executeUpdate(String.format("UPDATE reg SET password = %s WHERE name = '%s'", newPw, playerId.toString())) > 0)
-                        return true;
-                }
+            conn = (Connection) _connPool.borrowObject();
+            st = conn.createStatement();
+            res = st.executeQuery(String.format("SELECT name, world FROM warps WHERE world = '%s' ORDER BY world, name", world));
+            while (res.next()) {
+                warppoints.add(new String[]{res.getString("name"), res.getString("world")});
             }
         } catch (SQLException e) {
             throw e;
         } catch (Exception e) {
             throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
         } finally {
+            safeClose(res);
             safeClose(st);
             safeClose(conn);
         }
-        return false;
+        return warppoints;
     }
 
     public int setWarpPoint(Player player, String name) throws SQLException, MySqlPoolableException {
@@ -618,34 +636,6 @@ public class Functions {
             safeClose(st);
             safeClose(conn);
         }
-    }
-
-    private String getPassword(Player player) throws SQLException, MySqlPoolableException {
-        String password = null;
-        Connection conn = null;
-        Statement st = null;
-        ResultSet res = null;
-        UUID playerId = player.getUniqueId();
-        try {
-            conn = (Connection) _connPool.borrowObject();
-            st = conn.createStatement();
-            res = st.executeQuery(String.format("SELECT password FROM reg WHERE name = '%s'", playerId.toString()));
-            if (!res.next()) {
-                updateToUUID(player, "reg", "name", "getPassword");
-                res = st.executeQuery(String.format("SELECT password FROM reg WHERE name = '%s'", playerId.toString()));
-            } else {
-                password = res.getString("password");
-            }
-        } catch (SQLException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
-        } finally {
-            safeClose(res);
-            safeClose(st);
-            safeClose(conn);
-        }
-        return password;
     }
 
     private void safeClose(Connection conn) {

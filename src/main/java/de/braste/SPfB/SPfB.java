@@ -29,7 +29,7 @@ import static java.lang.String.format;
 
 public class SPfB extends JavaPlugin {
     public Functions Funcs;
-    public List<Block> FurnaceBlocks;
+    public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
     private String host;
     private String port;
     private String db;
@@ -60,7 +60,7 @@ public class SPfB extends JavaPlugin {
         saveConfig();
         try {
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
+            //furnaceBlocks = Collections.synchronizedList(new ArrayList<>());
             try {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath() + "/FurnaceBlocks.dat");
@@ -80,7 +80,9 @@ public class SPfB extends JavaPlugin {
                         }
                     }
                 }
-                getLogger().info(format("%s Öfen geladen.", FurnaceBlocks.size()));
+                synchronized (FurnaceBlocks) {
+                    getLogger().info(format("%s Öfen geladen.", FurnaceBlocks.size()));
+                }
             } catch(Exception e) {
                 getLogger().warning("Fehler beim Laden der Öfen aus YAML: ");
                 e.printStackTrace();
@@ -107,12 +109,6 @@ public class SPfB extends JavaPlugin {
         //SETSPAWN
         getCommand("setspawn").setExecutor(new setspawn(this));
 
-        //SETGROUP
-        //getCommand("setgroup").setExecutor(new setgroup(this));
-
-        //GETGROUPS
-        //getCommand("getgroups").setExecutor(new getgroups(this));
-
         //RIFT
         //getCommand("rift").setExecutor(new rift(this));
 
@@ -129,7 +125,7 @@ public class SPfB extends JavaPlugin {
         getCommand("deletewarp").setExecutor(new deletewarp(this));
 
         //REMOVEREG
-        //getCommand("removereg").setExecutor(new removereg(this));
+        getCommand("removereg").setExecutor(new removereg(this));
 
         //CLEARINVENTORY
         getCommand("clearinventory").setExecutor(new clearinventory(this));

@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 
-//TODO
 public class deletewp implements CommandExecutor {
     private final SPfB plugin;
 

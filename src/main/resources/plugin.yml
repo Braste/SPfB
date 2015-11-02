@@ -17,14 +17,6 @@ commands:
  setspawn:
   description: Setzt den Spawnpunkt der aktuellen Welt.
   usage: <command>
- setgroup:
-  description: Aendert die Gruppe des angegebenen Spielers.
-  usage: <command> <player> <group>
-  aliases: ['sgroup']
- getgroups:
-  description: Ruft alle Gruppen des Servers ab.
-  usage: <command>
-  aliases: ['groups']
  warp:
   description: Teleportiert den Spieler zu dem angegebenen Warppunkt in der aktuellen Welt.
   usage: <command> <warplocation>
@@ -33,7 +25,7 @@ commands:
   usage: <command>
   aliases: ['cwarp']
  listwarps:
-  description: Liste alles Warppunkte der aktuellen Welt auf.
+  description: Listet alle Warppunkte der aktuellen Welt auf.
   usage: <command>
   aliases: ['lwarps']
  deletewarp:
@@ -72,3 +64,7 @@ commands:
  rift:
   description: Die Zeit ist eine Schleife.
   usage: <command> [time]
+ removereg:
+  description: Löscht die Registrierung eines Spielers
+  usage: <command> [player]
+  aliases: ['rreg']
