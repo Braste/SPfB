@@ -4,6 +4,8 @@ import de.braste.SPfB.commands.*;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.pool.ObjectPool;
 import org.apache.commons.pool.PoolableObjectFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
@@ -18,6 +20,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -28,6 +31,8 @@ import java.util.*;
 import static java.lang.String.format;
 
 public class SPfB extends JavaPlugin {
+    public static Permission Perms;
+    public static Chat Chat;
     public Functions Funcs;
     public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
     private String host;
@@ -59,8 +64,9 @@ public class SPfB extends JavaPlugin {
         getConfig().options().copyDefaults(true);
         saveConfig();
         try {
+            if (!setupPermissions() || !setupChat())
+                throw new Exception();
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            //furnaceBlocks = Collections.synchronizedList(new ArrayList<>());
             try {
                 File datafolder = getDataFolder();
                 File data = new File(datafolder.getAbsolutePath() + "/FurnaceBlocks.dat");
@@ -200,6 +206,25 @@ public class SPfB extends JavaPlugin {
 
         GenericObjectPoolFactory genericObjectPoolFactory = new GenericObjectPoolFactory(mySqlPoolableObjectFactory, config);
         return genericObjectPoolFactory.createPool();
+    }
+
+    private boolean setupPermissions()
+    {
+        RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null) {
+            Perms = permissionProvider.getProvider();
+        }
+        return (Perms != null);
+    }
+
+    private boolean setupChat()
+    {
+        RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        if (chatProvider != null) {
+            Chat = chatProvider.getProvider();
+        }
+
+        return (Chat != null);
     }
 
     private void UpdateFurnace() {

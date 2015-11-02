@@ -19,8 +19,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.FurnaceInventory;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -111,8 +109,7 @@ class SPfBListener implements Listener {
         Player player = event.getPlayer();
 
         try {
-            PermissionUser user = PermissionsEx.getUser(player);
-            if ((int) plugin.Funcs.getConfigNode("debug", "int") == 2 && !user.inGroup("admin")) {
+            if ((int) plugin.Funcs.getConfigNode("debug", "int") == 2 && !SPfB.Perms.playerInGroup(player, "admin")) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Der Server wird zur Zeit gewartet!");
             } else if (player.getName().regionMatches(true, 0, "Player", 0, 6)) {
                 event.disallow(PlayerLoginEvent.Result.KICK_OTHER, String.format("Name '%s' nicht erlaubt", player.getName()));
@@ -167,9 +164,9 @@ class SPfBListener implements Listener {
         String message = event.getMessage();
 
         if (!message.startsWith("/")) {
-            PermissionUser user = PermissionsEx.getUser(event.getPlayer());
-            String group = user.getParentIdentifiers().get(0);
-            String prefix = user.getPrefix();
+            Player player = event.getPlayer();
+            String group = SPfB.Perms.getPrimaryGroup(player);
+            String prefix = SPfB.Chat.getPlayerPrefix(player) != null ? SPfB.Chat.getPlayerPrefix(player) : SPfB.Chat.getGroupPrefix(player.getWorld(), group);
 
             Date now = new Date();
 

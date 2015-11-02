@@ -7,15 +7,16 @@ import org.apache.commons.pool.ObjectPool;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.security.MessageDigest;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Functions {
     private final ObjectPool _connPool;
@@ -399,23 +400,20 @@ public class Functions {
         }
         return false;
     }
-
     public boolean removeReg(Player player) throws SQLException, MySqlPoolableException {
-        return removeReg(player.getUniqueId());
-    }
-
-    public boolean removeReg(UUID playerId) throws SQLException, MySqlPoolableException {
         Connection conn = null;
         Statement st = null;
-        PermissionUser user = PermissionsEx.getUser(playerId.toString());
-        if (user.inGroup("admin"))
+        UUID playerId = player.getUniqueId();
+        if (!SPfB.Perms.playerInGroup(player, "admin"))
             return false;
         try {
             conn = (Connection) _connPool.borrowObject();
             st = conn.createStatement();
             if (st.executeUpdate(String.format("DELETE FROM reg WHERE name = '%s'", playerId.toString())) > 0) {
-                Collection<String> groups = PermissionsEx.getPermissionManager().getGroupNames();
-                groups.stream().filter(user::inGroup).forEach(user::removeGroup);
+                String[] groups = SPfB.Perms.getPlayerGroups(player);
+                for (String group: groups) {
+                    SPfB.Perms.playerRemoveGroup(player, group);
+                }
                 return true;
             }
         } catch (SQLException e) {
@@ -427,6 +425,10 @@ public class Functions {
             safeClose(conn);
         }
         return false;
+    }
+
+    public boolean removeReg(UUID playerId) throws SQLException, MySqlPoolableException {
+        return removeReg(_plugin.getServer().getPlayer(playerId));
     }
 
     public void sendSystemMessage(Player player, String message) {

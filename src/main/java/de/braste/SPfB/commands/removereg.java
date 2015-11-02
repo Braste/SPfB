@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class removereg implements CommandExecutor {
     private final SPfB plugin;
@@ -22,9 +21,8 @@ public class removereg implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player) || (plugin.Funcs.getIsLoggedIn((Player)sender) && sender.hasPermission("SPfB.removereg"))) {
             if (args.length == 1) {
-                UUID playerId = plugin.Funcs.getUUID(args[0]);
                 try {
-                    if (plugin.Funcs.removeReg(playerId)) {
+                    if (plugin.Funcs.removeReg((Player)sender)) {
                         if (sender instanceof Player)
                             plugin.Funcs.sendSystemMessage((Player)sender, "Registrierung von " + args[0] + " erfolgreich gelöscht");
                         else

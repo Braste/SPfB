@@ -2,6 +2,7 @@ name: SPfB
 main: de.braste.SPfB.SPfB
 version: 1.3.3 (Spigot 1.8.8)
 author: Braste
+depend: [Vault]
 
 commands:
  home:
