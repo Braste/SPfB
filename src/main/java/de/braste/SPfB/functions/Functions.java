@@ -615,6 +615,66 @@ public class Functions {
         return false;
     }
 
+    public Location getPortalDestination(String id) throws MySqlPoolableException, SQLException {
+        Location loc = null;
+        Connection conn = null;
+        Statement st = null;
+        ResultSet res = null;
+        try {
+            conn = (Connection) _connPool.borrowObject();
+            st = conn.createStatement();
+            res = st.executeQuery(String.format("SELECT target FROM portals WHERE name = '%s'", id));
+            if (res.next()) {
+                res = st.executeQuery(String.format("SELECT world, x, y, z FROM portals WHERE name = '%s'", res.getString("target")));
+                if (res.next()) {
+                    World world = _plugin.getServer().getWorld(res.getString("world"));
+                    loc = new Location(world, res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
+                }
+            } else {
+
+            }
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(res);
+            safeClose(st);
+            safeClose(conn);
+        }
+        return loc;
+    }
+
+    /*public Location createPortal(String id, ) throws MySqlPoolableException, SQLException {
+        Location loc = null;
+        Connection conn = null;
+        Statement st = null;
+        ResultSet res = null;
+        try {
+            conn = (Connection) _connPool.borrowObject();
+            st = conn.createStatement();
+            res = st.executeQuery(String.format("SELECT target FROM portals WHERE name = '%s'", id));
+            if (res.next()) {
+                res = st.executeQuery(String.format("SELECT world, x, y, z FROM portals WHERE name = '%s'", res.getString("target")));
+                if (res.next()) {
+                    World world = _plugin.getServer().getWorld(res.getString("world"));
+                    loc = new Location(world, res.getDouble("x"), res.getDouble("y"), res.getDouble("z"), res.getFloat("rotX"), 0);
+                }
+            } else {
+
+            }
+        } catch (SQLException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new MySqlPoolableException("Failed to borrow connection from the pool", e);
+        } finally {
+            safeClose(res);
+            safeClose(st);
+            safeClose(conn);
+        }
+        return loc;
+    }*/
+
     private void updateToUUID(Player player, String table, String field, String function) throws SQLException, MySqlPoolableException {
         updateToUUID(player.getUniqueId(), player.getName(), table, field, function);
     }

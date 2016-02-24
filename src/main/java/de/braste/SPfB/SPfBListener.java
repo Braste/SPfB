@@ -22,10 +22,12 @@ import org.bukkit.inventory.FurnaceInventory;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-import static org.bukkit.block.BlockFace.DOWN;
+import static org.bukkit.block.BlockFace.*;
 
 class SPfBListener implements Listener {
 
@@ -84,6 +86,116 @@ class SPfBListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
+        if (event.getLine(0).equals("[gate]") && event.getPlayer().hasPermission("SPFB.createGate"))
+        {
+            String id = event.getLine(1);
+            String matString = event.getLine(2);
+            Material mat = Material.PORTAL;
+
+            if (!matString.equals(""))
+                mat = Material.valueOf(matString);
+            synchronized (plugin.Portals) {
+                if (plugin.Portals.containsKey(id))
+                    return;
+                plugin.Portals.put(id, new HashMap<>());
+            }
+
+            BlockState state = event.getBlock().getState();
+            BlockFace face = ((org.bukkit.material.Sign) state.getData()).getFacing();
+            Block b = event.getBlock().getRelative(face.getOppositeFace());
+
+            if (b == null)
+                return;
+            Material m = b.getType();
+
+            AddBlock(b, m, id, face, false);
+            AddBlock(b.getRelative(BlockFace.UP), m, id, face, true);
+            CreatePortal(id, mat);
+        }
+
+    }
+
+    private void CreatePortal(String id, Material mat)
+    {
+        synchronized (plugin.Portals) {
+            if (!plugin.Portals.containsKey(id))
+                return;
+            for (Block b : plugin.Portals.get(id).get(1)) {
+                b.setType(mat, false);
+            }
+        }
+    }
+
+    private void AddBlock(Block block, Material mat, String id, BlockFace face, boolean up) {
+        if (!block.getType().equals(mat))
+            return;
+
+        synchronized (plugin.Portals) {
+            if (plugin.Portals.get(id).get(0) == null)
+                plugin.Portals.get(id).put(0, new ArrayList<>());
+
+            plugin.Portals.get(id).get(0).add(block);
+        }
+
+        Block b = null;
+        switch (face)
+        {
+            case NORTH:
+                b = block.getRelative(EAST);
+                break;
+            case SOUTH:
+                b = block.getRelative(WEST);
+                break;
+            case WEST:
+                b = block.getRelative(NORTH);
+                break;
+            case EAST:
+                b = block.getRelative(SOUTH);
+                break;
+        }
+        if (!b.getType().equals(Material.AIR)) {
+            if (!b.getType().equals(mat))
+                return;
+            AddBlock(b, mat, id, face, up);
+            return;
+        }
+        AddAirBlock(b, mat, id, face);
+        if (up)
+            b = block.getRelative(UP);
+        else
+            b = block.getRelative(DOWN);
+        AddBlock(b, mat, id, face, up);
+    }
+
+    private void AddAirBlock(Block block, Material mat, String id, BlockFace face) {
+        if (!block.getType().equals(Material.AIR)) {
+            if (!block.getType().equals(mat))
+                return;
+            synchronized (plugin.Portals) {
+                plugin.Portals.get(id).get(0).add(block);
+            }
+            return;
+        }
+        synchronized (plugin.Portals) {
+            plugin.Portals.get(id).get(1).add(block);
+        }
+        Block b = null;
+        switch (face)
+        {
+            case NORTH:
+                b = block.getRelative(WEST);
+                break;
+            case SOUTH:
+                b = block.getRelative(EAST);
+                break;
+            case WEST:
+                b = block.getRelative(SOUTH);
+                break;
+            case EAST:
+                b = block.getRelative(NORTH);
+                break;
+        }
+        AddAirBlock(b, mat, id, face);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

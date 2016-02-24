@@ -35,6 +35,7 @@ public class SPfB extends JavaPlugin {
     public static Chat Chat;
     public Functions Funcs;
     public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
+    public final Map<String, Map<Integer, List<Block>>> Portals = Collections.synchronizedMap(new HashMap<>());
     private String host;
     private String port;
     private String db;
