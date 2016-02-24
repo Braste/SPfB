@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -69,9 +70,12 @@ class SPfBListener implements Listener {
         Block blockBreak = event.getBlock();
         synchronized (plugin.Portals) {
             for (String id : plugin.Portals.keySet()) {
-                if (plugin.Portals.get(id).get(0).contains(blockBreak) || plugin.Portals.get(id).get(1).contains(blockBreak))
+                if (plugin.Portals.get(id).get(0).contains(blockBreak) || plugin.Portals.get(id).get(1).contains(blockBreak)) {
+                    for (Block b : plugin.Portals.get(id).get(1))
+                        b.setType(Material.AIR);
                     plugin.Portals.remove(id);
-                return;
+                    return;
+                }
             }
         }
         synchronized (plugin.FurnaceBlocks) {
@@ -375,6 +379,19 @@ class SPfBListener implements Listener {
         }
         if (damager instanceof Player && !plugin.Funcs.getIsLoggedIn((Player) damager)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onEntityDamage(final EntityDamageEvent event) {
+
+        if (event.getCause() == EntityDamageEvent.DamageCause.DROWNING || event.getCause() == EntityDamageEvent.DamageCause.FIRE || event.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK || event.getCause() == EntityDamageEvent.DamageCause.LAVA) {
+            Location loc = event.getEntity().getLocation();
+            String gate = findGate(loc);
+            if (gate != null) {
+                event.setCancelled(true);
+                event.getEntity().setFireTicks(0);
+            }
         }
     }
 
