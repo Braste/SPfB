@@ -64,6 +64,10 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
         }
         Block blockBreak = event.getBlock();
+        synchronized (plugin.Portals) {
+            plugin.Portals.keySet().stream().filter(id -> plugin.Portals.get(id).values().contains(blockBreak)).forEach(plugin.Portals::remove);
+        }
+
         synchronized (plugin.FurnaceBlocks) {
             if (!plugin.FurnaceBlocks.contains(blockBreak)) {
                 return;
@@ -111,8 +115,8 @@ class SPfBListener implements Listener {
             AddBlock(b, m, id, face, false, false);
             AddBlock(b.getRelative(BlockFace.UP), m, id, face, true, false);
             CreatePortal(id, mat);
+            event.getBlock().breakNaturally();
         }
-
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
