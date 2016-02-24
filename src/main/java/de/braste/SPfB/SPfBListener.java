@@ -106,14 +106,14 @@ class SPfBListener implements Listener {
             String matString = event.getLine(2);
             Material mat = Material.PORTAL;
 
-            switch (matString) {
+            /*switch (matString) {
                 case "lava":
                     mat = Material.STATIONARY_LAVA;
                     break;
                 case "water":
                     mat = Material.STATIONARY_WATER;
                     break;
-            }
+            }*/
 
             synchronized (plugin.Portals) {
                 if (plugin.Portals.containsKey(id))
