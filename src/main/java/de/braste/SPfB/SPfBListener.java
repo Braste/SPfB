@@ -606,7 +606,7 @@ class SPfBListener implements Listener {
                         break;
                     final double distance = distanceBetweenLocations(loc, bLoc);
 
-                    if (distance > 0)
+                    if (distance > 1)
                         continue;
 
                     if (shortestDistance == -1 || shortestDistance > distance) {
