@@ -4,6 +4,7 @@ import de.braste.SPfB.commands.*;
 import de.braste.SPfB.exceptions.MySqlPoolableException;
 import de.braste.SPfB.functions.Functions;
 import de.braste.SPfB.functions.MySqlPoolableObjectFactory;
+import de.braste.SPfB.object.Gate;
 import net.milkbowl.vault.chat.Chat;
 import net.milkbowl.vault.permission.Permission;
 import org.apache.commons.pool.ObjectPool;
@@ -35,7 +36,7 @@ public class SPfB extends JavaPlugin {
     public static Chat Chat;
     public Functions Funcs;
     public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
-    public final Map<String, Map<Integer, List<Block>>> Portals = Collections.synchronizedMap(new HashMap<>());
+    public static final List<Gate> Portals = Collections.synchronizedList(new ArrayList<>());
     private String host;
     private String port;
     private String db;
