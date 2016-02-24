@@ -1,6 +1,7 @@
 package de.braste.SPfB;
 
 import de.braste.SPfB.exceptions.MySqlPoolableException;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -14,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPortalEnterEvent;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -22,16 +24,14 @@ import org.bukkit.inventory.FurnaceInventory;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.bukkit.block.BlockFace.*;
 
 class SPfBListener implements Listener {
 
     private final SPfB plugin;
+    private final HashMap<Player, Location> playerLocationAtEvent = new HashMap<>();
 
     public SPfBListener(final SPfB instance) {
         plugin = instance;
@@ -92,8 +92,8 @@ class SPfBListener implements Listener {
             String matString = event.getLine(2);
             Material mat = Material.PORTAL;
 
-            if (!matString.equals(""))
-                mat = Material.valueOf(matString);
+            /*if (!matString.equals(""))
+                mat = Material.valueOf(matString);*/
             synchronized (plugin.Portals) {
                 if (plugin.Portals.containsKey(id))
                     return;
@@ -113,95 +113,6 @@ class SPfBListener implements Listener {
             CreatePortal(id, mat);
         }
 
-    }
-
-    private void CreatePortal(String id, Material mat)
-    {
-        synchronized (plugin.Portals) {
-            if (!plugin.Portals.containsKey(id))
-                return;
-            for (Block b : plugin.Portals.get(id).get(1)) {
-                b.setType(mat, false);
-            }
-        }
-    }
-
-    private void AddBlock(Block block, Material mat, String id, BlockFace face, boolean up, boolean frame) {
-        if (!block.getType().equals(mat))
-            return;
-
-        synchronized (plugin.Portals) {
-            if (plugin.Portals.get(id).get(0) == null)
-                plugin.Portals.get(id).put(0, new ArrayList<>());
-
-            plugin.Portals.get(id).get(0).add(block);
-        }
-
-        Block b = null;
-        switch (face)
-        {
-            case NORTH:
-                b = block.getRelative(EAST);
-                break;
-            case SOUTH:
-                b = block.getRelative(WEST);
-                break;
-            case WEST:
-                b = block.getRelative(NORTH);
-                break;
-            case EAST:
-                b = block.getRelative(SOUTH);
-                break;
-        }
-        if (!b.getType().equals(Material.AIR) || frame) {
-            if (!b.getType().equals(mat))
-                return;
-            AddBlock(b, mat, id, face, up, true);
-            return;
-        }
-        AddAirBlock(b, mat, id, face);
-        if (up)
-            b = block.getRelative(UP);
-        else
-            b = block.getRelative(DOWN);
-        AddBlock(b, mat, id, face, up, false);
-    }
-
-    private void AddAirBlock(Block block, Material mat, String id, BlockFace face) {
-        if (!block.getType().equals(Material.AIR)) {
-            if (!block.getType().equals(mat))
-                return;
-            synchronized (plugin.Portals) {
-                if (plugin.Portals.get(id).get(0) == null)
-                    plugin.Portals.get(id).put(0, new ArrayList<>());
-
-                plugin.Portals.get(id).get(0).add(block);
-            }
-            return;
-        }
-        synchronized (plugin.Portals) {
-            if (plugin.Portals.get(id).get(1) == null)
-                plugin.Portals.get(id).put(1, new ArrayList<>());
-
-            plugin.Portals.get(id).get(1).add(block);
-        }
-        Block b = null;
-        switch (face)
-        {
-            case NORTH:
-                b = block.getRelative(EAST);
-                break;
-            case SOUTH:
-                b = block.getRelative(WEST);
-                break;
-            case WEST:
-                b = block.getRelative(NORTH);
-                break;
-            case EAST:
-                b = block.getRelative(SOUTH);
-                break;
-        }
-        AddAirBlock(b, mat, id, face);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -388,6 +299,21 @@ class SPfBListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
             event.setCancelled(true);
         }
+
+        Location loc = playerLocationAtEvent.get(event.getPlayer());
+        String gate = findGate(loc);
+        if (gate != null)
+            event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityPortalEnterEvent(final EntityPortalEnterEvent event) {
+        if (event.getEntity() instanceof Player) {
+            final Player player = (Player) event.getEntity();
+
+            final Location playerLocation = event.getLocation();
+            this.playerLocationAtEvent.put(player, playerLocation);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -515,6 +441,128 @@ class SPfBListener implements Listener {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void CreatePortal(String id, Material mat)
+    {
+        synchronized (plugin.Portals) {
+            if (!plugin.Portals.containsKey(id))
+                return;
+            for (Block b : plugin.Portals.get(id).get(1)) {
+                b.setType(mat, false);
+            }
+        }
+    }
+
+    private void AddBlock(Block block, Material mat, String id, BlockFace face, boolean up, boolean frame) {
+        if (!block.getType().equals(mat))
+            return;
+
+        synchronized (plugin.Portals) {
+            if (plugin.Portals.get(id).get(0) == null)
+                plugin.Portals.get(id).put(0, new ArrayList<>());
+
+            plugin.Portals.get(id).get(0).add(block);
+        }
+
+        Block b = null;
+        switch (face)
+        {
+            case NORTH:
+                b = block.getRelative(EAST);
+                break;
+            case SOUTH:
+                b = block.getRelative(WEST);
+                break;
+            case WEST:
+                b = block.getRelative(NORTH);
+                break;
+            case EAST:
+                b = block.getRelative(SOUTH);
+                break;
+        }
+        if (!b.getType().equals(Material.AIR) || frame) {
+            if (!b.getType().equals(mat))
+                return;
+            AddBlock(b, mat, id, face, up, true);
+            return;
+        }
+        AddAirBlock(b, mat, id, face);
+        if (up)
+            b = block.getRelative(UP);
+        else
+            b = block.getRelative(DOWN);
+        AddBlock(b, mat, id, face, up, false);
+    }
+
+    private void AddAirBlock(Block block, Material mat, String id, BlockFace face) {
+        if (!block.getType().equals(Material.AIR)) {
+            if (!block.getType().equals(mat))
+                return;
+            synchronized (plugin.Portals) {
+                if (plugin.Portals.get(id).get(0) == null)
+                    plugin.Portals.get(id).put(0, new ArrayList<>());
+
+                plugin.Portals.get(id).get(0).add(block);
+            }
+            return;
+        }
+        synchronized (plugin.Portals) {
+            if (plugin.Portals.get(id).get(1) == null)
+                plugin.Portals.get(id).put(1, new ArrayList<>());
+
+            plugin.Portals.get(id).get(1).add(block);
+        }
+        Block b = null;
+        switch (face)
+        {
+            case NORTH:
+                b = block.getRelative(EAST);
+                break;
+            case SOUTH:
+                b = block.getRelative(WEST);
+                break;
+            case WEST:
+                b = block.getRelative(NORTH);
+                break;
+            case EAST:
+                b = block.getRelative(SOUTH);
+                break;
+        }
+        AddAirBlock(b, mat, id, face);
+    }
+
+    private String findGate(Location loc) {
+        double shortestDistance = -1;
+        String nearestGate = null;
+
+        synchronized (plugin.Portals) {
+            for (String id : plugin.Portals.keySet()) {
+                List<Block> gateBlocks = plugin.Portals.get(id).get(1);
+                for (Block b : gateBlocks) {
+                    Location bLoc = b.getLocation();
+                    if (!loc.getWorld().equals(bLoc.getWorld()))
+                        break;
+                    final double distance = distanceBetweenLocations(loc, bLoc);
+
+                    if (distance > 10)
+                        break;
+
+                    if (shortestDistance == -1 || shortestDistance > distance) {
+                        nearestGate = id;
+                        shortestDistance = distance;
+                    }
+                }
+            }
+        }
+        return nearestGate;
+    }
+
+    private static double distanceBetweenLocations(final Location location1, final Location location2) {
+        final double X = location1.getX() - location2.getX();
+        final double Y = location1.getY() - location2.getY();
+        final double Z = location1.getZ() - location2.getZ();
+        return Math.sqrt(X * X + Y * Y + Z * Z);
     }
 
     public SPfB getPlugin() {
