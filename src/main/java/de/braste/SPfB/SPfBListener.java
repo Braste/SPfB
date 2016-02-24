@@ -24,7 +24,10 @@ import org.bukkit.inventory.FurnaceInventory;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.bukkit.block.BlockFace.*;
 
@@ -65,9 +68,12 @@ class SPfBListener implements Listener {
         }
         Block blockBreak = event.getBlock();
         synchronized (plugin.Portals) {
-            plugin.Portals.keySet().stream().filter(id -> plugin.Portals.get(id).values().contains(blockBreak)).forEach(plugin.Portals::remove);
+            for (String id : plugin.Portals.keySet()) {
+                if (plugin.Portals.get(id).get(0).contains(blockBreak) || plugin.Portals.get(id).get(1).contains(blockBreak))
+                    plugin.Portals.remove(id);
+                return;
+            }
         }
-
         synchronized (plugin.FurnaceBlocks) {
             if (!plugin.FurnaceBlocks.contains(blockBreak)) {
                 return;
@@ -96,8 +102,15 @@ class SPfBListener implements Listener {
             String matString = event.getLine(2);
             Material mat = Material.PORTAL;
 
-            /*if (!matString.equals(""))
-                mat = Material.valueOf(matString);*/
+            switch (matString) {
+                case "lava":
+                    mat = Material.STATIONARY_LAVA;
+                    break;
+                case "water":
+                    mat = Material.STATIONARY_WATER;
+                    break;
+            }
+
             synchronized (plugin.Portals) {
                 if (plugin.Portals.containsKey(id))
                     return;
@@ -131,6 +144,26 @@ class SPfBListener implements Listener {
             }
             else {
                 RemoveFurnace(block, event);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockFromTo(final BlockFromToEvent event) {
+        if (event.isCancelled())
+            return;
+
+        final Block block = event.getBlock();
+
+        if (!block.getType().equals(Material.STATIONARY_WATER) && !block.getType().equals(Material.STATIONARY_LAVA))
+            return;
+
+        synchronized (plugin.Portals) {
+            for (String id : plugin.Portals.keySet()) {
+                if (plugin.Portals.get(id).get(1).contains(block)) {
+                    event.setCancelled(true);
+                    return;
+                }
             }
         }
     }
@@ -310,16 +343,6 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onEntityPortalEnterEvent(final EntityPortalEnterEvent event) {
-        if (event.getEntity() instanceof Player) {
-            final Player player = (Player) event.getEntity();
-
-            final Location playerLocation = event.getLocation();
-            this.playerLocationAtEvent.put(player, playerLocation);
-        }
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerShearEntity(final PlayerShearEntityEvent event) {
         if (!plugin.Funcs.getIsLoggedIn(event.getPlayer())) {
@@ -333,6 +356,13 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerMove(final PlayerMoveEvent event) {
+        Location loc = event.getTo();
+        String gate = findGate(loc);
+    }
+
     //endregion
 
     //region Entity
@@ -345,6 +375,16 @@ class SPfBListener implements Listener {
         }
         if (damager instanceof Player && !plugin.Funcs.getIsLoggedIn((Player) damager)) {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+    public void onEntityPortalEnterEvent(final EntityPortalEnterEvent event) {
+        if (event.getEntity() instanceof Player) {
+            final Player player = (Player) event.getEntity();
+
+            final Location playerLocation = event.getLocation();
+            this.playerLocationAtEvent.put(player, playerLocation);
         }
     }
     //endregion
@@ -549,8 +589,8 @@ class SPfBListener implements Listener {
                         break;
                     final double distance = distanceBetweenLocations(loc, bLoc);
 
-                    if (distance > 10)
-                        break;
+                    if (distance > 0)
+                        continue;
 
                     if (shortestDistance == -1 || shortestDistance > distance) {
                         nearestGate = id;
