@@ -172,11 +172,17 @@ class SPfBListener implements Listener {
             if (!block.getType().equals(mat))
                 return;
             synchronized (plugin.Portals) {
+                if (plugin.Portals.get(id).get(0) == null)
+                    plugin.Portals.get(id).put(0, new ArrayList<>());
+
                 plugin.Portals.get(id).get(0).add(block);
             }
             return;
         }
         synchronized (plugin.Portals) {
+            if (plugin.Portals.get(id).get(1) == null)
+                plugin.Portals.get(id).put(1, new ArrayList<>());
+
             plugin.Portals.get(id).get(1).add(block);
         }
         Block b = null;
