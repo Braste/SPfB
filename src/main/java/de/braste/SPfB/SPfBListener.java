@@ -108,8 +108,8 @@ class SPfBListener implements Listener {
                 return;
             Material m = b.getType();
 
-            AddBlock(b, m, id, face, false);
-            AddBlock(b.getRelative(BlockFace.UP), m, id, face, true);
+            AddBlock(b, m, id, face, false, false);
+            AddBlock(b.getRelative(BlockFace.UP), m, id, face, true, false);
             CreatePortal(id, mat);
         }
 
@@ -126,7 +126,7 @@ class SPfBListener implements Listener {
         }
     }
 
-    private void AddBlock(Block block, Material mat, String id, BlockFace face, boolean up) {
+    private void AddBlock(Block block, Material mat, String id, BlockFace face, boolean up, boolean frame) {
         if (!block.getType().equals(mat))
             return;
 
@@ -153,10 +153,10 @@ class SPfBListener implements Listener {
                 b = block.getRelative(SOUTH);
                 break;
         }
-        if (!b.getType().equals(Material.AIR)) {
+        if (!b.getType().equals(Material.AIR) || frame) {
             if (!b.getType().equals(mat))
                 return;
-            AddBlock(b, mat, id, face, up);
+            AddBlock(b, mat, id, face, up, true);
             return;
         }
         AddAirBlock(b, mat, id, face);
@@ -164,7 +164,7 @@ class SPfBListener implements Listener {
             b = block.getRelative(UP);
         else
             b = block.getRelative(DOWN);
-        AddBlock(b, mat, id, face, up);
+        AddBlock(b, mat, id, face, up, false);
     }
 
     private void AddAirBlock(Block block, Material mat, String id, BlockFace face) {
@@ -189,16 +189,16 @@ class SPfBListener implements Listener {
         switch (face)
         {
             case NORTH:
-                b = block.getRelative(WEST);
-                break;
-            case SOUTH:
                 b = block.getRelative(EAST);
                 break;
+            case SOUTH:
+                b = block.getRelative(WEST);
+                break;
             case WEST:
-                b = block.getRelative(SOUTH);
+                b = block.getRelative(NORTH);
                 break;
             case EAST:
-                b = block.getRelative(NORTH);
+                b = block.getRelative(SOUTH);
                 break;
         }
         AddAirBlock(b, mat, id, face);
