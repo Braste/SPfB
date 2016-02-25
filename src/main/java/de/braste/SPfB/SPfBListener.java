@@ -119,22 +119,20 @@ class SPfBListener implements Listener {
 
             Gate gate;
             synchronized (SPfB.Portals) {
-                for (Gate g : SPfB.Portals)
-                {
-                    if (g.getId().equals(id))
-                        return;
-                }
                 BlockState state = event.getBlock().getState();
                 BlockFace face = ((org.bukkit.material.Sign) state.getData()).getFacing();
                 Block b = event.getBlock().getRelative(face.getOppositeFace());
-                gate = new Gate(id, mat, face.getOppositeFace(), b);
-                if (gate.getIsValid()) {
-                    SPfB.Portals.add(gate);
+                for (Gate g : SPfB.Portals)
+                {
+                    if (g.getId().equals(id) || g.containsBlock(b))
+                        return;
                 }
+                gate = new Gate(id, mat, face.getOppositeFace(), b);
+                if (!gate.getIsValid())
+                    return;
+                SPfB.Portals.add(gate);
+                event.getBlock().breakNaturally();
             }
-            if (!gate.getIsValid())
-                return;
-            event.getBlock().breakNaturally();
         }
     }
 
@@ -165,7 +163,10 @@ class SPfBListener implements Listener {
             return;
 
         synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.containsFrameBlock(block)).forEach(g -> event.setCancelled(true));
+            SPfB.Portals.stream().filter(g -> g.containsBlock(block)).forEach(g -> {
+                event.setCancelled(true);
+                return;
+            });
         }
     }
     //endregion
