@@ -19,7 +19,8 @@ public class Gate {
     private BlockFace facing;
     private transient Map<BlockFace, List<Block>> frameBlocks;
     private transient  List<Block> portalBlocks;
-    private Material material;
+    private Material portalMaterial;
+    private Material frameMaterial;
     private Location startBlockLocation;
     private Location teleportLocation;
     private transient boolean isValid;
@@ -29,12 +30,13 @@ public class Gate {
     public Gate(String id, Material mat, BlockFace facing, Block startBlock) {
         isValid = false;
         this.id = id;
-        this.material = mat;
+        this.portalMaterial = mat;
         this.facing = facing;
         frameBlocks = new HashMap<>();
         portalBlocks = new ArrayList<>();
         faceCount = new HashMap<>();
         world = startBlock.getWorld();
+        frameMaterial = startBlock.getType();
         startBlockLocation = startBlock.getLocation();
         createPortal(startBlock);
     }
@@ -42,7 +44,7 @@ public class Gate {
     public Gate(String id, Material mat, BlockFace facing, Block startBlock, Gate to) {
         isValid = false;
         this.id = id;
-        this.material = mat;
+        this.portalMaterial = mat;
         this.to = to;
         this.toId = to.getId();
         this.facing = facing;
@@ -50,6 +52,7 @@ public class Gate {
         portalBlocks = new ArrayList<>();
         faceCount = new HashMap<>();
         world = startBlock.getWorld();
+        frameMaterial = startBlock.getType();
         startBlockLocation = startBlock.getLocation();
         createPortal(startBlock);
     }
@@ -113,7 +116,7 @@ public class Gate {
         facing = null;
         frameBlocks = null;
         portalBlocks = null;
-        material = null;
+        portalMaterial = null;
         teleportLocation = null;
         faceCount = null;
         world = null;
@@ -122,6 +125,7 @@ public class Gate {
     private void loadGate () {
         isValid = false;
         Block startBlock = world.getBlockAt(startBlockLocation);
+        frameMaterial = startBlock.getType();
         createPortal(startBlock);
     }
 
@@ -162,7 +166,7 @@ public class Gate {
         BlockFace dir = direction;
 
         if (!b.getType().equals(Material.AIR)) {
-            if (!b.getType().equals(material)) {
+            if (!b.getType().equals(portalMaterial)) {
                 isValid = false;
                 return;
             }
