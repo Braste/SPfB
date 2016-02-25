@@ -49,6 +49,14 @@ class SPfBListener implements Listener {
             event.setCancelled(true);
         }
         Block placedBlock = event.getBlock();
+        synchronized (SPfB.Portals) {
+            for (Gate g : SPfB.Portals) {
+                if (g.containsBlock(event.getBlockReplacedState().getBlock())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+        }
         if (placedBlock.getType() == Material.FURNACE) {
             Block blockUnder = placedBlock.getRelative(DOWN);
             if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
@@ -69,7 +77,7 @@ class SPfBListener implements Listener {
         }
         Block blockBreak = event.getBlock();
         synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.containsFrame(blockBreak)).forEach(de.braste.SPfB.object.Gate::removeGate);
+            SPfB.Portals.stream().filter(g -> g.containsFrameBlock(blockBreak)).forEach(de.braste.SPfB.object.Gate::removeGate);
         }
         synchronized (plugin.FurnaceBlocks) {
             if (!plugin.FurnaceBlocks.contains(blockBreak)) {
@@ -145,7 +153,7 @@ class SPfBListener implements Listener {
             return;
 
         synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.containsFrame(block)).forEach(g -> event.setCancelled(true));
+            SPfB.Portals.stream().filter(g -> g.containsFrameBlock(block)).forEach(g -> event.setCancelled(true));
         }
     }
     //endregion
@@ -323,6 +331,8 @@ class SPfBListener implements Listener {
         synchronized (SPfB.Portals) {
             for (Gate g : SPfB.Portals) {
                 if (g.containsBlock(b)) {
+                    if (g.getTeleportLocation() != null)
+                        event.getPlayer().teleport(g.getTeleportLocation());
                     event.setCancelled(true);
                     return;
                 }
@@ -373,7 +383,7 @@ class SPfBListener implements Listener {
             Block b = event.getEntity().getWorld().getBlockAt(loc);
             synchronized (SPfB.Portals) {
                 for (Gate g : SPfB.Portals) {
-                    if (g.containsBlock(b)) {
+                    if (g.getIsValid() && g.containsBlock(b)) {
                         event.setCancelled(true);
                         event.getEntity().setFireTicks(0);
                         return;

@@ -24,7 +24,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
-
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -42,13 +41,19 @@ public class SPfB extends JavaPlugin {
     private String db;
     private String user;
     private String pw;
-    private YamlConfiguration config;
+    private ConfigurationSection database;
+    private ConfigurationSection furnaces;
+    private ConfigurationSection gates;
+    //private YamlConfiguration config;
 
     @Override
     public void onEnable() {
         PluginManager pm = getServer().getPluginManager();
         PluginDescriptionFile pdfFile = this.getDescription();
-        ConfigurationSection database = getConfig().getConfigurationSection("mysql");
+        database = getConfig().getConfigurationSection("mysql");
+        furnaces = getConfig().getConfigurationSection("Furnace");
+        gates = getConfig().getConfigurationSection("Gates");
+
         if (database != null) {
             host = database.getString("host");
             port = database.getString("port");
@@ -69,38 +74,11 @@ public class SPfB extends JavaPlugin {
             if (!setupPermissions() || !setupChat())
                 throw new Exception();
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            try {
-                File datafolder = getDataFolder();
-                File data = new File(datafolder.getAbsolutePath() + "/FurnaceBlocks.dat");
-                config = YamlConfiguration.loadConfiguration(data);
-
-                ConfigurationSection furnaces = config.getConfigurationSection("Furnace");
-                Set<String> keys = furnaces.getKeys(true);
-
-                for (String key: keys) {
-                   List<List<Double>> map = (List<List<Double>>) furnaces.get(key);
-                    for (List<Double> d: map) {
-                        Block b = getServer().getWorld(key).getBlockAt(d.get(0).intValue(), d.get(1).intValue(), d.get(2).intValue());
-                        if (b != null) {
-                            synchronized (FurnaceBlocks) {
-                                FurnaceBlocks.add(b);
-                            }
-                        }
-                    }
-                }
-                synchronized (FurnaceBlocks) {
-                    getLogger().info(format("%s Öfen geladen.", FurnaceBlocks.size()));
-                }
-            } catch(Exception e) {
-                getLogger().warning("Fehler beim Laden der Öfen aus YAML: ");
-                e.printStackTrace();
-            }
-
-
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::UpdateFurnace, 2400L, 2400L);
+            Thread.sleep(10000);
+            loadFurnaces();
+            loadGates();
         } catch (Exception e) {
             getLogger().warning(format("%s kann nicht geladen werden: ", pdfFile.getName()));
-
             return;
         }
         pm.registerEvents(new SPfBListener(this), this);
@@ -188,8 +166,13 @@ public class SPfB extends JavaPlugin {
                     map.put(loc.getWorld().getName(), list);
                 }
             }
-            config.set("Furnace", map);
-            config.save(datafolder.getAbsolutePath() + "/FurnaceBlocks.dat");
+            //config.set("Furnace", map);
+            getConfig().createSection("Furnace");
+            getConfig().set("Furnace", map);
+            getConfig().createSection("Gates");
+            getConfig().set("Gates", Portals);
+            saveConfig();
+            //config.save(datafolder.getAbsolutePath() + "/Blocks.dat");
         } catch(Exception ignored) {
 
         }
@@ -227,6 +210,48 @@ public class SPfB extends JavaPlugin {
         }
 
         return (Chat != null);
+    }
+
+    private void loadFurnaces() {
+        try {
+            if (furnaces == null) {
+                File dataFolder = getDataFolder();
+                File data = new File(dataFolder.getAbsolutePath() + "/FurnaceBlocks.dat");
+                YamlConfiguration config = YamlConfiguration.loadConfiguration(data);
+                furnaces = config.getConfigurationSection("Furnace");
+            }
+            Set<String> keys = furnaces.getKeys(true);
+
+            for (String key: keys) {
+                List<List<Double>> map = (List<List<Double>>) furnaces.get(key);
+                for (List<Double> d: map) {
+                    Block b = getServer().getWorld(key).getBlockAt(d.get(0).intValue(), d.get(1).intValue(), d.get(2).intValue());
+                    if (b != null) {
+                        synchronized (FurnaceBlocks) {
+                            FurnaceBlocks.add(b);
+                        }
+                    }
+                }
+            }
+            synchronized (FurnaceBlocks) {
+                getLogger().info(format("%s Öfen geladen.", FurnaceBlocks.size()));
+            }
+        } catch(Exception e) {
+            getLogger().warning("Fehler beim Laden der Öfen: ");
+            e.printStackTrace();
+        }
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::UpdateFurnace, 2400L, 2400L);
+    }
+
+    private void loadGates() {
+        try {
+
+            boolean b = true;
+
+        } catch(Exception e) {
+            getLogger().warning("Fehler beim Laden der Portale: ");
+            e.printStackTrace();
+        }
     }
 
     private void UpdateFurnace() {

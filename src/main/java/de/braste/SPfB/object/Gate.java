@@ -3,6 +3,7 @@ package de.braste.SPfB.object;
 import de.braste.SPfB.SPfB;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 
@@ -13,33 +14,47 @@ import static org.bukkit.block.BlockFace.*;
 public class Gate {
     private String id;
     private Gate to;
+    private String toId;
     private BlockFace facing;
-    private Map<BlockFace, List<Block>> frameBlocks;
-    private List<Block> portalBlocks;
+    private transient Map<BlockFace, List<Block>> frameBlocks;
+    private transient  List<Block> portalBlocks;
     private Material material;
+    private Location startBlockLocation;
     private Location teleportLocation;
-    private boolean isValid;
+    private transient boolean isValid;
     private Map<BlockFace, Integer> faceCount;
+    private World world;
 
     public Gate(String id, Material mat, BlockFace facing, Block startBlock) {
+        isValid = false;
         this.id = id;
         this.material = mat;
         this.facing = facing;
         frameBlocks = new HashMap<>();
         portalBlocks = new ArrayList<>();
         faceCount = new HashMap<>();
+        world = startBlock.getWorld();
+        startBlockLocation = startBlock.getLocation();
         createPortal(startBlock);
     }
 
     public Gate(String id, Material mat, BlockFace facing, Block startBlock, Gate to) {
+        isValid = false;
         this.id = id;
         this.material = mat;
         this.to = to;
+        this.toId = to.getId();
         this.facing = facing;
         frameBlocks = new HashMap<>();
         portalBlocks = new ArrayList<>();
         faceCount = new HashMap<>();
+        world = startBlock.getWorld();
+        startBlockLocation = startBlock.getLocation();
         createPortal(startBlock);
+    }
+
+    public World getWorld() {
+        return world;
     }
 
     public boolean getIsValid() {
@@ -52,6 +67,7 @@ public class Gate {
 
     public void setTo(Gate to) {
         this.to = to;
+        this.toId = to.getId();
     }
 
     public String getId() {
@@ -70,17 +86,20 @@ public class Gate {
         return portalBlocks;
     }
 
-    public boolean containsFrame(Block block) {
+    public boolean containsFrameBlock(Block block) {
         return frameBlocks.containsValue(block);
+    }
+
+    public boolean containsPortalBlock(Block block) {
+        return portalBlocks.contains(block);
     }
 
     public boolean containsBlock(Block block) {
         return frameBlocks.containsValue(block) || portalBlocks.contains(block);
     }
 
-
-
     public void removeGate() {
+        isValid = false;
         synchronized (SPfB.Portals) {
             SPfB.Portals.stream().filter(g -> g.getTo().equals(this)).forEach(g -> g.setTo(null));
             SPfB.Portals.remove(this);
@@ -88,7 +107,6 @@ public class Gate {
         for (Block b : portalBlocks) {
             b.setType(Material.AIR);
         }
-
         id = null;
         to = null;
         facing = null;
@@ -97,7 +115,13 @@ public class Gate {
         material = null;
         teleportLocation = null;
         faceCount = null;
+        world = null;
+    }
+
+    private void loadGate () {
         isValid = false;
+        Block startBlock = world.getBlockAt(startBlockLocation);
+        createPortal(startBlock);
     }
 
     private void createPortal(Block startBlock) {
@@ -122,6 +146,7 @@ public class Gate {
             addPortalBlock(b.getRelative(facing));
         }
         setTeleportLocation();
+        isValid = true;
     }
 
     private void addFrameBlock(Block block, BlockFace facing, BlockFace direction) {
