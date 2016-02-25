@@ -167,7 +167,9 @@ public class Gate {
         if (!frameBlocks.containsKey(face))
             frameBlocks.put(face, new ArrayList<>());
         frameBlocks.get(face).add(block);
-        int i = faceCount.remove(dir);
+        int i = 0;
+        if (faceCount.containsKey(dir))
+            i = faceCount.remove(dir);
         faceCount.put(dir, ++i);
         Block nextBlock = block.getRelative(direction);
         addFrameBlock(nextBlock, facing, direction);
