@@ -199,12 +199,9 @@ public class Gate {
     }
 
     private void setTeleportLocation() {
-        List<Block> blocks = frameBlocks.get(facing.getOppositeFace());
-        int index = faceCount.get(facing.getOppositeFace()) / 2;
-        Block b = blocks.get(index);
         BlockFace face = null;
 
-        switch (facing)
+        switch (this.facing)
         {
             case NORTH:
                 face = WEST;
@@ -219,6 +216,11 @@ public class Gate {
                 face = NORTH;
                 break;
         }
-        teleportLocation = b.getRelative(face).getLocation();
+
+        List<Block> blocks = frameBlocks.get(face);
+        int index = faceCount.get(face) / 2;
+        Block b = blocks.get(index);
+
+        teleportLocation = b.getRelative(this.facing.getOppositeFace()).getLocation();
     }
 }
