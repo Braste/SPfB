@@ -166,7 +166,7 @@ public class Gate {
         BlockFace dir = direction;
 
         if (!b.getType().equals(Material.AIR)) {
-            if (!b.getType().equals(portalMaterial)) {
+            if (!b.getType().equals(frameMaterial)) {
                 isValid = false;
                 return;
             }
