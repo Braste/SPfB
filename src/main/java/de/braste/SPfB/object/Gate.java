@@ -135,24 +135,24 @@ public class Gate {
 
     private void createPortal(Block startBlock) {
         try {
-            BlockFace face = null;
+            BlockFace facing = null;
             switch (this.facing) {
                 case NORTH:
-                    face = WEST;
+                    facing = WEST;
                     break;
                 case SOUTH:
-                    face = EAST;
+                    facing = EAST;
                     break;
                 case WEST:
-                    face = SOUTH;
+                    facing = SOUTH;
                     break;
                 case EAST:
-                    face = NORTH;
+                    facing = NORTH;
                     break;
             }
-            addFrameBlock(startBlock, face, UP);
-            for (Block b : frameBlocks.get(this.facing)) {
-                addPortalBlock(b.getRelative(this.facing));
+            addFrameBlock(startBlock, facing, UP);
+            for (Block b : frameBlocks.get(facing)) {
+                addPortalBlock(b.getRelative(facing));
             }
             setTeleportLocation();
             isValid = true;
@@ -191,11 +191,11 @@ public class Gate {
     private void addPortalBlock(Block block) {
         if (containsBlock(block))
             return;
-        if (block.getType().equals(Material.AIR)) {
-            portalBlocks.add(block);
-            block.setType(Material.PORTAL, false);
+        if (block.getType().equals(Material.PORTAL)) {
+            //portalBlocks.add(block);
+            block.setType(Material.AIR, false);
         }
-        addPortalBlock(block.getRelative(this.facing));
+        addPortalBlock(block.getRelative(facing));
     }
 
     private void setTeleportLocation() {
