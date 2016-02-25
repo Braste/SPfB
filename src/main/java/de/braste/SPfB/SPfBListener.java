@@ -332,8 +332,8 @@ class SPfBListener implements Listener {
         synchronized (SPfB.Portals) {
             for (Gate g : SPfB.Portals) {
                 if (g.containsBlock(b)) {
-                    if (g.getTeleportLocation() != null)
-                        event.getPlayer().teleport(g.getTeleportLocation());
+                    if (g.getTo() != null)
+                        event.getPlayer().teleport(g.getTo().getTeleportLocation());
                     event.setCancelled(true);
                     return;
                 }

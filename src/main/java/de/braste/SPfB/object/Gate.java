@@ -203,6 +203,6 @@ public class Gate {
         int index = faceCount.get(UP) / 2;
         Block b = blocks.get(index);
 
-        teleportLocation = b.getRelative(this.facing.getOppositeFace()).getLocation();
+        teleportLocation = b.getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);
     }
 }
