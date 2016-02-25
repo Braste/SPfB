@@ -27,6 +27,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.lang.String.format;
 
@@ -36,6 +37,7 @@ public class SPfB extends JavaPlugin {
     public Functions Funcs;
     public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
     public static final List<Gate> Portals = Collections.synchronizedList(new ArrayList<>());
+    public static Logger logger;
     private String host;
     private String port;
     private String db;
@@ -44,7 +46,6 @@ public class SPfB extends JavaPlugin {
     private ConfigurationSection database;
     private ConfigurationSection furnaces;
     private ConfigurationSection gates;
-    //private YamlConfiguration config;
 
     @Override
     public void onEnable() {
@@ -53,6 +54,7 @@ public class SPfB extends JavaPlugin {
         database = getConfig().getConfigurationSection("mysql");
         furnaces = getConfig().getConfigurationSection("Furnace");
         gates = getConfig().getConfigurationSection("Gates");
+        logger = getLogger();
 
         if (database != null) {
             host = database.getString("host");

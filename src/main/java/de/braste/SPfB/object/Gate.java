@@ -10,6 +10,7 @@ import org.bukkit.block.BlockFace;
 import java.util.*;
 
 import static org.bukkit.block.BlockFace.*;
+import static java.lang.String.format;
 
 public class Gate {
     private String id;
@@ -125,28 +126,32 @@ public class Gate {
     }
 
     private void createPortal(Block startBlock) {
-        BlockFace facing = null;
-        switch (this.facing)
-        {
-            case NORTH:
-                facing = WEST;
-                break;
-            case SOUTH:
-                facing = EAST;
-                break;
-            case WEST:
-                facing = SOUTH;
-                break;
-            case EAST:
-                facing = NORTH;
-                break;
+        try {
+            BlockFace facing = null;
+            switch (this.facing) {
+                case NORTH:
+                    facing = WEST;
+                    break;
+                case SOUTH:
+                    facing = EAST;
+                    break;
+                case WEST:
+                    facing = SOUTH;
+                    break;
+                case EAST:
+                    facing = NORTH;
+                    break;
+            }
+            addFrameBlock(startBlock, facing, UP);
+            for (Block b : frameBlocks.get(UP)) {
+                addPortalBlock(b.getRelative(facing));
+            }
+            setTeleportLocation();
+            isValid = true;
         }
-        addFrameBlock(startBlock, facing, UP);
-        for (Block b : frameBlocks.get(UP)) {
-            addPortalBlock(b.getRelative(facing));
+        catch (Exception e) {
+            SPfB.logger.warning(format("Gate %s kann nicht erzeugt werden: %s", id, e));
         }
-        setTeleportLocation();
-        isValid = true;
     }
 
     private void addFrameBlock(Block block, BlockFace facing, BlockFace direction) {
