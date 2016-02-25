@@ -77,7 +77,11 @@ class SPfBListener implements Listener {
         }
         Block blockBreak = event.getBlock();
         synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.containsFrameBlock(blockBreak)).forEach(de.braste.SPfB.object.Gate::removeGate);
+            SPfB.Portals.stream().filter(g -> g.containsFrameBlock(blockBreak)).forEach(g -> {
+                g.removeGate();
+                SPfB.Portals.stream().filter(g2 -> g2.getTo().equals(g)).forEach(g2 -> g.setTo(null));
+                SPfB.Portals.remove(g);
+            });
         }
         synchronized (plugin.FurnaceBlocks) {
             if (!plugin.FurnaceBlocks.contains(blockBreak)) {
@@ -332,8 +336,10 @@ class SPfBListener implements Listener {
         synchronized (SPfB.Portals) {
             for (Gate g : SPfB.Portals) {
                 if (g.containsBlock(b)) {
-                    if (g.getTo() != null)
-                        event.getPlayer().teleport(g.getTo().getTeleportLocation());
+                    /*if (g.getTo() != null)
+                        event.getPlayer().teleport(g.getTo().getTeleportLocation());*/
+                    if (g.getTeleportLocation() != null)
+                        event.getPlayer().teleport(g.getTeleportLocation());
                     event.setCancelled(true);
                     return;
                 }

@@ -108,10 +108,6 @@ public class Gate {
 
     public void removeGate() {
         isValid = false;
-        synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.getTo().equals(this)).forEach(g -> g.setTo(null));
-            SPfB.Portals.remove(this);
-        }
         for (Block b : portalBlocks) {
             b.setType(Material.AIR);
         }
