@@ -247,7 +247,6 @@ public class SPfB extends JavaPlugin {
 
     private void loadGates() {
         try {
-
             boolean b = true;
 
         } catch(Exception e) {

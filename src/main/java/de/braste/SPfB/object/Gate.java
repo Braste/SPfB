@@ -193,32 +193,14 @@ public class Gate {
             return;
         if (block.getType().equals(Material.AIR)) {
             portalBlocks.add(block);
-            block.setType(Material.PORTAL, false);
+            block.setType(this.portalMaterial, false);
         }
         addPortalBlock(block.getRelative(facing), facing);
     }
 
     private void setTeleportLocation() {
-        BlockFace face = null;
-
-        switch (this.facing)
-        {
-            case NORTH:
-                face = WEST;
-                break;
-            case SOUTH:
-                face = EAST;
-                break;
-            case WEST:
-                face = SOUTH;
-                break;
-            case EAST:
-                face = NORTH;
-                break;
-        }
-
-        List<Block> blocks = frameBlocks.get(face);
-        int index = faceCount.get(face) / 2;
+        List<Block> blocks = frameBlocks.get(UP);
+        int index = faceCount.get(UP) / 2;
         Block b = blocks.get(index);
 
         teleportLocation = b.getRelative(this.facing.getOppositeFace()).getLocation();

@@ -117,8 +117,9 @@ class SPfBListener implements Listener {
                 BlockFace face = ((org.bukkit.material.Sign) state.getData()).getFacing();
                 Block b = event.getBlock().getRelative(face.getOppositeFace());
                 gate = new Gate(id, mat, face.getOppositeFace(), b);
-                if (gate.getIsValid())
+                if (gate.getIsValid()) {
                     SPfB.Portals.add(gate);
+                }
             }
             if (!gate.getIsValid())
                 return;
