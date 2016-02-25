@@ -171,8 +171,8 @@ public class SPfB extends JavaPlugin {
             //config.set("Furnace", map);
             getConfig().createSection("Furnace");
             getConfig().set("Furnace", map);
-            getConfig().createSection("Gates");
-            getConfig().set("Gates", Portals);
+            //getConfig().createSection("Gates");
+            //getConfig().set("Gates", Portals);
             saveConfig();
             //config.save(datafolder.getAbsolutePath() + "/Blocks.dat");
         } catch(Exception ignored) {
