@@ -77,11 +77,18 @@ class SPfBListener implements Listener {
         }
         Block blockBreak = event.getBlock();
         synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.containsFrameBlock(blockBreak)).forEach(g -> {
+            for (Gate g : SPfB.Portals) {
+                if (!g.containsFrameBlock(blockBreak))
+                    continue;
+                for (Gate g2 : SPfB.Portals) {
+                    if (g2.getTo().equals(g)) {
+                        g2.setTo(null);
+                    }
+                }
                 g.removeGate();
-                SPfB.Portals.stream().filter(g2 -> g2.getTo().equals(g)).forEach(g2 -> g.setTo(null));
                 SPfB.Portals.remove(g);
-            });
+                break;
+            }
         }
         synchronized (plugin.FurnaceBlocks) {
             if (!plugin.FurnaceBlocks.contains(blockBreak)) {
