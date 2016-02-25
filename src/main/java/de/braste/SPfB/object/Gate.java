@@ -91,7 +91,11 @@ public class Gate {
     }
 
     public boolean containsFrameBlock(Block block) {
-        return frameBlocks.containsValue(block);
+        for (List<Block> l : frameBlocks.values()) {
+            if (l.contains(block))
+                return true;
+        }
+        return false;
     }
 
     public boolean containsPortalBlock(Block block) {
@@ -99,7 +103,7 @@ public class Gate {
     }
 
     public boolean containsBlock(Block block) {
-        return frameBlocks.containsValue(block) || portalBlocks.contains(block);
+        return containsFrameBlock(block) || containsPortalBlock(block);
     }
 
     public void removeGate() {
@@ -147,7 +151,7 @@ public class Gate {
                     break;
             }
             addFrameBlock(startBlock, facing, UP);
-            for (Block b : frameBlocks.get(UP)) {
+            for (Block b : frameBlocks.get(facing)) {
                 addPortalBlock(b.getRelative(facing));
             }
             setTeleportLocation();
@@ -159,7 +163,7 @@ public class Gate {
     }
 
     private void addFrameBlock(Block block, BlockFace facing, BlockFace direction) {
-        if (frameBlocks.containsValue(block))
+        if (containsFrameBlock(block))
             return;
         Block b = block.getRelative(facing);
         BlockFace face = facing;
@@ -185,7 +189,7 @@ public class Gate {
     }
 
     private void addPortalBlock(Block block) {
-        if (frameBlocks.containsValue(block))
+        if (containsBlock(block))
             return;
         if (block.getType().equals(Material.AIR)) {
             portalBlocks.add(block);
