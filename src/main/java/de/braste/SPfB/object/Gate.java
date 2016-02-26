@@ -225,7 +225,9 @@ public class Gate {
 
     private void setTeleportLocation() {
         List<Block> blocks = this.frameBlocks.get(UP);
-        int index = (this.faceCount.get(UP) / 2) + 1;
+        int index = (this.faceCount.get(UP) / 2) - 1;
+        if (index < 0)
+            index = 0;
         Block b = blocks.get(index);
 
         this.teleportLocation = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);
