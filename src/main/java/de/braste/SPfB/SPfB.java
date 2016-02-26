@@ -259,7 +259,7 @@ public class SPfB extends JavaPlugin {
                 YamlConfiguration config = YamlConfiguration.loadConfiguration(data);
                 furnaces = config.getConfigurationSection("Furnace");
             }
-            Set<String> keys = furnaces.getKeys(true);
+            Set<String> keys = furnaces.getKeys(false);
 
             for (String key: keys) {
                 List<List<Double>> map = (List<List<Double>>) furnaces.get(key);
@@ -284,7 +284,7 @@ public class SPfB extends JavaPlugin {
 
     private void loadGates() {
         try {
-            Set<String> keys = gates.getKeys(true);
+            Set<String> keys = gates.getKeys(false);
 
             for (String key : keys) {
                 Map<String, Object> map = (Map<String, Object>) gates.get(key);
