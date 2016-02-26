@@ -76,7 +76,8 @@ public class Gate {
 
     public void setTo(Gate to) {
         this.to = to;
-        this.toId = to.getId();
+        if (to != null)
+            this.toId = to.getId();
     }
 
     public String getId() {

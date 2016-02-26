@@ -81,7 +81,7 @@ class SPfBListener implements Listener {
                 if (!g.containsFrameBlock(blockBreak))
                     continue;
                 for (Gate g2 : SPfB.Portals.values()) {
-                    if (g.equals(g2.getTo())) {
+                    if (g2 != null && g.equals(g2.getTo())) {
                         g2.setTo(null);
                     }
                 }
