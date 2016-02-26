@@ -51,7 +51,7 @@ class SPfBListener implements Listener {
         Block placedBlock = event.getBlock();
         synchronized (SPfB.Portals) {
             for (Gate g : SPfB.Portals.values()) {
-                if (g.containsBlock(event.getBlockReplacedState().getBlock())) {
+                if (g.getIsValid() && g.containsBlock(event.getBlockReplacedState().getBlock())) {
                     event.setCancelled(true);
                     return;
                 }
@@ -176,7 +176,7 @@ class SPfBListener implements Listener {
             return;
 
         synchronized (SPfB.Portals) {
-            SPfB.Portals.values().stream().filter(g -> g.containsBlock(block)).forEach(g -> {
+            SPfB.Portals.values().stream().filter(g -> g.getIsValid() && g.containsBlock(block)).forEach(g -> {
                 event.setCancelled(true);
             });
         }

@@ -6,11 +6,16 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.BlockState;
+import org.bukkit.material.MaterialData;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.bukkit.block.BlockFace.*;
 import static java.lang.String.format;
+import static org.bukkit.block.BlockFace.*;
 
 public class Gate {
     private String id;
@@ -214,6 +219,9 @@ public class Gate {
         if (block.getType().equals(checkMaterial)) {
             this.portalBlocks.add(block);
             block.setType(this.portalMaterial, false);
+            BlockState state = block.getState();
+            Class<? extends MaterialData> test = state.getData().getClass();
+            String test2 = test.getCanonicalName();
         }
         addPortalBlock(block.getRelative(facing), facing);
     }
