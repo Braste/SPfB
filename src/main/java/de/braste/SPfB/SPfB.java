@@ -79,7 +79,6 @@ public class SPfB extends JavaPlugin {
             if (!setupPermissions() || !setupChat())
                 throw new Exception();
             Funcs = new Functions(initMySqlConnectionPool(), this);
-            Thread.sleep(10000);
             loadFurnaces();
             loadGates();
         } catch (Exception e) {
@@ -287,19 +286,24 @@ public class SPfB extends JavaPlugin {
             Set<String> keys = gates.getKeys(false);
 
             for (String key : keys) {
-                ConfigurationSection map = (ConfigurationSection) gates.get(key);
-                BlockFace facing = BlockFace.valueOf(map.getString("facing"));
-                Material portalMaterial =  Material.valueOf(map.getString("portalMatereial"));
-                List<Double> startBlockLocation = new ArrayList<>();
-                map.getList("startBlockLocation", startBlockLocation);
-                World world = getServer().getWorld(map.getString("world"));
-                Block startBlock = world.getBlockAt(startBlockLocation.get(0).intValue(), startBlockLocation.get(1).intValue(), startBlockLocation.get(2).intValue());
+                try {
+                    ConfigurationSection map = (ConfigurationSection) gates.get(key);
+                    BlockFace facing = BlockFace.valueOf(map.getString("facing"));
+                    Material portalMaterial = Material.valueOf(map.getString("portalMaterial"));
+                    List<Double> startBlockLocation = new ArrayList<>();
+                    map.getList("startBlockLocation", startBlockLocation);
+                    World world = getServer().getWorld(map.getString("world"));
+                    Block startBlock = world.getBlockAt(startBlockLocation.get(0).intValue(), startBlockLocation.get(1).intValue(), startBlockLocation.get(2).intValue());
 
-                Gate g = new Gate(key, portalMaterial, facing, startBlock);
-                if (g.getIsValid()) {
-                    synchronized (Portals) {
-                        Portals.put(key, g);
+                    Gate g = new Gate(key, portalMaterial, facing, startBlock);
+                    if (g.getIsValid()) {
+                        synchronized (Portals) {
+                            Portals.put(key, g);
+                        }
                     }
+                } catch(Exception e) {
+                    getLogger().info(format("Portal %s konnte nicht geladen werden: ", key));
+                    e.printStackTrace();
                 }
             }
 
