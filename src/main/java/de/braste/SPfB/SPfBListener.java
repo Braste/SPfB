@@ -86,6 +86,7 @@ class SPfBListener implements Listener {
                     }
                 }
                 SPfB.Portals.remove(g.getId());
+                plugin.Funcs.sendSystemMessage(player, "Portal " + g.getId() + " zerstört!");
                 g.removeGate();
                 break;
             }
@@ -112,26 +113,38 @@ class SPfBListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        if (event.getLine(0).equals("[portal]") && event.getPlayer().hasPermission("SPFB.createPortal"))
+        if (event.getLine(0).equals("[portal]"))
         {
             String id = event.getLine(1);
-            Material mat = Material.PORTAL;
+            BlockState state = event.getBlock().getState();
+            BlockFace face = ((org.bukkit.material.Sign) state.getData()).getFacing();
+            Block b = event.getBlock().getRelative(face.getOppositeFace());
 
-            Gate gate;
-            synchronized (SPfB.Portals) {
-                BlockState state = event.getBlock().getState();
-                BlockFace face = ((org.bukkit.material.Sign) state.getData()).getFacing();
-                Block b = event.getBlock().getRelative(face.getOppositeFace());
-                for (Gate g : SPfB.Portals.values())
-                {
-                    if (g.getId().equals(id) || g.containsBlock(b))
+            if (!id.equals("") && event.getPlayer().hasPermission("SPFB.createPortal")) {
+                Material mat = Material.PORTAL;
+                Gate gate;
+                synchronized (SPfB.Portals) {
+                    for (Gate g : SPfB.Portals.values()) {
+                        if (g.getId().equals(id) || g.containsBlock(b))
+                            return;
+                    }
+                    gate = new Gate(id, mat, face.getOppositeFace(), b, false);
+                    if (!gate.getIsValid())
                         return;
+                    SPfB.Portals.put(id, gate);
+                    plugin.Funcs.sendSystemMessage(player, "Portal " + id + " erfolgreich erstellt!");
+                    event.getBlock().breakNaturally();
                 }
-                gate = new Gate(id, mat, face.getOppositeFace(), b, false);
-                if (!gate.getIsValid())
-                    return;
-                SPfB.Portals.put(id, gate);
-                event.getBlock().breakNaturally();
+            } else if (event.getPlayer().hasPermission("SPFB.getPortalInfo")) {
+                synchronized (SPfB.Portals) {
+                    for (Gate g : SPfB.Portals.values()) {
+                        if (g.getIsValid() && g.containsBlock(b)) {
+                            event.setLine(1, "ID: " + g.getId());
+                            event.setLine(2, "Target: " + g.getToId());
+                            return;
+                        }
+                    }
+                }
             }
         }
     }
