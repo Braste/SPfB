@@ -27,47 +27,67 @@ public class Gate {
     private Map<BlockFace, Integer> faceCount;
     private World world;
 
-    public Gate(String id, Material mat, BlockFace facing, Block startBlock) {
-        isValid = false;
+    public Gate(String id, Material portalMaterial, BlockFace facing, Block startBlock) {
+        this.isValid = false;
         this.id = id;
-        this.portalMaterial = mat;
+        this.portalMaterial = portalMaterial;
         this.facing = facing;
-        frameBlocks = new HashMap<>();
-        portalBlocks = new ArrayList<>();
-        faceCount = new HashMap<>();
-        world = startBlock.getWorld();
-        frameMaterial = startBlock.getType();
-        startBlockLocation = startBlock.getLocation();
+        this.frameBlocks = new HashMap<>();
+        this.portalBlocks = new ArrayList<>();
+        this.faceCount = new HashMap<>();
+        this.world = startBlock.getWorld();
+        this.frameMaterial = startBlock.getType();
+        this.startBlockLocation = startBlock.getLocation();
         createPortal(startBlock);
     }
 
-    public Gate(String id, Material mat, BlockFace facing, Block startBlock, Gate to) {
-        isValid = false;
+    public Gate(String id, Material portalMaterial, BlockFace facing, Block startBlock, Gate to) {
+        this.isValid = false;
         this.id = id;
-        this.portalMaterial = mat;
+        this.portalMaterial = portalMaterial;
         this.to = to;
         this.toId = to.getId();
         this.facing = facing;
-        frameBlocks = new HashMap<>();
-        portalBlocks = new ArrayList<>();
-        faceCount = new HashMap<>();
-        world = startBlock.getWorld();
-        frameMaterial = startBlock.getType();
-        startBlockLocation = startBlock.getLocation();
+        this.frameBlocks = new HashMap<>();
+        this.portalBlocks = new ArrayList<>();
+        this.faceCount = new HashMap<>();
+        this.world = startBlock.getWorld();
+        this.frameMaterial = startBlock.getType();
+        this.startBlockLocation = startBlock.getLocation();
         createPortal(startBlock);
     }
 
+    public Gate(String id, Material portalMaterial, BlockFace facing, Location startBlockLocation, Material frameMaterial, String toId) {
+        this.isValid = false;
+        this.id = id;
+        this.portalMaterial = portalMaterial;
+        synchronized (SPfB.Portals) {
+            this.to = SPfB.Portals.get(toId);
+        }
+        this.toId = toId;
+        this.facing = facing;
+        this.frameBlocks = new HashMap<>();
+        this.portalBlocks = new ArrayList<>();
+        this.faceCount = new HashMap<>();
+        this.startBlockLocation = startBlockLocation;
+        this.world = startBlockLocation.getWorld();
+        this.frameMaterial = frameMaterial;
+        createPortal(startBlockLocation.getBlock());
+    }
+
     public World getWorld() {
-        return world;
+        return this.world;
     }
 
     public boolean getIsValid() {
-        return isValid;
+        return this.isValid;
     }
 
     public Gate getTo() {
-        return to;
+        return this.to;
     }
+
+    public String getToId() { return toId; }
 
     public void setTo(Gate to) {
         this.to = to;
@@ -75,23 +95,39 @@ public class Gate {
     }
 
     public String getId() {
-        return id;
+        return this.id;
+    }
+
+    public BlockFace getFacing() {
+        return this.facing;
+    }
+
+    public Material getPortalMaterial() {
+        return this.portalMaterial;
+    }
+
+    public Material getFrameMaterial() {
+        return this.frameMaterial;
+    }
+
+    public Location getStartBlockLocation() {
+        return this.startBlockLocation;
     }
 
     public void rename(String newId) {
-        id = newId;
+        this.id = newId;
     }
 
     public Location getTeleportLocation() {
-        return teleportLocation;
+        return this.teleportLocation;
     }
 
     public List<Block> getPortalBlocks() {
-        return portalBlocks;
+        return this.portalBlocks;
     }
 
     public boolean containsFrameBlock(Block block) {
-        for (List<Block> l : frameBlocks.values()) {
+        for (List<Block> l : this.frameBlocks.values()) {
             if (l.contains(block))
                 return true;
         }
@@ -99,7 +135,7 @@ public class Gate {
     }
 
     public boolean containsPortalBlock(Block block) {
-        return portalBlocks.contains(block);
+        return this.portalBlocks.contains(block);
     }
 
     public boolean containsBlock(Block block) {
@@ -107,26 +143,19 @@ public class Gate {
     }
 
     public void removeGate() {
-        isValid = false;
-        for (Block b : portalBlocks) {
+        this.isValid = false;
+        for (Block b : this.portalBlocks) {
             b.setType(Material.AIR);
         }
-        id = null;
-        to = null;
-        facing = null;
-        frameBlocks = null;
-        portalBlocks = null;
-        portalMaterial = null;
-        teleportLocation = null;
-        faceCount = null;
-        world = null;
-    }
-
-    private void loadGate () {
-        isValid = false;
-        Block startBlock = world.getBlockAt(startBlockLocation);
-        frameMaterial = startBlock.getType();
-        createPortal(startBlock);
+        this.id = null;
+        this.to = null;
+        this.facing = null;
+        this.frameBlocks = null;
+        this.portalBlocks = null;
+        this.portalMaterial = null;
+        this.teleportLocation = null;
+        this.faceCount = null;
+        this.world = null;
     }
 
     private void createPortal(Block startBlock) {
@@ -147,11 +176,11 @@ public class Gate {
                     break;
             }
             addFrameBlock(startBlock, face, UP);
-            for (Block b : frameBlocks.get(face)) {
+            for (Block b : this.frameBlocks.get(face)) {
                 addPortalBlock(b.getRelative(face), face);
             }
             setTeleportLocation();
-            isValid = true;
+            this.isValid = true;
         }
         catch (Exception e) {
             SPfB.logger.warning(format("Gate %s kann nicht erzeugt werden: %s", id, e));
@@ -166,20 +195,20 @@ public class Gate {
         BlockFace dir = direction;
 
         if (!b.getType().equals(Material.AIR)) {
-            if (!b.getType().equals(frameMaterial)) {
-                isValid = false;
+            if (!b.getType().equals(this.frameMaterial)) {
+                this.isValid = false;
                 return;
             }
             facing = dir.getOppositeFace();
             direction = face;
         }
-        if (!frameBlocks.containsKey(face))
-            frameBlocks.put(face, new ArrayList<>());
-        frameBlocks.get(face).add(block);
+        if (!this.frameBlocks.containsKey(face))
+            this.frameBlocks.put(face, new ArrayList<>());
+        this.frameBlocks.get(face).add(block);
         int i = 0;
-        if (faceCount.containsKey(dir))
-            i = faceCount.remove(dir);
-        faceCount.put(dir, ++i);
+        if (this.faceCount.containsKey(dir))
+            i = this.faceCount.remove(dir);
+        this.faceCount.put(dir, ++i);
         Block nextBlock = block.getRelative(direction);
         addFrameBlock(nextBlock, facing, direction);
     }
@@ -188,17 +217,17 @@ public class Gate {
         if (containsBlock(block))
             return;
         if (block.getType().equals(Material.AIR)) {
-            portalBlocks.add(block);
+            this.portalBlocks.add(block);
             block.setType(this.portalMaterial, false);
         }
         addPortalBlock(block.getRelative(facing), facing);
     }
 
     private void setTeleportLocation() {
-        List<Block> blocks = frameBlocks.get(UP);
-        int index = faceCount.get(UP) / 2;
+        List<Block> blocks = this.frameBlocks.get(UP);
+        int index = this.faceCount.get(UP) / 2;
         Block b = blocks.get(index);
 
-        teleportLocation = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);
+        this.teleportLocation = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);
     }
 }

@@ -69,3 +69,6 @@ commands:
   description: Löscht die Registrierung eines Spielers
   usage: <command> [player]
   aliases: ['rreg']
+ testsave:
+  description: Gatetest
+  usage: <command>

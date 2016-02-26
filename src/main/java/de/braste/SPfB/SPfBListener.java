@@ -50,7 +50,7 @@ class SPfBListener implements Listener {
         }
         Block placedBlock = event.getBlock();
         synchronized (SPfB.Portals) {
-            for (Gate g : SPfB.Portals) {
+            for (Gate g : SPfB.Portals.values()) {
                 if (g.containsBlock(event.getBlockReplacedState().getBlock())) {
                     event.setCancelled(true);
                     return;
@@ -77,10 +77,10 @@ class SPfBListener implements Listener {
         }
         Block blockBreak = event.getBlock();
         synchronized (SPfB.Portals) {
-            for (Gate g : SPfB.Portals) {
+            for (Gate g : SPfB.Portals.values()) {
                 if (!g.containsFrameBlock(blockBreak))
                     continue;
-                for (Gate g2 : SPfB.Portals) {
+                for (Gate g2 : SPfB.Portals.values()) {
                     if (g.equals(g2.getTo())) {
                         g2.setTo(null);
                     }
@@ -122,7 +122,7 @@ class SPfBListener implements Listener {
                 BlockState state = event.getBlock().getState();
                 BlockFace face = ((org.bukkit.material.Sign) state.getData()).getFacing();
                 Block b = event.getBlock().getRelative(face.getOppositeFace());
-                for (Gate g : SPfB.Portals)
+                for (Gate g : SPfB.Portals.values())
                 {
                     if (g.getId().equals(id) || g.containsBlock(b))
                         return;
@@ -130,7 +130,7 @@ class SPfBListener implements Listener {
                 gate = new Gate(id, mat, face.getOppositeFace(), b);
                 if (!gate.getIsValid())
                     return;
-                SPfB.Portals.add(gate);
+                SPfB.Portals.put(id, gate);
                 event.getBlock().breakNaturally();
             }
         }
@@ -163,9 +163,8 @@ class SPfBListener implements Listener {
             return;
 
         synchronized (SPfB.Portals) {
-            SPfB.Portals.stream().filter(g -> g.containsBlock(block)).forEach(g -> {
+            SPfB.Portals.values().stream().filter(g -> g.containsBlock(block)).forEach(g -> {
                 event.setCancelled(true);
-                return;
             });
         }
     }
@@ -342,7 +341,7 @@ class SPfBListener implements Listener {
         Location loc = playerLocationAtEvent.get(event.getPlayer());
         Block b = event.getPlayer().getWorld().getBlockAt(loc);
         synchronized (SPfB.Portals) {
-            for (Gate g : SPfB.Portals) {
+            for (Gate g : SPfB.Portals.values()) {
                 if (g.containsBlock(b)) {
                     /*if (g.getTo() != null)
                         event.getPlayer().teleport(g.getTo().getTeleportLocation());*/
@@ -397,7 +396,7 @@ class SPfBListener implements Listener {
             Location loc = event.getEntity().getLocation();
             Block b = event.getEntity().getWorld().getBlockAt(loc);
             synchronized (SPfB.Portals) {
-                for (Gate g : SPfB.Portals) {
+                for (Gate g : SPfB.Portals.values()) {
                     if (g.getIsValid() && g.containsBlock(b)) {
                         event.setCancelled(true);
                         event.getEntity().setFireTicks(0);
@@ -515,14 +514,6 @@ class SPfBListener implements Listener {
                 e.printStackTrace();
             }
         }
-    }
-
-
-    private static double distanceBetweenLocations(final Location location1, final Location location2) {
-        final double X = location1.getX() - location2.getX();
-        final double Y = location1.getY() - location2.getY();
-        final double Z = location1.getZ() - location2.getZ();
-        return Math.sqrt(X * X + Y * Y + Z * Z);
     }
 
     public SPfB getPlugin() {

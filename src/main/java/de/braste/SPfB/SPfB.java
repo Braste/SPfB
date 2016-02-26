@@ -36,7 +36,7 @@ public class SPfB extends JavaPlugin {
     public static Chat Chat;
     public Functions Funcs;
     public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
-    public static final List<Gate> Portals = Collections.synchronizedList(new ArrayList<>());
+    public static final Map<String, Gate> Portals = Collections.synchronizedMap(new HashMap<>());
     public static Logger logger;
     private String host;
     private String port;
@@ -139,6 +139,9 @@ public class SPfB extends JavaPlugin {
         //BROADCAST
         getCommand("broadcast").setExecutor(new broadcast(this));
 
+        //TESTSAVEGATES
+        getCommand("testsave").setExecutor(new testSaveGates(this));
+
         getLogger().info(format("%s erfolgreich geladen!", pdfFile.getName()));
     }
 
@@ -149,35 +152,9 @@ public class SPfB extends JavaPlugin {
         if (Funcs != null)
             Funcs.CloseConnections();
         PluginDescriptionFile pdfFile = this.getDescription();
-        try {
-            File datafolder = getDataFolder();
-            Map<String, List<double[]>> map = new HashMap<>();
-
-            for (Block FurnaceBlock : FurnaceBlocks) {
-
-                double[] coords = new double[3];
-                Location loc = FurnaceBlock.getLocation();
-                coords[0] = loc.getX();
-                coords[1] = loc.getY();
-                coords[2] = loc.getZ();
-                if (map.containsKey(loc.getWorld().getName())) {
-                    map.get(loc.getWorld().getName()).add(coords);
-                } else {
-                    List<double[]> list = new ArrayList<>();
-                    list.add(coords);
-                    map.put(loc.getWorld().getName(), list);
-                }
-            }
-            //config.set("Furnace", map);
-            getConfig().createSection("Furnace");
-            getConfig().set("Furnace", map);
-            //getConfig().createSection("Gates");
-            //getConfig().set("Gates", Portals);
-            saveConfig();
-            //config.save(datafolder.getAbsolutePath() + "/Blocks.dat");
-        } catch(Exception ignored) {
-
-        }
+        saveFurnaces();
+        saveGates();
+        saveConfig();
         getLogger().info(format("%s deaktiviert.", pdfFile.getName()));
     }
 
@@ -195,8 +172,7 @@ public class SPfB extends JavaPlugin {
         return genericObjectPoolFactory.createPool();
     }
 
-    private boolean setupPermissions()
-    {
+    private boolean setupPermissions() {
         RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
         if (permissionProvider != null) {
             Perms = permissionProvider.getProvider();
@@ -204,14 +180,76 @@ public class SPfB extends JavaPlugin {
         return (Perms != null);
     }
 
-    private boolean setupChat()
-    {
+    private boolean setupChat() {
         RegisteredServiceProvider<Chat> chatProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
         if (chatProvider != null) {
             Chat = chatProvider.getProvider();
         }
 
         return (Chat != null);
+    }
+
+    private void saveFurnaces() {
+        try {
+            Map<String, List<double[]>> map = new HashMap<>();
+
+            for (Block FurnaceBlock : FurnaceBlocks) {
+
+                double[] coords = new double[3];
+                Location loc = FurnaceBlock.getLocation();
+                coords[0] = loc.getX();
+                coords[1] = loc.getY();
+                coords[2] = loc.getZ();
+                if (map.containsKey(loc.getWorld().getName())) {
+                    map.get(loc.getWorld().getName()).add(coords);
+                } else {
+                    List<double[]> list = new ArrayList<>();
+                    list.add(coords);
+                    map.put(loc.getWorld().getName(), list);
+                }
+            }
+            if (!getConfig().contains("Furnace"))
+                getConfig().createSection("Furnace");
+            getConfig().set("Furnace", map);
+        } catch(Exception ignored) {
+
+        }
+    }
+
+    public void saveGates() {
+        try {
+            Map<String, List<AbstractMap.SimpleEntry<String, Object>>> map = new HashMap<>();
+
+            synchronized (Portals) {
+                for (Gate g : Portals.values()) {
+                    List<AbstractMap.SimpleEntry<String, Object>> mapList =  new ArrayList<>();
+                    AbstractMap.SimpleEntry<String, Object> to = new AbstractMap.SimpleEntry<>("toId", g.getToId());
+                    mapList.add(to);
+
+                    AbstractMap.SimpleEntry<String, Object> facing = new AbstractMap.SimpleEntry<>("facing", g.getFacing());
+                    mapList.add(facing);
+                    AbstractMap.SimpleEntry<String, Object> partMat = new AbstractMap.SimpleEntry<>("portalMaterial", g.getPortalMaterial());
+                    mapList.add(partMat);
+                    AbstractMap.SimpleEntry<String, Object> frameMat = new AbstractMap.SimpleEntry<>("frameMaterial", g.getFrameMaterial());
+                    mapList.add(frameMat);
+                    AbstractMap.SimpleEntry<String, Object> world = new AbstractMap.SimpleEntry<>("world", g.getWorld());
+                    mapList.add(world);
+                    List<Double> locList = new ArrayList<>();
+                    Location loc = g.getStartBlockLocation();
+                    locList.add(loc.getX());
+                    locList.add(loc.getY());
+                    locList.add(loc.getZ());
+                    AbstractMap.SimpleEntry<String, Object> startLoc = new AbstractMap.SimpleEntry<>("startBlockLocation", locList);
+                    mapList.add(startLoc);
+                    map.put(g.getId(), mapList);
+                }
+            }
+            if (!getConfig().contains("Gates"))
+                getConfig().createSection("Gates");
+            getConfig().set("Gates", map);
+        } catch(Exception ignored) {
+
+        }
     }
 
     private void loadFurnaces() {
