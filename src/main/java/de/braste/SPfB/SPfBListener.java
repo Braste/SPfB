@@ -127,7 +127,7 @@ class SPfBListener implements Listener {
                     if (g.getId().equals(id) || g.containsBlock(b))
                         return;
                 }
-                gate = new Gate(id, mat, face.getOppositeFace(), b);
+                gate = new Gate(id, mat, face.getOppositeFace(), b, false);
                 if (!gate.getIsValid())
                     return;
                 SPfB.Portals.put(id, gate);

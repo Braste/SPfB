@@ -26,7 +26,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import javax.sound.sampled.Port;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -294,7 +293,7 @@ public class SPfB extends JavaPlugin {
                     World world = getServer().getWorld(map.getString("world"));
                     Block startBlock = world.getBlockAt(startBlockLocation.get(0).intValue(), startBlockLocation.get(1).intValue(), startBlockLocation.get(2).intValue());
 
-                    Gate g = new Gate(key, portalMaterial, facing, startBlock);
+                    Gate g = new Gate(key, portalMaterial, facing, startBlock, true);
                     if (g.getIsValid()) {
                         synchronized (Portals) {
                             Portals.put(key, g);
