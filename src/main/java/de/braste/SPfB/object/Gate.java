@@ -6,8 +6,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.BlockState;
-import org.bukkit.material.SimpleAttachableMaterialData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -219,18 +217,15 @@ public class Gate {
         if (block.getType().equals(checkMaterial)) {
             this.portalBlocks.add(block);
             block.setType(this.portalMaterial, false);
-            BlockState state = block.getState();
-            SimpleAttachableMaterialData data = (SimpleAttachableMaterialData) state.getData();
-            data.setFacingDirection(this.facing.getOppositeFace());
-            state.setData(data);
-            state.update();
+            if (this.facing.equals(BlockFace.EAST) || this.facing.equals(BlockFace.WEST))
+                block.setData((byte)2);
         }
         addPortalBlock(block.getRelative(facing), facing);
     }
 
     private void setTeleportLocation() {
         List<Block> blocks = this.frameBlocks.get(UP);
-        int index = this.faceCount.get(UP) / 2;
+        int index = (this.faceCount.get(UP) / 2) + 1;
         Block b = blocks.get(index);
 
         this.teleportLocation = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);
