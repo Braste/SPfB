@@ -225,10 +225,10 @@ public class SPfB extends JavaPlugin {
                     Map<String, Object> mapList =  new HashMap<>();
 
                     mapList.put("toId", g.getToId());
-                    mapList.put("facing", g.getFacing());
-                    mapList.put("portalMaterial", g.getPortalMaterial());
-                    mapList.put("frameMaterial", g.getFrameMaterial());
-                    mapList.put("world", g.getWorld());
+                    mapList.put("facing", g.getFacing().name());
+                    mapList.put("portalMaterial", g.getPortalMaterial().name());
+                    mapList.put("frameMaterial", g.getFrameMaterial().name());
+                    mapList.put("world", g.getWorld().getName());
 
                     List<Double> locList = new ArrayList<>();
                     Location loc = g.getStartBlockLocation();
