@@ -287,12 +287,12 @@ public class SPfB extends JavaPlugin {
             Set<String> keys = gates.getKeys(false);
 
             for (String key : keys) {
-                Map<String, Object> map = (Map<String, Object>) gates.get(key);
-                BlockFace facing = BlockFace.valueOf((String) map.get("facing"));
-                Material portalMaterial =  Material.valueOf((String) map.get("portalMatereial"));
-                String worldString = (String) map.get("world");
-                List<Double> startBlockLocation = (List<Double>) map.get("startBlockLocation");
-                World world = getServer().getWorld(worldString);
+                ConfigurationSection map = (ConfigurationSection) gates.get(key);
+                BlockFace facing = BlockFace.valueOf(map.getString("facing"));
+                Material portalMaterial =  Material.valueOf(map.getString("portalMatereial"));
+                List<Double> startBlockLocation = new ArrayList<>();
+                map.getList("startBlockLocation", startBlockLocation);
+                World world = getServer().getWorld(map.getString("world"));
                 Block startBlock = world.getBlockAt(startBlockLocation.get(0).intValue(), startBlockLocation.get(1).intValue(), startBlockLocation.get(2).intValue());
 
                 Gate g = new Gate(key, portalMaterial, facing, startBlock);
@@ -304,8 +304,8 @@ public class SPfB extends JavaPlugin {
             }
 
             for (String key : keys) {
-                Map<String, Object> map = (Map<String, Object>) gates.get(key);
-                String toId = (String) map.get("toId");
+                ConfigurationSection map = (ConfigurationSection) gates.get(key);
+                String toId = map.getString("toId");
                 synchronized (Portals) {
                     if (Portals.containsKey(key) && Portals.containsKey(toId)) {
                         Portals.get(key).setTo(Portals.get(toId));
