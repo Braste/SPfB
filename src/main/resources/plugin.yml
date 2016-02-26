@@ -1,6 +1,6 @@
 name: SPfB
 main: de.braste.SPfB.SPfB
-version: 1.4.1-SNAPSHOT (Spigot 1.8.8)
+version: 1.4.1 (Spigot 1.8.8)
 author: Braste
 depend: [Vault]
 
@@ -71,5 +71,5 @@ commands:
   aliases: ['rreg']
  settargetportal:
   description: Setzt ein Portal als Ziel
-  usage: <command> <source> <target>
-  aliases: ['setportal', 'sp']
+  usage: <command> [source] [target]
+  aliases: ['setportal']

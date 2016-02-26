@@ -23,6 +23,10 @@ public class settargetportal implements CommandExecutor {
                     if (SPfB.Portals.containsKey(args[0])) {
                         if (SPfB.Portals.containsKey(args[1])) {
                             SPfB.Portals.get(args[0]).setTo(SPfB.Portals.get(args[1]));
+                            if (sender instanceof Player)
+                                plugin.Funcs.sendSystemMessage((Player) sender, format("Portal %s erfolgreich als Ziel für Portal %s gesetzt.", args[1], args[0]));
+                            else
+                                plugin.getLogger().info(format("Portal %s erfolgreich als Ziel für Portal %s gesetzt.", args[1], args[0]));
                         } else {
                             if (sender instanceof Player)
                                 plugin.Funcs.sendSystemMessage((Player) sender, format("Portal %s nicht gefunden", args[1]));
