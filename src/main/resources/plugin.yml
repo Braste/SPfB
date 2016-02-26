@@ -69,6 +69,7 @@ commands:
   description: Löscht die Registrierung eines Spielers
   usage: <command> [player]
   aliases: ['rreg']
- testsave:
-  description: Gatetest
-  usage: <command>
+ settargetportal:
+  description: Setzt ein Portal als Ziel
+  usage: <command> <source> <target>
+  aliases: ['setportal', 'sp']

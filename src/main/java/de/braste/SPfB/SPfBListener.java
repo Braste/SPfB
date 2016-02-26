@@ -112,7 +112,7 @@ class SPfBListener implements Listener {
         if (!plugin.Funcs.getIsLoggedIn(player)) {
             event.setCancelled(true);
         }
-        if (event.getLine(0).equals("[portal]") && event.getPlayer().hasPermission("SPFB.createGate"))
+        if (event.getLine(0).equals("[portal]") && event.getPlayer().hasPermission("SPFB.createPortal"))
         {
             String id = event.getLine(1);
             Material mat = Material.PORTAL;

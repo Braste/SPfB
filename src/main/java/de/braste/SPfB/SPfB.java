@@ -140,8 +140,8 @@ public class SPfB extends JavaPlugin {
         //BROADCAST
         getCommand("broadcast").setExecutor(new broadcast(this));
 
-        //TESTSAVEGATES
-        getCommand("testsave").setExecutor(new testSaveGates(this));
+        //SETTARGETPORTAL
+        getCommand("settargetportal").setExecutor(new settargetportal(this));
 
         getLogger().info(format("%s erfolgreich geladen!", pdfFile.getName()));
     }
@@ -314,7 +314,7 @@ public class SPfB extends JavaPlugin {
                 }
             }
             synchronized (Portals) {
-                getLogger().info(format("%s Portale geladen.", Portals.size()));
+                getLogger().info(format("%s Portal(e) geladen.", Portals.size()));
             }
 
         } catch(Exception e) {
