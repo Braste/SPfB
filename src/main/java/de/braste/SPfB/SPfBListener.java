@@ -78,15 +78,15 @@ class SPfBListener implements Listener {
         Block blockBreak = event.getBlock();
         synchronized (SPfB.Portals) {
             for (Gate g : SPfB.Portals.values()) {
-                if (!g.containsFrameBlock(blockBreak))
+                if (!g.getIsValid() || !g.containsFrameBlock(blockBreak))
                     continue;
                 for (Gate g2 : SPfB.Portals.values()) {
-                    if (g2 != null && g.equals(g2.getTo())) {
+                    if (g2.getIsValid() && g.equals(g2.getTo())) {
                         g2.setTo(null);
                     }
                 }
+                SPfB.Portals.remove(g.getId());
                 g.removeGate();
-                SPfB.Portals.remove(g);
                 break;
             }
         }

@@ -14,18 +14,18 @@ import static java.lang.String.format;
 
 public class Gate {
     private String id;
-    private Gate to;
     private String toId;
+    private Gate to;
     private BlockFace facing;
-    private transient Map<BlockFace, List<Block>> frameBlocks;
-    private transient  List<Block> portalBlocks;
     private Material portalMaterial;
     private Material frameMaterial;
     private Location startBlockLocation;
     private Location teleportLocation;
-    private transient boolean isValid;
+    private boolean isValid;
     private boolean loadFromConfig;
     private Map<BlockFace, Integer> faceCount;
+    private Map<BlockFace, List<Block>> frameBlocks;
+    private List<Block> portalBlocks;
     private World world;
 
     public Gate(String id, Material portalMaterial, BlockFace facing, Block startBlock, boolean loadFromConfig) {
@@ -135,12 +135,15 @@ public class Gate {
         }
         this.id = null;
         this.to = null;
+        this.toId = null;
         this.facing = null;
-        this.frameBlocks = null;
-        this.portalBlocks = null;
         this.portalMaterial = null;
+        this.frameMaterial = null;
+        this.startBlockLocation = null;
         this.teleportLocation = null;
         this.faceCount = null;
+        this.frameBlocks = null;
+        this.portalBlocks = null;
         this.world = null;
     }
 
