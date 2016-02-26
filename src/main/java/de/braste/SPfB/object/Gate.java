@@ -7,7 +7,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.material.MaterialData;
+import org.bukkit.material.SimpleAttachableMaterialData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -220,8 +220,10 @@ public class Gate {
             this.portalBlocks.add(block);
             block.setType(this.portalMaterial, false);
             BlockState state = block.getState();
-            Class<? extends MaterialData> test = state.getData().getClass();
-            String test2 = test.getCanonicalName();
+            SimpleAttachableMaterialData data = (SimpleAttachableMaterialData) state.getData();
+            data.setFacingDirection(this.facing.getOppositeFace());
+            state.setData(data);
+            state.update();
         }
         addPortalBlock(block.getRelative(facing), facing);
     }
