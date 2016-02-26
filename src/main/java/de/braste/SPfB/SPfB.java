@@ -14,6 +14,7 @@ import org.apache.commons.pool.impl.GenericObjectPoolFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
@@ -24,6 +25,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+
+import javax.sound.sampled.Port;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.*;
@@ -227,7 +230,6 @@ public class SPfB extends JavaPlugin {
                     mapList.put("toId", g.getToId());
                     mapList.put("facing", g.getFacing().name());
                     mapList.put("portalMaterial", g.getPortalMaterial().name());
-                    mapList.put("frameMaterial", g.getFrameMaterial().name());
                     mapList.put("world", g.getWorld().getName());
 
                     List<Double> locList = new ArrayList<>();
@@ -282,7 +284,37 @@ public class SPfB extends JavaPlugin {
 
     private void loadGates() {
         try {
-            boolean b = true;
+            Set<String> keys = gates.getKeys(true);
+
+            for (String key : keys) {
+                Map<String, Object> map = (Map<String, Object>) gates.get(key);
+                BlockFace facing = BlockFace.valueOf((String) map.get("facing"));
+                Material portalMaterial =  Material.valueOf((String) map.get("portalMatereial"));
+                String worldString = (String) map.get("world");
+                List<Double> startBlockLocation = (List<Double>) map.get("startBlockLocation");
+                World world = getServer().getWorld(worldString);
+                Block startBlock = world.getBlockAt(startBlockLocation.get(0).intValue(), startBlockLocation.get(1).intValue(), startBlockLocation.get(2).intValue());
+
+                Gate g = new Gate(key, portalMaterial, facing, startBlock);
+                if (g.getIsValid()) {
+                    synchronized (Portals) {
+                        Portals.put(key, g);
+                    }
+                }
+            }
+
+            for (String key : keys) {
+                Map<String, Object> map = (Map<String, Object>) gates.get(key);
+                String toId = (String) map.get("toId");
+                synchronized (Portals) {
+                    if (Portals.containsKey(key) && Portals.containsKey(toId)) {
+                        Portals.get(key).setTo(Portals.get(toId));
+                    }
+                }
+            }
+            synchronized (Portals) {
+                getLogger().info(format("%s Portale geladen.", Portals.size()));
+            }
 
         } catch(Exception e) {
             getLogger().warning("Fehler beim Laden der Portale: ");

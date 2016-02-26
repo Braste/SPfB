@@ -57,23 +57,19 @@ public class Gate {
         createPortal(startBlock);
     }
 
-    public Gate(String id, Material portalMaterial, BlockFace facing, Location startBlockLocation, Material frameMaterial, String toId) {
+    /*public Gate(String id, Material portalMaterial, BlockFace facing, Location startBlockLocation) {
         this.isValid = false;
         this.id = id;
         this.portalMaterial = portalMaterial;
-        synchronized (SPfB.Portals) {
-            this.to = SPfB.Portals.get(toId);
-        }
-        this.toId = toId;
         this.facing = facing;
         this.frameBlocks = new HashMap<>();
         this.portalBlocks = new ArrayList<>();
         this.faceCount = new HashMap<>();
         this.startBlockLocation = startBlockLocation;
         this.world = startBlockLocation.getWorld();
-        this.frameMaterial = frameMaterial;
+        this.frameMaterial = startBlockLocation.getBlock().getType();
         createPortal(startBlockLocation.getBlock());
-    }
+    }*/
 
     public World getWorld() {
         return this.world;
