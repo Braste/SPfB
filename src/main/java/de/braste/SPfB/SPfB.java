@@ -290,8 +290,7 @@ public class SPfB extends JavaPlugin {
                     ConfigurationSection map = (ConfigurationSection) gates.get(key);
                     BlockFace facing = BlockFace.valueOf(map.getString("facing"));
                     Material portalMaterial = Material.valueOf(map.getString("portalMaterial"));
-                    List<Double> startBlockLocation = new ArrayList<>();
-                    map.getList("startBlockLocation", startBlockLocation);
+                    List<Double> startBlockLocation = (List<Double>) map.get("startBlockLocation");
                     World world = getServer().getWorld(map.getString("world"));
                     Block startBlock = world.getBlockAt(startBlockLocation.get(0).intValue(), startBlockLocation.get(1).intValue(), startBlockLocation.get(2).intValue());
 
@@ -302,8 +301,7 @@ public class SPfB extends JavaPlugin {
                         }
                     }
                 } catch(Exception e) {
-                    getLogger().info(format("Portal %s konnte nicht geladen werden: ", key));
-                    e.printStackTrace();
+                    getLogger().info(format("Portal %s konnte nicht geladen werden.", key));
                 }
             }
 
