@@ -218,29 +218,26 @@ public class SPfB extends JavaPlugin {
 
     public void saveGates() {
         try {
-            Map<String, List<AbstractMap.SimpleEntry<String, Object>>> map = new HashMap<>();
+            Map<String, Map<String, Object>> map = new HashMap<>();
 
             synchronized (Portals) {
                 for (Gate g : Portals.values()) {
-                    List<AbstractMap.SimpleEntry<String, Object>> mapList =  new ArrayList<>();
-                    AbstractMap.SimpleEntry<String, Object> to = new AbstractMap.SimpleEntry<>("toId", g.getToId());
-                    mapList.add(to);
+                    Map<String, Object> mapList =  new HashMap<>();
 
-                    AbstractMap.SimpleEntry<String, Object> facing = new AbstractMap.SimpleEntry<>("facing", g.getFacing());
-                    mapList.add(facing);
-                    AbstractMap.SimpleEntry<String, Object> partMat = new AbstractMap.SimpleEntry<>("portalMaterial", g.getPortalMaterial());
-                    mapList.add(partMat);
-                    AbstractMap.SimpleEntry<String, Object> frameMat = new AbstractMap.SimpleEntry<>("frameMaterial", g.getFrameMaterial());
-                    mapList.add(frameMat);
-                    AbstractMap.SimpleEntry<String, Object> world = new AbstractMap.SimpleEntry<>("world", g.getWorld());
-                    mapList.add(world);
+                    mapList.put("toId", g.getToId());
+                    mapList.put("facing", g.getFacing());
+                    mapList.put("portalMaterial", g.getPortalMaterial());
+                    mapList.put("frameMaterial", g.getFrameMaterial());
+                    mapList.put("world", g.getWorld());
+
                     List<Double> locList = new ArrayList<>();
                     Location loc = g.getStartBlockLocation();
                     locList.add(loc.getX());
                     locList.add(loc.getY());
                     locList.add(loc.getZ());
-                    AbstractMap.SimpleEntry<String, Object> startLoc = new AbstractMap.SimpleEntry<>("startBlockLocation", locList);
-                    mapList.add(startLoc);
+
+                    mapList.put("startBlockLocation", locList);
+
                     map.put(g.getId(), mapList);
                 }
             }
