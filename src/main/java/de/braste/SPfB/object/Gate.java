@@ -227,11 +227,26 @@ public class Gate {
 
     private void setTeleportLocation() {
         List<Block> blocks = this.frameBlocks.get(UP);
-        int index = (this.faceCount.get(UP) / 2) + 1;
+        int index = (this.faceCount.get(UP) - 1) / 2;
         if (index >= blocks.size())
             index = blocks.size() / 2 - 1;
         Block b = blocks.get(index);
-
-        this.teleportLocation = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);
+        Location target = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation();
+        target.add(0, 1, 0);
+        switch (this.facing) {
+            case NORTH:
+                target.setYaw((float)0);
+                break;
+            case SOUTH:
+                target.setYaw((float)-180);
+                break;
+            case WEST:
+                target.setYaw((float)-90);
+                break;
+            case EAST:
+                target.setYaw((float)90);
+                break;
+        }
+        this.teleportLocation = target;
     }
 }

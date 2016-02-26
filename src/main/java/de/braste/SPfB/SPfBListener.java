@@ -132,6 +132,11 @@ class SPfBListener implements Listener {
                     if (!gate.getIsValid())
                         return;
                     SPfB.Portals.put(id, gate);
+                    if (!event.getLine(2).equals("")) {
+                        if (SPfB.Portals.containsKey(event.getLine(2))) {
+                            gate.setTo(SPfB.Portals.get(event.getLine(2)));
+                        }
+                    }
                     plugin.Funcs.sendSystemMessage(player, "Portal " + id + " erfolgreich erstellt!");
                     event.getBlock().breakNaturally();
                 }
@@ -355,13 +360,16 @@ class SPfBListener implements Listener {
         Block b = event.getPlayer().getWorld().getBlockAt(loc);
         synchronized (SPfB.Portals) {
             for (Gate g : SPfB.Portals.values()) {
-                if (g.containsBlock(b)) {
+                if (g.getIsValid() && g.containsBlock(b)) {
+                    //event.getPortalTravelAgent().setCanCreatePortal(false);
                     event.setCancelled(true);
                     if (g.getTo() != null) {
+                        //event.setTo(g.getTo().getTeleportLocation());
                         event.getPlayer().teleport(g.getTo().getTeleportLocation());
                         return;
                     }
                     if (g.getTeleportLocation() != null)
+                        //event.setTo(g.getTeleportLocation());
                         event.getPlayer().teleport(g.getTeleportLocation());
                     return;
                 }
