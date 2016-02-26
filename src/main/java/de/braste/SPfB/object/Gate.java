@@ -168,6 +168,8 @@ public class Gate {
                     break;
             }
             addFrameBlock(startBlock, face, UP);
+            if (this.frameBlocks.size() == 0)
+                return;
             for (Block b : this.frameBlocks.get(face)) {
                 addPortalBlock(b.getRelative(face), face);
             }
@@ -217,17 +219,17 @@ public class Gate {
         if (block.getType().equals(checkMaterial)) {
             this.portalBlocks.add(block);
             block.setType(this.portalMaterial, false);
-            if (this.facing.equals(BlockFace.EAST) || this.facing.equals(BlockFace.WEST))
-                block.setData((byte)2);
+            /*if (this.facing.equals(BlockFace.EAST) || this.facing.equals(BlockFace.WEST))
+                block.setData((byte)2);*/
         }
         addPortalBlock(block.getRelative(facing), facing);
     }
 
     private void setTeleportLocation() {
         List<Block> blocks = this.frameBlocks.get(UP);
-        int index = (this.faceCount.get(UP) / 2) - 1;
-        if (index < 0)
-            index = 0;
+        int index = (this.faceCount.get(UP) / 2) + 1;
+        if (index >= blocks.size())
+            index = blocks.size() / 2;
         Block b = blocks.get(index);
 
         this.teleportLocation = b.getRelative(this.facing.getOppositeFace()).getRelative(this.facing.getOppositeFace()).getLocation().add(0, 1, 0);

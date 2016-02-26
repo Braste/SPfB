@@ -121,7 +121,7 @@ class SPfBListener implements Listener {
             Block b = event.getBlock().getRelative(face.getOppositeFace());
 
             if (!id.equals("") && event.getPlayer().hasPermission("SPFB.createPortal")) {
-                Material mat = Material.PORTAL;
+                Material mat = Material.STATIONARY_WATER;
                 Gate gate;
                 synchronized (SPfB.Portals) {
                     for (Gate g : SPfB.Portals.values()) {
@@ -385,8 +385,21 @@ class SPfBListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(final PlayerMoveEvent event) {
-        /*Location loc = event.getTo();
-        String gate = findGate(loc);*/
+        Block b = event.getPlayer().getWorld().getBlockAt(event.getTo());
+        synchronized (SPfB.Portals) {
+            for (Gate g : SPfB.Portals.values()) {
+                if (g.getIsValid() && g.containsBlock(b)) {
+                    //event.setCancelled(true);
+                    if (g.getTo() != null) {
+                        event.getPlayer().teleport(g.getTo().getTeleportLocation());
+                        return;
+                    }
+                    if (g.getTeleportLocation() != null)
+                        event.getPlayer().teleport(g.getTeleportLocation());
+                    return;
+                }
+            }
+        }
     }
 
     //endregion
