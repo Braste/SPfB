@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.braste</groupId>
     <artifactId>SPfB</artifactId>
-    <version>1.4.1</version>
+    <version>1.5.0</version>
     <name>SPfB</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version>unknown</api.version>
-        <minecraft.version>1.8.8</minecraft.version>
-        <spigot_version>1.8.8-R0.1-SNAPSHOT</spigot_version>
-        <minecraft_version>1_8_R3</minecraft_version>
+        <minecraft.version>1.11.2</minecraft.version>
+        <minecraft_version>1_11_R1</minecraft_version>
+        <spigot_version>1.11.2-R0.1-SNAPSHOT</spigot_version>
     </properties>
 
     <scm>

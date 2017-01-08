@@ -29,7 +29,7 @@ public class home implements CommandExecutor {
                     loc = plugin.Funcs.getHomeLocation(player);
                     if (loc != null) player.teleport(loc);
                     else
-                        plugin.Funcs.sendSystemMessage(player, "Kein Home-Punkt auf Welt" + player.getWorld().getName() + " gefunden.");
+                        plugin.Funcs.sendSystemMessage(player, "Kein Home-Punkt auf Welt " + player.getWorld().getName() + " gefunden.");
                 } catch (SQLException | MySqlPoolableException e) {
                     e.printStackTrace();
                     return false;
