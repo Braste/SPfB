@@ -1,6 +1,7 @@
 name: SPfB
 main: de.braste.SPfB.SPfB
-version: 1.5.0 (Spigot 1.11.2)
+version: 1.5.1 (Spigot 1.15.2)
+api-version: 1.15
 author: Braste
 depend: [Vault]
 

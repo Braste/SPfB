@@ -20,11 +20,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -37,7 +39,8 @@ public class SPfB extends JavaPlugin {
     public static Permission Perms;
     public static Chat Chat;
     public Functions Funcs;
-    public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
+    //public final List<Block> FurnaceBlocks = Collections.synchronizedList(new ArrayList<>());
+    public final Map<Block, BukkitTask> FurnaceBlocks = new HashMap<>();
     public static final Map<String, Gate> Portals = Collections.synchronizedMap(new HashMap<>());
     public static Logger logger;
     private String host;
@@ -194,7 +197,7 @@ public class SPfB extends JavaPlugin {
         try {
             Map<String, List<double[]>> map = new HashMap<>();
 
-            for (Block FurnaceBlock : FurnaceBlocks) {
+            for (Block FurnaceBlock : FurnaceBlocks.keySet()) {
 
                 double[] coords = new double[3];
                 Location loc = FurnaceBlock.getLocation();
@@ -265,7 +268,7 @@ public class SPfB extends JavaPlugin {
                     Block b = getServer().getWorld(key).getBlockAt(d.get(0).intValue(), d.get(1).intValue(), d.get(2).intValue());
                     if (b != null) {
                         synchronized (FurnaceBlocks) {
-                            FurnaceBlocks.add(b);
+                            FurnaceBlocks.put(b, null);
                         }
                     }
                 }
@@ -277,7 +280,7 @@ public class SPfB extends JavaPlugin {
             getLogger().warning("Fehler beim Laden der Öfen: ");
             e.printStackTrace();
         }
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, this::UpdateFurnace, 2400L, 2400L);
+        Bukkit.getScheduler().runTaskTimer(this, this::UpdateFurnaces, 2400L, 2400L);
     }
 
     private void loadGates() {
@@ -323,7 +326,7 @@ public class SPfB extends JavaPlugin {
         }
     }
 
-    private void UpdateFurnace() {
+    private void UpdateFurnaces() {
         try {
             if ((int) Funcs.getConfigNode("debug", "int") > 1) {
                 getLogger().info("Aktualisiere Öfen");
@@ -331,18 +334,36 @@ public class SPfB extends JavaPlugin {
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
         }
-        Block[] blocks;
         synchronized (FurnaceBlocks) {
-            blocks  = FurnaceBlocks.toArray(new Block[FurnaceBlocks.size()]);
+            for (Block b : FurnaceBlocks.keySet()) {
+                BukkitTask task = FurnaceBlocks.get(b);
+                if (task == null || !Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
+                    BukkitTask t = Bukkit.getScheduler().runTaskLater(this, new UpdateFurnace(b), 10L);
+                    FurnaceBlocks.replace(b, t);
+                }
+            }
         }
-        for (Block b: blocks) {
-            Block blockUnder = b.getRelative(BlockFace.DOWN);
-            if (blockUnder.getType() == Material.LAVA || blockUnder.getType() == Material.STATIONARY_LAVA) {
-                ((Furnace) b.getState()).setBurnTime((short)10000);
-                continue;
+
+    }
+
+    private class UpdateFurnace implements Runnable {
+
+        Block block;
+
+        public UpdateFurnace(Block b) {
+            block = b;
+        }
+
+        @Override
+        public void run() {
+            Block blockUnder = block.getRelative(BlockFace.DOWN);
+
+            if (blockUnder.getType() == Material.LAVA) {
+                ((Furnace) block.getState()).setBurnTime((short)10000);
+                return;
             }
             synchronized (FurnaceBlocks) {
-                FurnaceBlocks.remove(b);
+                FurnaceBlocks.remove(block);
             }
         }
     }

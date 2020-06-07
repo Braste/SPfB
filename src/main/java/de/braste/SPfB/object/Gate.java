@@ -222,7 +222,9 @@ public class Gate {
             /*if (this.facing.equals(BlockFace.EAST) || this.facing.equals(BlockFace.WEST))
                 block.setData((byte)2);*/
         }
-        addPortalBlock(block.getRelative(facing), facing);
+        Block b =  block.getRelative(facing);
+        if (b != null)
+            addPortalBlock(b, facing);
     }
 
     private void setTeleportLocation() {

@@ -3,15 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>de.braste</groupId>
     <artifactId>SPfB</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <name>SPfB</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version>unknown</api.version>
-        <minecraft.version>1.11.2</minecraft.version>
-        <minecraft_version>1_11_R1</minecraft_version>
-        <spigot_version>1.11.2-R0.1-SNAPSHOT</spigot_version>
+        <minecraft.version>1.15.2</minecraft.version>
+        <minecraft_version>1_15.2</minecraft_version>
+        <spigot_version>1.15.2-R0.1-SNAPSHOT</spigot_version>
     </properties>
 
     <scm>
@@ -21,9 +21,9 @@
     </scm>
 
     <repositories>
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		<repository>
+            <id>paper-repo</id>
+            <url>https://papermc.io/repo/repository/maven-public/</url>
         </repository>
         <repository>
             <snapshots>
@@ -39,21 +39,21 @@
             <url>http://repo.crm-braun.de/artifactory/libs-snapshot</url>
         </repository>
         <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
             <version>${spigot_version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>net.milkbowl.vault</groupId>
+            <groupId>com.github.MilkBowl</groupId>
             <artifactId>VaultAPI</artifactId>
-            <version>1.5</version>
+            <version>1.7</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -94,7 +94,7 @@
                             <Implementation-Title>SPfB</Implementation-Title>
                             <Implementation-Version>${project.version}</Implementation-Version>
                             <Implementation-Vendor>Braste</Implementation-Vendor>
-                            <Specification-Title>Spigot</Specification-Title>
+                            <Specification-Title>Paper</Specification-Title>
                             <Specification-Version>${spigot_version}</Specification-Version>
                             <Specification-Vendor>Spigot Team</Specification-Vendor>
                             <Sealed>true</Sealed>

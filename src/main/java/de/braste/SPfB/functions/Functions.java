@@ -387,6 +387,7 @@ public class Functions {
                 conn = (Connection) _connPool.borrowObject();
                 st = conn.createStatement();
                 if (st.executeUpdate(String.format("INSERT INTO reg (id, name, password, session) VALUES (null, '%s', '%s', 0)", playerId.toString(), getSHA(password))) > 0) {
+                    login(player);
                     return true;
                 }
             }
