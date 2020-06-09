@@ -20,7 +20,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.Furnace;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -334,36 +334,22 @@ public class SPfB extends JavaPlugin {
         } catch (SQLException | MySqlPoolableException e) {
             e.printStackTrace();
         }
-        synchronized (FurnaceBlocks) {
-            for (Block b : FurnaceBlocks.keySet()) {
-                BukkitTask task = FurnaceBlocks.get(b);
-                if (task == null || !Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId())) {
-                    BukkitTask t = Bukkit.getScheduler().runTaskLater(this, new UpdateFurnace(b), 10L);
-                    FurnaceBlocks.replace(b, t);
-                }
-            }
-        }
+        List<World> worlds = Bukkit.getWorlds();
 
-    }
+        for (World w : worlds) {
+            Collection<Entity> furnaces = w.getEntitiesByClasses(Furnace.class);
 
-    private class UpdateFurnace implements Runnable {
-
-        Block block;
-
-        public UpdateFurnace(Block b) {
-            block = b;
-        }
-
-        @Override
-        public void run() {
-            Block blockUnder = block.getRelative(BlockFace.DOWN);
-
-            if (blockUnder.getType() == Material.LAVA) {
-                ((Furnace) block.getState()).setBurnTime((short)10000);
-                return;
-            }
             synchronized (FurnaceBlocks) {
-                FurnaceBlocks.remove(block);
+                for (Block b : FurnaceBlocks.keySet()) {
+
+                    if (furnaces.contains(b)) {
+                        Block blockUnder = b.getRelative(BlockFace.DOWN);
+
+                        if (blockUnder.getType() == Material.LAVA) {
+                            ((Furnace) b.getState()).setBurnTime((short)10000);
+                        }
+                    }
+                }
             }
         }
     }
