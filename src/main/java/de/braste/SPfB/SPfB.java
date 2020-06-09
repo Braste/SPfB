@@ -29,6 +29,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
+import java.sql.Array;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -338,16 +339,25 @@ public class SPfB extends JavaPlugin {
 
         for (World w : worlds) {
             Collection<Entity> furnaces = w.getEntitiesByClasses(Furnace.class);
+            try {
+                if ((int) Funcs.getConfigNode("debug", "int") > 1) {
+                    getLogger().info("Anzahl Öfen: " + furnaces.size());
+                }
+            } catch (SQLException | MySqlPoolableException e) {
+                e.printStackTrace();
+            }
+            Set<Block> blocks;
 
             synchronized (FurnaceBlocks) {
-                for (Block b : FurnaceBlocks.keySet()) {
+                blocks = FurnaceBlocks.keySet();
+            }
+            for (Block b : blocks) {
 
-                    if (furnaces.contains(b)) {
-                        Block blockUnder = b.getRelative(BlockFace.DOWN);
+                if (furnaces.contains(b)) {
+                    Block blockUnder = b.getRelative(BlockFace.DOWN);
 
-                        if (blockUnder.getType() == Material.LAVA) {
-                            ((Furnace) b.getState()).setBurnTime((short)10000);
-                        }
+                    if (blockUnder.getType() == Material.LAVA) {
+                        ((Furnace) b.getState()).setBurnTime((short)10000);
                     }
                 }
             }
